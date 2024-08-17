@@ -5,6 +5,7 @@ import dts from "vite-plugin-dts";
 import sassDts from "vite-plugin-sass-dts";
 import { libInjectCss } from "vite-plugin-lib-inject-css";
 import { glob } from "glob";
+import { fileURLToPath } from "node:url";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -12,12 +13,26 @@ export default defineConfig({
     cssCodeSplit: true,
     modulePreload: true,
     lib: {
-      entry: glob.sync(
-        // Adds all entry point from the main index and all submodules
-        path.resolve(__dirname, "src/**/index.{ts,tsx}"),
-        {
-          ignore: "src/**/*.d.ts",
-        }
+      entry: Object.fromEntries(
+        glob
+          .sync(
+            // Adds all entry point from the main index and all submodules
+            path.resolve(__dirname, "src/**/index.{ts,tsx}"),
+            {
+              ignore: "src/**/*.d.ts",
+            }
+          )
+          .map((file) => [
+            // This remove `src/` as well as the file extension from each
+            // file, so e.g. src/nested/foo.js becomes nested/foo
+            path.relative(
+              "src",
+              file.slice(0, file.length - path.extname(file).length)
+            ),
+            // This expands the relative paths to absolute paths, so e.g.
+            // src/nested/foo becomes /project/src/nested/foo.js
+            fileURLToPath(new URL(file, import.meta.url)),
+          ])
       ),
       name: "@jonathanramlie/neuron",
     },
@@ -25,8 +40,7 @@ export default defineConfig({
       // Adds all dependencies as external packages so it's not bundled
       external: ["react", "react/jsx-runtime", "react-dom"],
       output: {
-        preserveModules: true,
-        preserveModulesRoot: "src",
+        sourcemap: true,
         exports: "named",
         globals: {
           react: "react",
