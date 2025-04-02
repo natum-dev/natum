@@ -1,6 +1,6 @@
 import AppProvider from "@/lib/providers/typo-meter/AppProvider";
-import { Container } from "@jonathanramlie/neuron";
-import "@jonathanramlie/neuron/design-tokens/base.scss";
+import { Container } from "@natum/natum-ui";
+import "@natum/natum-ui/design-tokens/base.scss";
 import styles from "./base.module.scss";
 
 const TypewriterLayout = ({

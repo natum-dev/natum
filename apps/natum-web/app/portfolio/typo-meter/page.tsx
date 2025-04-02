@@ -1,7 +1,7 @@
 "use client";
 
 import TypingArea from "./components/TypingArea/TypingArea";
-import Typography from "@jonathanramlie/neuron/Typography";
+import Typography from "@natum/natum-ui/Typography";
 import { useWordsQuery } from "@/lib/queries/useWordsQuery";
 import { useEffect } from "react";
 import { useSetAtom } from "jotai";

@@ -37,7 +37,7 @@ export default defineConfig({
             ])
         ),
       },
-      name: "@jonathanramlie/neuron",
+      name: "@natum/natum-ui",
     },
     rollupOptions: {
       // Adds all dependencies as external packages so it's not bundled

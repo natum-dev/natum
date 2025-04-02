@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import Typography from "@jonathanramlie/neuron/Typography";
+import Typography from "@natum/natum-ui/Typography";
 import styles from "./Tile.module.scss";
 
 type Props = {

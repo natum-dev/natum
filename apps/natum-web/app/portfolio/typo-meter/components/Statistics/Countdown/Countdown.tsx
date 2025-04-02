@@ -1,4 +1,4 @@
-import { useCountdown } from "@jonathanramlie/neuron/hooks";
+import { useCountdown } from "@natum/natum-ui/hooks";
 import { useAtomValue, useSetAtom } from "jotai";
 import {
   dispatchTestManagerAtom,

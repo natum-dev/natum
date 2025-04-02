@@ -27,7 +27,8 @@ type TypographyVariant =
   | "caption"
   | "code";
 
-export type TypographyProps<TTag extends keyof JSX.IntrinsicElements = "p"> = {
+export type TypographyProps<TTag extends keyof JSX.IntrinsicElements> = {
+  tag?: TTag;
   variant?: TypographyVariant;
   color?: TypographyColor;
 } & ComponentPropsWithRef<TTag>;
@@ -48,15 +49,16 @@ const sanitizeHtmlTag = (tag: string): keyof JSX.IntrinsicElements => {
     : "p";
 };
 
-const Typography = ({
+const Typography = <TTag extends keyof JSX.IntrinsicElements = "p">({
+  tag,
   variant = "body1",
   children,
   color,
   className,
   ...restProps
-}: PropsWithChildren<TypographyProps>) => {
+}: PropsWithChildren<TypographyProps<TTag>>) => {
   return createElement(
-    sanitizeHtmlTag(variant),
+    tag ?? sanitizeHtmlTag(variant),
     {
       className: classNames(
         className,

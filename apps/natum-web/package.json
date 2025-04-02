@@ -1,5 +1,5 @@
 {
-  "name": "cortex-web",
+  "name": "natum-web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@jonathanramlie/neuron": "workspace:^",
+    "@natum/natum-ui": "workspace:^",
     "@tanstack/react-query": "^5.66.0",
     "classnames": "^2.5.1",
     "jotai": "^2.10.0",

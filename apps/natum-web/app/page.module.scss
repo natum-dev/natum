@@ -1,0 +1,88 @@
+.main {
+  min-height: 100vh;
+  display: flex !important;
+  justify-content: center;
+  flex-direction: column;
+  padding: 24px;
+
+  & > :first-child {
+    margin-block: auto;
+  }
+}
+
+.gradient {
+  background: linear-gradient(
+    45deg,
+    var(--color-blue-200),
+    var(--color-purple-300),
+    var(--color-blue-200)
+  );
+  background-size: 200% 100%;
+  animation: gradient-shift 4s linear infinite;
+  background-clip: text;
+  color: transparent;
+}
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0%;
+  }
+  100% {
+    background-position: -200%;
+  }
+}
+
+.summary {
+  text-align: center;
+}
+
+.section {
+  height: 100dvh;
+}
+
+.heading {
+  word-break: break-word;
+  margin-bottom: 24px;
+
+  & > * {
+    display: inline-block;
+  }
+}
+
+.summary_text {
+  opacity: 0;
+  animation: fade-in 1s ease forwards;
+  word-break: break-word;
+
+  & > span {
+    display: inline-block;
+  }
+}
+
+.link {
+  text-decoration: none;
+}
+
+.current_role {
+  margin-top: 24px;
+
+  animation-delay: 0.75s;
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.under_construction.under_construction {
+  margin-top: 96px;
+  animation-delay: 1.25s;
+
+  & a {
+    color: inherit;
+  }
+}

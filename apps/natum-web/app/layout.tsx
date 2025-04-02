@@ -1,4 +1,3 @@
-import "@jonathanramlie/neuron/design-tokens/base.scss";
 import "./index.scss";
 
 const DefaultLayout = ({
