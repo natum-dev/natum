@@ -9,11 +9,19 @@
   @include register-variable($typography-light-scheme, "typography");
   @include register-variable($typography-preset, "typography");
 
+  --bg-color: var(--color-grey-50);
+
   &[data-theme="dark"] {
+    --bg-color: var(--color-grey-900);
     @include register-variable($typography-dark-scheme, "typography");
   }
 
   @media (prefers-color-scheme: dark) {
+    --bg-color: var(--color-grey-900);
     @include register-variable($typography-dark-scheme, "typography");
   }
+}
+
+body {
+  background-color: var(--bg-color);
 }
