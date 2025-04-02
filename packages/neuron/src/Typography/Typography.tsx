@@ -1,37 +1,69 @@
-import { ComponentPropsWithRef, createElement, ReactNode } from "react";
-import { TypographyColor, TypographySize, useTheme } from "../Theme";
+import { ComponentPropsWithRef, createElement, PropsWithChildren } from "react";
+import styles from "./Typography.module.scss";
+import classNames from "classnames";
+import { getPropertyValue } from "../utils/property";
 
-type TypographyType = "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "p";
+type TypographyColor =
+  | "primary"
+  | "secondary"
+  | "disabled"
+  | "link"
+  | "inverse"
+  | "error"
+  | "info"
+  | "success"
+  | "warning";
 
-type TypographyProps<TType extends TypographyType = TypographyType> = {
-  type?: TType;
-  children?: ReactNode;
-  align?: "left" | "right" | "center";
-  color?: keyof TypographyColor;
-  weight?: number | string;
-} & ComponentPropsWithRef<TType>;
+type TypographyVariant =
+  | "h1"
+  | "h2"
+  | "h3"
+  | "h4"
+  | "h5"
+  | "h6"
+  | "body1"
+  | "body2"
+  | "body3"
+  | "caption"
+  | "code";
+
+export type TypographyProps<TTag extends keyof JSX.IntrinsicElements = "p"> = {
+  variant?: TypographyVariant;
+  color?: TypographyColor;
+} & ComponentPropsWithRef<TTag>;
+
+const allowedHtml5Element = new Set([
+  "h1",
+  "h2",
+  "h3",
+  "h4",
+  "h5",
+  "h6",
+  "code",
+]);
+
+const sanitizeHtmlTag = (tag: string): keyof JSX.IntrinsicElements => {
+  return allowedHtml5Element.has(tag)
+    ? (tag as keyof JSX.IntrinsicElements)
+    : "p";
+};
 
 const Typography = ({
-  type = "p",
+  variant = "body1",
   children,
-  color = "primary",
-  align,
-  weight,
+  color,
+  className,
   ...restProps
-}: TypographyProps) => {
-  const {
-    typography: { sizes, color: colorTheme },
-  } = useTheme();
+}: PropsWithChildren<TypographyProps>) => {
   return createElement(
-    type,
+    sanitizeHtmlTag(variant),
     {
-      style: {
-        fontSize:
-          type in sizes ? sizes[type as keyof TypographySize] : sizes.default,
-        color: colorTheme[color],
-        textAlign: align,
-        fontWeight: weight,
-      },
+      className: classNames(
+        className,
+        styles.typography,
+        getPropertyValue(styles, variant),
+        color && getPropertyValue(styles, color)
+      ),
       ...restProps,
     },
     children

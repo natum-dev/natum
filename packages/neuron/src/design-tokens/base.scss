@@ -1,0 +1,19 @@
+@use "index" as *;
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
+@import "modern-normalize/modern-normalize.css";
+
+:root {
+  @include register-variable($palette, "palette");
+  @include register-variable($color, "color");
+
+  @include register-variable($typography-light-scheme, "typography");
+  @include register-variable($typography-preset, "typography");
+
+  &[data-theme="dark"] {
+    @include register-variable($typography-dark-scheme, "typography");
+  }
+
+  @media (prefers-color-scheme: dark) {
+    @include register-variable($typography-dark-scheme, "typography");
+  }
+}

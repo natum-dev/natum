@@ -1,12 +1,46 @@
+import { PropsWithChildren } from "react";
 import styles from "./Button.module.scss";
+import cx from "classnames";
+import { getPropertyValue } from "../utils/property";
 
 export type ButtonProps = {
-  exampleProps: string;
+  size?: "small" | "medium" | "large";
+  disabled?: boolean;
+  fullWidth?: boolean;
+  variant?: "filled" | "light" | "outlined" | "text";
+  color?: "primary" | "secondary" | "error" | "success" | "warning";
+  className?: string;
+  onClick?: VoidFunction;
 };
 
-const Button = ({ exampleProps }: ButtonProps): JSX.Element => {
+const Button = ({
+  color = "primary",
+  size = "medium",
+  variant = "filled",
+  disabled,
+  fullWidth,
+  children,
+  className,
+  onClick,
+}: PropsWithChildren<ButtonProps>): JSX.Element => {
   return (
-    <button className={styles.bg_red}>Example Button {exampleProps}</button>
+    <button
+      className={cx(
+        className,
+        styles.button,
+        getPropertyValue(styles, variant),
+        getPropertyValue(styles, size),
+        getPropertyValue(styles, color),
+        {
+          [styles.full_width]: fullWidth,
+          [styles.disabled]: disabled,
+        }
+      )}
+      disabled={disabled}
+      onClick={onClick}
+    >
+      {children}
+    </button>
   );
 };
 

@@ -1,0 +1,23 @@
+.wrapper {
+  padding: 8px 12px;
+  border-radius: 8px;
+  background-color: var(--color-grey-800);
+  line-height: 1.4;
+
+  & > div {
+    position: relative;
+    overflow: hidden;
+    font-size: 24px;
+  }
+}
+
+.highlight {
+  position: absolute;
+  display: inline-block;
+  background-color: var(--palette-neutral-main);
+  opacity: 0.45;
+  top: 0;
+  width: 0;
+
+  transition: 0.1s all ease;
+}

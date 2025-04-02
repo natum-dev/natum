@@ -1,0 +1,23 @@
+@use "../design-tokens" as *;
+
+.typography {
+  color: var(--typography-primary);
+
+  @each $property in map-keys(map-get($typography-preset, "body1")) {
+    #{$property}: var(--typography-body1-#{$property});
+  }
+}
+
+@each $variant, $styles in $typography-preset {
+  .#{$variant} {
+    @each $property in map-keys($styles) {
+      #{$property}: var(--typography-#{$variant}-#{$property});
+    }
+  }
+}
+
+@each $color in map-keys($typography-light-scheme) {
+  .#{$color} {
+    color: var(--typography-#{$color});
+  }
+}

@@ -1,0 +1,20 @@
+@use "../design-tokens" as b;
+
+$container-width: (
+  sm: 640px,
+  md: 840px,
+  lg: 960px,
+  xl: 1280px,
+);
+
+.container {
+  display: block;
+  width: 100%;
+  margin: auto;
+
+  @each $key, $value in $container-width {
+    @include b.breakpoint($key) {
+      max-width: $value;
+    }
+  }
+}

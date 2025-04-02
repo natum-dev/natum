@@ -1,0 +1,29 @@
+@use "sass:meta";
+@use "functions";
+
+@mixin _deep-register($root-key, $var) {
+  @if meta.type-of($var) != "map" {
+    // If it's not a map variable register the value directly
+    #{$root-key}: $var;
+  } @else {
+    @each $name, $val in $var {
+      @include _deep-register(
+        functions.to-string(($root-key, $name), "-"),
+        $val
+      );
+    }
+  }
+}
+
+@mixin register-variable($var, $base-key: "") {
+  @if meta.type-of($var) != "map" {
+    @error "Variable $var is not a map found: #{$var}";
+  } @else {
+    @each $name, $val in $var {
+      @include _deep-register(
+        "--" + functions.to-string(($base-key, $name), "-"),
+        $val
+      );
+    }
+  }
+}

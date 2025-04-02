@@ -1,0 +1,22 @@
+@use "sass:meta";
+
+@function to-string($list, $separator: "") {
+  $accumulator: "";
+
+  @if meta.type-of($list) != "list" {
+    @error "Variable $list is not a list found: #{$list}";
+    @return $list;
+  }
+
+  @each $val in $list {
+    @if $val != "" {
+      @if $accumulator != "" {
+        $accumulator: $accumulator + $separator + $val;
+      } @else {
+        $accumulator: $val;
+      }
+    }
+  }
+
+  @return $accumulator;
+}

@@ -1,0 +1,8 @@
+@import "@jonathanramlie/neuron/design-tokens";
+
+.main {
+  padding: 16px;
+  @include breakpoint(lg) {
+    max-width: 960px;
+  }
+}

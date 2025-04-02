@@ -6,6 +6,7 @@ import sassDts from "vite-plugin-sass-dts";
 import { libInjectCss } from "vite-plugin-lib-inject-css";
 import { glob } from "glob";
 import { fileURLToPath } from "node:url";
+import copy from "rollup-plugin-copy";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -13,27 +14,29 @@ export default defineConfig({
     cssCodeSplit: true,
     modulePreload: true,
     lib: {
-      entry: Object.fromEntries(
-        glob
-          .sync(
-            // Adds all entry point from the main index and all submodules
-            path.resolve(__dirname, "src/**/index.{ts,tsx}"),
-            {
-              ignore: "src/**/*.d.ts",
-            }
-          )
-          .map((file) => [
-            // This remove `src/` as well as the file extension from each
-            // file, so e.g. src/nested/foo.js becomes nested/foo
-            path.relative(
-              "src",
-              file.slice(0, file.length - path.extname(file).length)
-            ),
-            // This expands the relative paths to absolute paths, so e.g.
-            // src/nested/foo becomes /project/src/nested/foo.js
-            fileURLToPath(new URL(file, import.meta.url)),
-          ])
-      ),
+      entry: {
+        ...Object.fromEntries(
+          glob
+            .sync(
+              // Adds all entry point from the main index and all submodules
+              path.resolve(__dirname, "src/**/index.{ts,tsx}"),
+              {
+                ignore: "src/**/*.d.ts",
+              }
+            )
+            .map((file) => [
+              // This remove `src/` as well as the file extension from each
+              // file, so e.g. src/nested/foo.js becomes nested/foo
+              path.relative(
+                "src",
+                file.slice(0, file.length - path.extname(file).length)
+              ),
+              // This expands the relative paths to absolute paths, so e.g.
+              // src/nested/foo becomes /project/src/nested/foo.js
+              fileURLToPath(new URL(file, import.meta.url)),
+            ])
+        ),
+      },
       name: "@jonathanramlie/neuron",
     },
     rollupOptions: {
@@ -54,9 +57,22 @@ export default defineConfig({
     react(),
     // Configures typing definiton generation
     dts({
-      tsconfigPath: "./tsconfig.app.json",
+      tsconfigPath: "./tsconfig.json",
     }),
-    sassDts(),
+    sassDts({
+      enabledMode: ["development", "production"],
+      esmExport: true,
+    }),
     libInjectCss(),
+    copy({
+      targets: [
+        {
+          src: glob.sync(path.resolve(__dirname, "src/design-tokens/*")),
+          dest: "dist/design-tokens",
+        },
+      ],
+      hook: "closeBundle",
+      verbose: true,
+    }),
   ],
 });

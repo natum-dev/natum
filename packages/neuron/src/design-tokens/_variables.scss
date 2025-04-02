@@ -1,0 +1,325 @@
+$blue: (
+  // Lightest
+  50: #e3f2fd,
+  100: #bbdefb,
+  200: #90caf9,
+  300: #64b5f6,
+  400: #42a5f5,
+  // Main color
+  500: #2196f3,
+  600: #1e88e5,
+  700: #1976d2,
+  800: #1565c0,
+  // Darkest
+  900: #0d47a1
+);
+
+$orange: (
+  // Lightest
+  50: #fff3e0,
+  100: #ffe0b2,
+  200: #ffcc80,
+  300: #ffb74d,
+  400: #ffa726,
+  // Main color
+  500: #ff9800,
+  600: #fb8c00,
+  700: #f57c00,
+  800: #ef6c00,
+  // Darkest
+  900: #e65100
+);
+
+$red: (
+  // Lightest
+  50: #ffebee,
+  100: #ffcdd2,
+  200: #ef9a9a,
+  300: #e57373,
+  400: #ef5350,
+  // Main color
+  500: #f44336,
+  600: #e53935,
+  700: #d32f2f,
+  800: #c62828,
+  // Darkest
+  900: #b71c1c
+);
+
+$green: (
+  // Lightest
+  50: #e8f5e9,
+  100: #c8e6c9,
+  200: #a5d6a7,
+  300: #81c784,
+  400: #66bb6a,
+  // Main color
+  500: #4caf50,
+  600: #43a047,
+  700: #388e3c,
+  800: #2e7d32,
+  // Darkest
+  900: #1b5e20
+);
+
+$yellow: (
+  // Lightest
+  50: #fffde7,
+  100: #fff9c4,
+  200: #fff59d,
+  300: #fff176,
+  400: #ffee58,
+  // Main color
+  500: #ffeb3b,
+  600: #fdd835,
+  700: #fbc02d,
+  800: #f9a825,
+  // Darkest
+  900: #f57f17
+);
+
+$purple: (
+  // Lightest
+  50: #f3e5f5,
+  100: #e1bee7,
+  200: #ce93d8,
+  300: #ba68c8,
+  400: #ab47bc,
+  // Main color
+  500: #9c27b0,
+  600: #8e24aa,
+  700: #7b1fa2,
+  800: #6a1b9a,
+  // Darkest
+  900: #4a148c
+);
+
+$pink: (
+  // Lightest
+  50: #fce4ec,
+  100: #f8bbd0,
+  200: #f48fb1,
+  300: #f06292,
+  400: #ec407a,
+  // Main color
+  500: #e91e63,
+  600: #d81b60,
+  700: #c2185b,
+  800: #ad1457,
+  // Darkest
+  900: #880e4f
+);
+
+$teal: (
+  // Lightest
+  50: #e0f2f1,
+  100: #b2dfdb,
+  200: #80cbc4,
+  300: #4db6ac,
+  400: #26a69a,
+  // Main color
+  500: #009688,
+  600: #00897b,
+  700: #00796b,
+  800: #00695c,
+  // Darkest
+  900: #004d40
+);
+
+$brown: (
+  // Lightest
+  50: #efebe9,
+  100: #d7ccc8,
+  200: #bcaaa4,
+  300: #a1887f,
+  400: #8d6e63,
+  // Main color
+  500: #795548,
+  600: #6d4c41,
+  700: #5d4037,
+  800: #4e342e,
+  // Darkest
+  900: #3e2723
+);
+
+$grey: (
+  // Lightest
+  50: #fafafa,
+  100: #f5f5f5,
+  200: #eeeeee,
+  300: #e0e0e0,
+  400: #bdbdbd,
+  // Main color
+  500: #9e9e9e,
+  600: #757575,
+  700: #616161,
+  800: #424242,
+  // Darkest
+  900: #212121
+);
+
+$color: (
+  blue: $blue,
+  orange: $orange,
+  red: $red,
+  green: $green,
+  yellow: $yellow,
+  purple: $purple,
+  pink: $pink,
+  teal: $teal,
+  brown: $brown,
+  grey: $grey,
+);
+
+$palette: (
+  primary: (
+    main: map-get($blue, 500),
+    dark: map-get($blue, 700),
+    light: map-get($blue, 300),
+  ),
+  secondary: (
+    main: map-get($orange, 400),
+    dark: map-get($orange, 700),
+    light: map-get($orange, 300),
+  ),
+  error: (
+    main: map-get($red, 500),
+    dark: map-get($red, 700),
+    light: map-get($red, 300),
+  ),
+  info: (
+    main: map-get($blue, 400),
+    dark: map-get($blue, 700),
+    light: map-get($blue, 300),
+  ),
+  success: (
+    main: map-get($green, 500),
+    dark: map-get($green, 700),
+    light: map-get($green, 300),
+  ),
+  warning: (
+    main: map-get($yellow, 500),
+    dark: map-get($yellow, 700),
+    light: map-get($yellow, 300),
+  ),
+  neutral: (
+    main: map-get($grey, 500),
+    dark: map-get($grey, 700),
+    light: map-get($grey, 300),
+  ),
+);
+
+$typography-preset: (
+  h1: (
+    letter-spacing: -0.02em,
+    font-weight: 700,
+    line-height: 1.2,
+    font-size: 48px,
+    margin-top: 32px,
+    margin-bottom: 24px,
+  ),
+  h2: (
+    letter-spacing: -0.015em,
+    font-weight: 700,
+    line-height: 1.3,
+    font-size: 40px,
+    margin-top: 28px,
+    margin-bottom: 20px,
+  ),
+  h3: (
+    letter-spacing: -0.01em,
+    font-weight: 600,
+    line-height: 1.4,
+    font-size: 32px,
+    margin-top: 24px,
+    margin-bottom: 16px,
+  ),
+  h4: (
+    letter-spacing: -0.005em,
+    font-weight: 600,
+    line-height: 1.5,
+    font-size: 24px,
+    margin-top: 20px,
+    margin-bottom: 12px,
+  ),
+  h5: (
+    letter-spacing: 0em,
+    font-weight: 500,
+    line-height: 1.5,
+    font-size: 20px,
+    margin-top: 16px,
+    margin-bottom: 10px,
+  ),
+  h6: (
+    letter-spacing: 0em,
+    font-weight: 500,
+    line-height: 1.6,
+    font-size: 18px,
+    margin-top: 12px,
+    margin-bottom: 8px,
+  ),
+  body1: (
+    letter-spacing: 0em,
+    font-weight: 400,
+    line-height: 1.6,
+    font-size: 16px,
+    margin-top: 8px,
+    margin-bottom: 8px,
+  ),
+  body2: (
+    letter-spacing: 0.01em,
+    font-weight: 400,
+    line-height: 1.6,
+    font-size: 14px,
+    margin-top: 6px,
+    margin-bottom: 6px,
+  ),
+  body3: (
+    letter-spacing: 0.02em,
+    font-weight: 400,
+    line-height: 1.5,
+    font-size: 12px,
+    margin-top: 4px,
+    margin-bottom: 4px,
+  ),
+  caption: (
+    letter-spacing: 0.02em,
+    font-weight: 400,
+    line-height: 1.4,
+    font-size: 12px,
+    margin-top: 2px,
+    margin-bottom: 2px,
+  ),
+  code: (
+    letter-spacing: 0em,
+    font-weight: 400,
+    line-height: 1.5,
+    font-size: 14px,
+    margin-top: 4px,
+    margin-bottom: 4px,
+  ),
+);
+
+$typography-light-scheme: (
+  primary: map-get($grey, 900),
+  secondary: map-get($grey, 700),
+  disabled: map-get($grey, 600),
+  link: map-get($blue, 700),
+  inverse: map-get($grey, 50),
+  error: map-get($red, 700),
+  info: map-get($blue, 700),
+  success: map-get($green, 700),
+  warning: map-get($yellow, 700),
+);
+
+$typography-dark-scheme: (
+  primary: map-get($grey, 100),
+  secondary: map-get($grey, 400),
+  disabled: map-get($grey, 500),
+  link: map-get($blue, 300),
+  inverse: map-get($grey, 900),
+  error: map-get($red, 300),
+  info: map-get($blue, 300),
+  success: map-get($green, 300),
+  warning: map-get($yellow, 300),
+);

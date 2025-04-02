@@ -1,0 +1,24 @@
+declare const classNames: {
+  readonly typography: "typography";
+  readonly h1: "h1";
+  readonly h2: "h2";
+  readonly h3: "h3";
+  readonly h4: "h4";
+  readonly h5: "h5";
+  readonly h6: "h6";
+  readonly body1: "body1";
+  readonly body2: "body2";
+  readonly body3: "body3";
+  readonly caption: "caption";
+  readonly code: "code";
+  readonly primary: "primary";
+  readonly secondary: "secondary";
+  readonly disabled: "disabled";
+  readonly link: "link";
+  readonly inverse: "inverse";
+  readonly error: "error";
+  readonly info: "info";
+  readonly success: "success";
+  readonly warning: "warning";
+};
+export default classNames;
