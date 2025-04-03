@@ -1,6 +1,6 @@
 "use client";
 
-import { PropsWithChildren, useState } from "react";
+import { PropsWithChildren, useEffect, useState } from "react";
 import { Provider } from "jotai";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
@@ -15,6 +15,7 @@ const AppProvider = ({ children }: PropsWithChildren) => {
       },
     })
   );
+
   return (
     <QueryClientProvider client={queryClient}>
       <Provider>{children}</Provider>

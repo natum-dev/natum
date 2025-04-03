@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  ChangeEvent,
-  KeyboardEvent,
-  useCallback,
-  useEffect,
-  useRef,
-} from "react";
+import { ChangeEvent, KeyboardEvent, useCallback, useRef } from "react";
 import WordsCarousel from "../Words/WordsCarousel";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { dispatchWordAtom, WordsAtomAction } from "../../store/atoms/Words";
@@ -36,7 +30,7 @@ const TypingArea = () => {
       const input = e.currentTarget;
 
       // If space is hit, skips the change and keyup lifecycle
-      if (e.code === "Space") {
+      if (e.code === "Space" || e.key === " ") {
         e.stopPropagation();
         e.preventDefault();
         if (input.value) {

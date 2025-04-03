@@ -1,7 +1,7 @@
 import AppProvider from "@/lib/providers/typo-meter/AppProvider";
 import { Container } from "@natum/natum-ui";
 import "@natum/natum-ui/design-tokens/base.scss";
-import styles from "./base.module.scss";
+import styles from "./layout.module.scss";
 
 const TypewriterLayout = ({
   children,
@@ -9,11 +9,15 @@ const TypewriterLayout = ({
   children: React.ReactNode;
 }>) => {
   return (
-    <AppProvider>
-      <Container type="main" className={styles.main}>
-        {children}
-      </Container>
-    </AppProvider>
+    <html lang="en">
+      <body data-theme="dark">
+        <AppProvider>
+          <Container type="main" className={styles.main}>
+            {children}
+          </Container>
+        </AppProvider>
+      </body>
+    </html>
   );
 };
 
