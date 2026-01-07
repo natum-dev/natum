@@ -5,22 +5,22 @@ export const metadata: Metadata = {
   description: "Playground description",
   manifest: '/manifest.json',
   icons: {
-    icon: '/assets/icons/index_logo.png',
+    icon: '/assets/icons/index_logo_dark.png',
     apple: [
       {
-        url: '/assets/icons/icon_60.png',
+        url: '/assets/icons/icon_60_dark.png',
         sizes: '60x60'
       },
       {
-        url: '/assets/icons/icon_120.png',
+        url: '/assets/icons/icon_120_dark.png',
         sizes: '120x120'
       },
       {
-        url: '/assets/icons/icon_192.png',
+        url: '/assets/icons/icon_192_dark.png',
         sizes: '192x192'
       },
       {
-        url: '/assets/icons/icon_512.png',
+        url: '/assets/icons/icon_512_dark.png',
         sizes: '512x512'
       }
     ]
