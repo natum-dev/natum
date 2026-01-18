@@ -1,10 +1,10 @@
 {
   "dir": "ltr",
   "lang": "en-US",
-  "name": "Playground",
+  "name": "Playground v1",
   "display": "standalone",
   "start_url": "/",
-  "short_name": "Playground",
+  "short_name": "Playground v1",
   "theme_color": "#FFFFFF",
   "description": "Playground for exploration.",
   "orientation": "any",
