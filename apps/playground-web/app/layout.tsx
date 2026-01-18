@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Playground",
+  title: "Playground V1",
   description: "Playground description",
-  manifest: '/manifest.json',
+  manifest: '/manifest.json?v1',
   icons: {
     icon: '/assets/icons/index_logo_dark.png',
     apple: [
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   },
   appleWebApp: {
     capable: true,
-    title: 'Playground',
+    title: 'Playground V1',
   }
 };
 
