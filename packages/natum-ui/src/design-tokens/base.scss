@@ -2,18 +2,20 @@
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
 @import "modern-normalize/modern-normalize.css";
 
+@mixin dark-scheme {
+  --bg-color: #{get-color(grey, 900)};
+  @include register-variable($typography-dark-scheme, "typography");
+}
+
 :root {
   @include register-variable($palette, "palette");
-  @include register-variable($color, "color");
 
   @include register-variable($typography-light-scheme, "typography");
-  @include register-variable($typography-preset, "typography");
 
-  --bg-color: var(--color-grey-50);
+  --bg-color: #{get-color(grey, 50)};
 
   @media (prefers-color-scheme: dark) {
-    --bg-color: var(--color-grey-900);
-    @include register-variable($typography-dark-scheme, "typography");
+    @include dark-scheme;
   }
 }
 
@@ -21,7 +23,6 @@ body {
   background-color: var(--bg-color);
 
   &[data-theme="dark"] {
-    --bg-color: var(--color-grey-900);
-    @include register-variable($typography-dark-scheme, "typography");
+    @include dark-scheme;
   }
 }

@@ -1,4 +1,18 @@
 @use "sass:meta";
+@use "sass:map";
+@use "variables" as vars;
+
+@function get-color($name, $shade) {
+  $family: map.get(vars.$color, $name);
+  @if not $family {
+    @error "Unknown color '#{$name}'.";
+  }
+  $value: map.get($family, $shade);
+  @if not $value {
+    @error "Unknown shade '#{$shade}' for color '#{$name}'.";
+  }
+  @return $value;
+}
 
 @function to-string($list, $separator: "") {
   $accumulator: "";

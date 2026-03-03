@@ -3,18 +3,7 @@ import styles from "./Typography.module.scss";
 import classNames from "classnames";
 import { getPropertyValue } from "../utils/property";
 
-type TypographyColor =
-  | "primary"
-  | "secondary"
-  | "disabled"
-  | "link"
-  | "inverse"
-  | "error"
-  | "info"
-  | "success"
-  | "warning";
-
-type TypographyVariant =
+export type TypographyVariantBase =
   | "h1"
   | "h2"
   | "h3"
@@ -26,6 +15,20 @@ type TypographyVariant =
   | "body3"
   | "caption"
   | "code";
+
+export type TypographyColorBase =
+  | "primary"
+  | "secondary"
+  | "disabled"
+  | "link"
+  | "inverse"
+  | "error"
+  | "info"
+  | "success"
+  | "warning";
+
+export type TypographyVariant = TypographyVariantBase;
+export type TypographyColor = TypographyColorBase;
 
 export type TypographyProps<TTag extends keyof JSX.IntrinsicElements> = {
   tag?: TTag;

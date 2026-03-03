@@ -1,3 +1,5 @@
+@use "@natum/natum-ui/design-tokens" as *;
+
 .main {
   min-height: 100vh;
   display: flex !important;
@@ -13,9 +15,9 @@
 .gradient {
   background: linear-gradient(
     45deg,
-    var(--color-blue-200),
-    var(--color-purple-300),
-    var(--color-blue-200)
+    get-color(blue, 200),
+    get-color(purple, 300),
+    get-color(blue, 200)
   );
   background-size: 200% 100%;
   animation: gradient-shift 4s linear infinite;

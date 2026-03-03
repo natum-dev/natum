@@ -3,15 +3,15 @@
 .typography {
   color: var(--typography-primary);
 
-  @each $property in map-keys(map-get($typography-preset, "body1")) {
-    #{$property}: var(--typography-body1-#{$property});
+  @each $property, $value in map-get($typography-preset, "body1") {
+    #{$property}: $value;
   }
 }
 
 @each $variant, $styles in $typography-preset {
   .#{$variant} {
-    @each $property in map-keys($styles) {
-      #{$property}: var(--typography-#{$variant}-#{$property});
+    @each $property, $value in $styles {
+      #{$property}: $value;
     }
   }
 }

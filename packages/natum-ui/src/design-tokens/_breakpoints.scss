@@ -1,10 +1,14 @@
-$breakpoints: (
+@use "sass:map";
+
+$breakpoints-overrides: () !default;
+
+$breakpoints: map.deep-merge((
   xs: 0px,
   sm: 600px,
   md: 960px,
   lg: 1280px,
   xl: 1920px,
-);
+), $breakpoints-overrides);
 
 @mixin breakpoint($bp) {
   @if not map-has-key($breakpoints, $bp) {

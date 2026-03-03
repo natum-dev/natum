@@ -1,7 +1,9 @@
+@use "@natum/natum-ui/design-tokens" as *;
+
 .wrapper {
   padding: 8px 12px;
   border-radius: 8px;
-  background-color: var(--color-grey-800);
+  background-color: get-color(grey, 800);
   line-height: 1.4;
 
   & > div {

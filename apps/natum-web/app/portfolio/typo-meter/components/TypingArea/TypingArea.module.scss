@@ -1,3 +1,5 @@
+@use "@natum/natum-ui/design-tokens" as *;
+
 .container {
   & > * {
     display: block;
@@ -14,7 +16,7 @@
   outline: none;
   line-height: 22px;
   font-size: 22px;
-  background-color: var(--color-grey-800);
+  background-color: get-color(grey, 800);
   color: var(--typography-primary);
   padding: 6px 12px;
 
@@ -43,20 +45,20 @@
 .reset_button {
   all: unset;
   cursor: pointer;
-  color: var(--color-grey-400);
+  color: get-color(grey, 400);
   font: inherit;
   height: 100%;
   display: inline-block;
-  background-color: var(--color-grey-800);
+  background-color: get-color(grey, 800);
   padding: 12px 24px;
   border-radius: 4px;
-  font-size: var(--typography-body1-font-size);
+  font-size: 16px;
   transition: all 0.2s ease-in-out;
 
   &:hover,
   &:focus {
     background-color: var(--palette-neutral-main);
-    color: var(--color-grey-800);
+    color: get-color(grey, 800);
   }
 
   &:focus {

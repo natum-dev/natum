@@ -1,3 +1,10 @@
+@use "sass:map";
+
+$palette-overrides: () !default;
+$typography-preset-overrides: () !default;
+$typography-light-scheme-overrides: () !default;
+$typography-dark-scheme-overrides: () !default;
+
 $blue: (
   // Lightest
   50: #e3f2fd,
@@ -171,7 +178,7 @@ $color: (
   grey: $grey,
 );
 
-$palette: (
+$palette: map.deep-merge((
   primary: (
     main: map-get($blue, 500),
     dark: map-get($blue, 700),
@@ -207,9 +214,9 @@ $palette: (
     dark: map-get($grey, 700),
     light: map-get($grey, 300),
   ),
-);
+), $palette-overrides);
 
-$typography-preset: (
+$typography-preset: map.deep-merge((
   h1: (
     letter-spacing: -0.02em,
     font-weight: 700,
@@ -298,9 +305,9 @@ $typography-preset: (
     margin-top: 4px,
     margin-bottom: 4px,
   ),
-);
+), $typography-preset-overrides);
 
-$typography-light-scheme: (
+$typography-light-scheme: map.deep-merge((
   primary: map-get($grey, 900),
   secondary: map-get($grey, 700),
   disabled: map-get($grey, 600),
@@ -310,9 +317,9 @@ $typography-light-scheme: (
   info: map-get($blue, 700),
   success: map-get($green, 700),
   warning: map-get($yellow, 700),
-);
+), $typography-light-scheme-overrides);
 
-$typography-dark-scheme: (
+$typography-dark-scheme: map.deep-merge((
   primary: map-get($grey, 100),
   secondary: map-get($grey, 400),
   disabled: map-get($grey, 500),
@@ -322,4 +329,4 @@ $typography-dark-scheme: (
   info: map-get($blue, 300),
   success: map-get($green, 300),
   warning: map-get($yellow, 300),
-);
+), $typography-dark-scheme-overrides);
