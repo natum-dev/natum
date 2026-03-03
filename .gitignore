@@ -33,6 +33,9 @@ node_modules/
 *.tsbuildinfo
 next-env.d.ts
 
+# Generated SCSS module declarations
+*.module.scss.d.ts
+
 # Optional npm cache directory
 .npm
 

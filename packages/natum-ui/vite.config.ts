@@ -8,6 +8,17 @@ import { glob } from "glob";
 import { fileURLToPath } from "node:url";
 import copy from "rollup-plugin-copy";
 
+const sharedOutput = {
+  sourcemap: true,
+  exports: "named" as const,
+  globals: {
+    react: "react",
+    "react-dom": "ReactDOM",
+    "react/jsx-runtime": "react/jsx-runtime",
+  },
+  assetFileNames: "[name][extname]",
+};
+
 // https://vitejs.dev/config/
 export default defineConfig({
   build: {
@@ -42,15 +53,22 @@ export default defineConfig({
     rollupOptions: {
       // Adds all dependencies as external packages so it's not bundled
       external: ["react", "react/jsx-runtime", "react-dom"],
-      output: {
-        sourcemap: true,
-        exports: "named",
-        globals: {
-          react: "react",
-          "react-dom": "ReactDOM",
-          "react/jsx-runtime": "react/jsx-runtime",
+      output: [
+        {
+          ...sharedOutput,
+          format: "es" as const,
+          dir: "dist/esm",
+          entryFileNames: "[name].js",
+          chunkFileNames: "[name]-[hash].js",
         },
-      },
+        {
+          ...sharedOutput,
+          format: "cjs" as const,
+          dir: "dist/cjs",
+          entryFileNames: "[name].cjs",
+          chunkFileNames: "[name]-[hash].cjs",
+        },
+      ],
     },
   },
   plugins: [
@@ -58,6 +76,7 @@ export default defineConfig({
     // Configures typing definiton generation
     dts({
       tsconfigPath: "./tsconfig.json",
+      outDir: "dist/types",
     }),
     sassDts({
       enabledMode: ["development", "production"],
@@ -67,7 +86,7 @@ export default defineConfig({
     copy({
       targets: [
         {
-          src: glob.sync(path.resolve(__dirname, "src/design-tokens/*")),
+          src: glob.sync(path.resolve(__dirname, "src/design-tokens/*.scss")),
           dest: "dist/design-tokens",
         },
       ],
