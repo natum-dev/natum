@@ -8,6 +8,32 @@ import { glob } from "glob";
 import { fileURLToPath } from "node:url";
 import copy from "rollup-plugin-copy";
 
+/**
+ * Inline Rollup plugin that preserves "use client" directives
+ * on chunks whose source modules contain the directive.
+ */
+function preserveUseClientDirective(): import("rollup").Plugin {
+  const clientModules = new Set<string>();
+  return {
+    name: "preserve-use-client",
+    transform(code, id) {
+      if (/^['"]use client['"]/.test(code.trim())) {
+        clientModules.add(id);
+      }
+      return null;
+    },
+    renderChunk(code, chunk) {
+      const hasClientModule = chunk.moduleIds.some((id) =>
+        clientModules.has(id)
+      );
+      if (hasClientModule && !code.startsWith('"use client"')) {
+        return { code: `"use client";\n${code}`, map: null };
+      }
+      return null;
+    },
+  };
+}
+
 const sharedOutput = {
   sourcemap: true,
   exports: "named" as const,
@@ -72,6 +98,7 @@ export default defineConfig({
     },
   },
   plugins: [
+    preserveUseClientDirective(),
     react(),
     // Configures typing definiton generation
     dts({
