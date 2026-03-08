@@ -1,7 +1,6 @@
 import { PropsWithChildren } from "react";
 import styles from "./Button.module.scss";
 import cx from "classnames";
-import { getPropertyValue } from "../utils/property";
 
 export type ButtonProps = {
   size?: "small" | "medium" | "large";
@@ -28,9 +27,9 @@ const Button = ({
       className={cx(
         className,
         styles.button,
-        getPropertyValue(styles, variant),
-        getPropertyValue(styles, size),
-        getPropertyValue(styles, color),
+        styles[variant],
+        styles[size],
+        styles[color],
         {
           [styles.full_width]: fullWidth,
           [styles.disabled]: disabled,
@@ -44,4 +43,4 @@ const Button = ({
   );
 };
 
-export default Button;
+export { Button };

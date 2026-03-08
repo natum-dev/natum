@@ -1,1 +1,1 @@
-export { default as useCountdown } from "./useCountdown";
+export { useCountdown } from "./useCountdown";

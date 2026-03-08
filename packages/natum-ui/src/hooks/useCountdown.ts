@@ -17,7 +17,7 @@ const generateTimeBreakdown = (duration: number) => {
 };
 
 // Countdown hooks that will do countdown based on provided duration
-const useCountdown = (initialDuration: number) => {
+export const useCountdown = (initialDuration: number) => {
   const startTime = useRef<number>(0);
   const rafId = useRef<number | null>(null);
   const lastRender = useRef<number>(0);
@@ -93,5 +93,3 @@ const useCountdown = (initialDuration: number) => {
     state,
   };
 };
-
-export default useCountdown;

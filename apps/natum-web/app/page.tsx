@@ -1,4 +1,4 @@
-import Typography from "@natum/natum-ui/Typography";
+import { Typography } from "@natum/natum-ui/Typography";
 import { Container } from "@natum/natum-ui";
 import classNames from "classnames";
 import Link from "next/link";

@@ -1,7 +1,6 @@
 import { ComponentPropsWithRef, createElement, PropsWithChildren } from "react";
 import styles from "./Typography.module.scss";
 import classNames from "classnames";
-import { getPropertyValue } from "../utils/property";
 
 export type TypographyVariantBase =
   | "h1"
@@ -66,8 +65,8 @@ const Typography = <TTag extends keyof JSX.IntrinsicElements = "p">({
       className: classNames(
         className,
         styles.typography,
-        getPropertyValue(styles, variant),
-        color && getPropertyValue(styles, color)
+        styles[variant],
+        color && styles[color]
       ),
       ...restProps,
     },
@@ -75,4 +74,4 @@ const Typography = <TTag extends keyof JSX.IntrinsicElements = "p">({
   );
 };
 
-export default Typography;
+export { Typography };

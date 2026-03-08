@@ -34,4 +34,4 @@ const Container = <P extends HTMLAttributes<T>, T extends HTMLElement>({
   );
 };
 
-export default Container;
+export { Container };

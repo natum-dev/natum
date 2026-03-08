@@ -1,3 +1,2 @@
-export * from "./Button";
-export { default as Button, default } from "./Button";
-export type * from "./Button.d.ts";
+export { Button } from "./Button";
+export type { ButtonProps } from "./Button";
