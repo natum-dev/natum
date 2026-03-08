@@ -1,0 +1,223 @@
+@use "../design-tokens" as *;
+
+.textfield {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 4px;
+  font-family: inherit;
+
+  --textfield-border-color: #{get-color(grey, 400)};
+  --textfield-focus-color: #{get-color(blue, 700)};
+  --textfield-bg: transparent;
+  --textfield-label-color: #{get-color(grey, 800)};
+  --textfield-text-color: #{get-color(grey, 900)};
+  --textfield-message-color: #{get-color(grey, 600)};
+  --textfield-placeholder-color: #{get-color(grey, 500)};
+  --textfield-font-size: 16px;
+  --textfield-padding: 10px 12px;
+  --textfield-radius: 8px;
+
+  &.full_width {
+    display: flex;
+    width: 100%;
+  }
+}
+
+.label {
+  font-size: calc(var(--textfield-font-size) - 2px);
+  font-weight: 500;
+  color: var(--textfield-label-color);
+}
+
+.input_wrapper {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--textfield-border-color);
+  border-radius: var(--textfield-radius);
+  background-color: var(--textfield-bg);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:focus-within {
+    border-color: var(--textfield-focus-color);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--textfield-focus-color) 20%, transparent);
+  }
+}
+
+.input {
+  all: unset;
+  flex: 1;
+  min-width: 0;
+  font-size: var(--textfield-font-size);
+  padding: var(--textfield-padding);
+  color: var(--textfield-text-color);
+
+  &::placeholder {
+    color: var(--textfield-placeholder-color);
+  }
+}
+
+.left_section,
+.right_section {
+  display: flex;
+  align-items: center;
+  color: #{get-color(grey, 600)};
+}
+
+.left_section {
+  padding-left: 12px;
+}
+
+.right_section {
+  padding-right: 12px;
+}
+
+.clear_button {
+  all: unset;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0 8px;
+  font-size: calc(var(--textfield-font-size) + 2px);
+  color: #{get-color(grey, 500)};
+  line-height: 1;
+
+  &:hover {
+    color: #{get-color(grey, 700)};
+  }
+}
+
+.message {
+  font-size: calc(var(--textfield-font-size) - 2px);
+  color: var(--textfield-message-color);
+}
+
+.error_text {
+  color: var(--textfield-focus-color);
+}
+
+// --- Colors ---
+
+.primary {
+  --textfield-border-color: #{get-color(blue, 300)};
+  --textfield-focus-color: #{get-color(blue, 700)};
+  --textfield-label-color: #{get-color(blue, 700)};
+  --textfield-text-color: #{get-color(blue, 800)};
+  --textfield-message-color: #{get-color(blue, 600)};
+  --textfield-placeholder-color: color-mix(in srgb, #{get-color(blue, 100)} 50%, #{get-color(grey, 100)});
+}
+
+.secondary {
+  --textfield-border-color: #{get-color(purple, 300)};
+  --textfield-focus-color: #{get-color(purple, 700)};
+  --textfield-label-color: #{get-color(purple, 700)};
+  --textfield-text-color: #{get-color(purple, 800)};
+  --textfield-message-color: #{get-color(purple, 600)};
+  --textfield-placeholder-color: color-mix(in srgb, #{get-color(purple, 100)} 50%, #{get-color(grey, 100)});
+}
+
+.error {
+  --textfield-border-color: #{get-color(red, 300)};
+  --textfield-focus-color: #{get-color(red, 700)};
+  --textfield-label-color: #{get-color(red, 700)};
+  --textfield-text-color: #{get-color(red, 800)};
+  --textfield-message-color: #{get-color(red, 600)};
+  --textfield-placeholder-color: color-mix(in srgb, #{get-color(red, 100)} 50%, #{get-color(grey, 100)});
+}
+
+.success {
+  --textfield-border-color: #{get-color(green, 300)};
+  --textfield-focus-color: #{get-color(green, 700)};
+  --textfield-label-color: #{get-color(green, 700)};
+  --textfield-text-color: #{get-color(green, 800)};
+  --textfield-message-color: #{get-color(green, 600)};
+  --textfield-placeholder-color: color-mix(in srgb, #{get-color(green, 100)} 50%, #{get-color(grey, 100)});
+}
+
+.warning {
+  --textfield-border-color: #{get-color(orange, 300)};
+  --textfield-focus-color: #{get-color(orange, 700)};
+  --textfield-label-color: #{get-color(orange, 700)};
+  --textfield-text-color: #{get-color(orange, 800)};
+  --textfield-message-color: #{get-color(orange, 600)};
+  --textfield-placeholder-color: color-mix(in srgb, #{get-color(orange, 100)} 50%, #{get-color(grey, 100)});
+}
+
+// --- Error state ---
+
+.has_error {
+  --textfield-border-color: #{get-color(red, 700)};
+  --textfield-focus-color: #{get-color(red, 700)};
+  --textfield-label-color: #{get-color(red, 700)};
+}
+
+// --- Disabled ---
+
+.disabled {
+  --textfield-border-color: #{get-color(grey, 300)};
+  --textfield-label-color: #{get-color(grey, 500)};
+  --textfield-text-color: #{get-color(grey, 500)};
+  --textfield-message-color: #{get-color(grey, 400)};
+  --textfield-placeholder-color: #{get-color(grey, 300)};
+  --textfield-bg: #{get-color(grey, 100)};
+  cursor: not-allowed;
+
+  .input {
+    cursor: not-allowed;
+  }
+
+  .input_wrapper {
+    &:focus-within {
+      border-color: var(--textfield-border-color);
+      box-shadow: none;
+    }
+  }
+}
+
+// --- Variants ---
+
+.outlined {
+  // uses default .input_wrapper styling
+}
+
+.filled {
+  .input_wrapper {
+    border-color: transparent;
+    border-bottom: 2px solid var(--textfield-border-color);
+    border-radius: var(--textfield-radius);
+    background-color: #{get-color(grey, 50)};
+
+    &:focus-within {
+      border-bottom-color: var(--textfield-focus-color);
+      box-shadow: none;
+    }
+  }
+
+  &.has_error .input_wrapper {
+    border-bottom-color: #{get-color(red, 700)};
+  }
+
+  &.disabled .input_wrapper {
+    background-color: #{get-color(grey, 100)};
+  }
+}
+
+// --- Sizes ---
+
+.small {
+  --textfield-font-size: 14px;
+  --textfield-padding: 8px 10px;
+  --textfield-radius: 6px;
+}
+
+.medium {
+  --textfield-font-size: 16px;
+  --textfield-padding: 10px 12px;
+  --textfield-radius: 8px;
+}
+
+.large {
+  --textfield-font-size: 18px;
+  --textfield-padding: 12px 14px;
+  --textfield-radius: 10px;
+}
