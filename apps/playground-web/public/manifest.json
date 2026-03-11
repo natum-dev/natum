@@ -1,22 +1,26 @@
 {
-  "dir": "ltr",
-  "lang": "en-US",
-  "name": "Playground v1",
+  "name": "TikTok Coins",
+  "short_name": "TikTok Coins",
+  "orientation": "portrait",
   "display": "standalone",
-  "start_url": "/",
-  "short_name": "Playground v1",
-  "theme_color": "#FFFFFF",
-  "description": "Playground for exploration.",
-  "orientation": "any",
-  "background_color": "#FFFFFF",
-  "related_applications": [],
-  "prefer_related_applications": false,
+  "start_url": "/coin/76EdtfM",
+  "id": "/coin/76EdtfM",
+  "scope": "/coin",
+  "description": "Get Coins to send Gifts to TikTok LIVE hosts here! Buy or recharge TikTok Coins at a lower price, with more payment options and a customizable recharge amount.",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "related_applications": [
+    {
+      "platform": "webapp",
+      "url": "/unified-wallet/static/coin/manifest.json",
+      "id": "https://www.tiktok.com/coin/76EdtfM"
+    }
+  ],
   "icons": [
     {
       "src": "/assets/icons/icon_512_dark.png",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
+      "type": "image/png"
     },
     {
       "src": "/assets/icons/icon_192_dark.png",
@@ -39,12 +43,20 @@
       "type": "image/png"
     }
   ],
-  "features": [
-    "Cross Platform",
-    "fast",
-    "simple"
-  ],
-  "categories": [
-    "utilities"
+  "screenshots": [
+    {
+      "src": "/assets/coin.png",
+      "sizes": "610x1098",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Add it to Home Screen, unlock 5% cash back"
+    },
+    {
+      "src": "/assets/ease-of-access.png",
+      "sizes": "610x1098",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Access Get Coins page in one tap"
+    }
   ]
 }
