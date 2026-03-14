@@ -2,25 +2,65 @@
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
 @import "modern-normalize/modern-normalize.css";
 
+@mixin light-scheme {
+  --bg-color: #{get-color(grey, 50)};
+  @include register-variable($typography-light-scheme, "typography");
+
+  // Surface
+  --bg: #{get-color(grey, 50)};
+  --bg-elevated: #fff;
+  --bg-overlay: #fff;
+  --bg-inset: #{get-color(grey, 100)};
+
+  // Border
+  --border-color: #{get-color(grey, 300)};
+  --border-color-subtle: #{get-color(grey, 200)};
+
+  // Shadow
+  --shadow-low: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-medium: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
+  --shadow-high: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+  --shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
 @mixin dark-scheme {
   --bg-color: #{get-color(grey, 900)};
   @include register-variable($typography-dark-scheme, "typography");
+
+  // Surface
+  --bg: #{get-color(grey, 900)};
+  --bg-elevated: #{get-color(grey, 800)};
+  --bg-overlay: #{get-color(grey, 800)};
+  --bg-inset: #{get-color(grey, 900)};
+
+  // Border
+  --border-color: #{get-color(grey, 600)};
+  --border-color-subtle: #{get-color(grey, 700)};
+
+  // Shadow
+  --shadow-low: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-medium: 0 4px 6px rgba(0, 0, 0, 0.35), 0 2px 4px rgba(0, 0, 0, 0.25);
+  --shadow-high: 0 10px 15px rgba(0, 0, 0, 0.45), 0 4px 6px rgba(0, 0, 0, 0.3);
+  --shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
 :root {
   @include register-variable($palette, "palette");
+  @include light-scheme;
 
-  @include register-variable($typography-light-scheme, "typography");
-
-  --bg-color: #{get-color(grey, 50)};
-
+  // Prevent flash: match bg-color to user preference before JS hydrates
   @media (prefers-color-scheme: dark) {
-    @include dark-scheme;
+    --bg-color: #{get-color(grey, 900)};
   }
 }
 
 body {
   background-color: var(--bg-color);
+
+  // All theme tokens are driven by data-theme set by ThemeProvider
+  &[data-theme="light"] {
+    @include light-scheme;
+  }
 
   &[data-theme="dark"] {
     @include dark-scheme;
