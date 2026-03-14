@@ -2,3 +2,8 @@ export * from "./Button";
 export * from "./Typography";
 export * from "./Container";
 export * from "./TextField";
+export * from "./IconButton";
+export * from "./Card";
+export * from "./Divider";
+export * from "./Toast";
+export * from "./ThemeProvider";

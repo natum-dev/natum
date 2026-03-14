@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { ThemeProvider } from "./ThemeProvider";
 import { useTheme } from "./useTheme";
 import { Card } from "../Card";
-import { Icon } from "../Icon";
+import { IconCheckCircle, IconInfo, IconStar } from "@natum/icons";
 
 const meta: Meta<typeof ThemeProvider> = {
   title: "Components/ThemeProvider",
@@ -52,7 +52,7 @@ const ThemeDemo = () => {
         <Card variant="elevated">
           <Card.Body>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <Icon name="check-circle" color="success" />
+              <IconCheckCircle size="md" color="green" />
               <span style={{ color: "var(--typography-primary)" }}>Elevated</span>
             </div>
           </Card.Body>
@@ -60,7 +60,7 @@ const ThemeDemo = () => {
         <Card variant="outlined">
           <Card.Body>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <Icon name="info" color="info" />
+              <IconInfo size="md" color="blue" />
               <span style={{ color: "var(--typography-primary)" }}>Outlined</span>
             </div>
           </Card.Body>
@@ -68,7 +68,7 @@ const ThemeDemo = () => {
         <Card variant="filled">
           <Card.Body>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <Icon name="star" color="warning" />
+              <IconStar size="md" color="orange" />
               <span style={{ color: "var(--typography-primary)" }}>Filled</span>
             </div>
           </Card.Body>

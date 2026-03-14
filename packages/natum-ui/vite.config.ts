@@ -78,7 +78,7 @@ export default defineConfig({
     },
     rollupOptions: {
       // Adds all dependencies as external packages so it's not bundled
-      external: ["react", "react/jsx-runtime", "react-dom"],
+      external: ["react", "react/jsx-runtime", "react-dom", "@natum/icons"],
       output: [
         {
           ...sharedOutput,

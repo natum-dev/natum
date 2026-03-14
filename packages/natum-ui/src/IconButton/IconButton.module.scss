@@ -1,0 +1,169 @@
+@use "../design-tokens" as *;
+
+.icon_button {
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: all 0.25s ease;
+  color: var(--icon-button-color, #{get-color(grey, 50)});
+  box-sizing: border-box;
+
+  &:focus-visible {
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--icon-button-main-color) 30%, transparent);
+  }
+}
+
+// Variants
+.filled,
+.light {
+  background-color: var(--icon-button-main-color);
+}
+
+.outlined {
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--icon-button-main-color);
+  color: var(--icon-button-main-color);
+}
+
+.text {
+  background-color: transparent;
+  color: var(--icon-button-main-color);
+}
+
+// Colors
+.primary {
+  --icon-button-main-color: #{get-color(blue, 700)};
+
+  &:hover {
+    --icon-button-main-color: #{get-color(blue, 800)};
+  }
+
+  &.light {
+    --icon-button-main-color: #{get-color(blue, 100)};
+    --icon-button-color: #{get-color(blue, 700)};
+
+    &:hover {
+      --icon-button-main-color: #{get-color(blue, 200)};
+    }
+  }
+}
+
+.secondary {
+  --icon-button-main-color: #{get-color(purple, 700)};
+
+  &:hover {
+    --icon-button-main-color: #{get-color(purple, 800)};
+  }
+
+  &.light {
+    --icon-button-main-color: #{get-color(purple, 100)};
+    --icon-button-color: #{get-color(purple, 700)};
+
+    &:hover {
+      --icon-button-main-color: #{get-color(purple, 200)};
+    }
+  }
+}
+
+.error {
+  --icon-button-main-color: #{get-color(red, 700)};
+
+  &:hover {
+    --icon-button-main-color: #{get-color(red, 800)};
+  }
+
+  &.light {
+    --icon-button-main-color: #{get-color(red, 100)};
+    --icon-button-color: #{get-color(red, 700)};
+
+    &:hover {
+      --icon-button-main-color: #{get-color(red, 200)};
+    }
+  }
+}
+
+.warning {
+  --icon-button-main-color: #{get-color(orange, 700)};
+
+  &:hover {
+    --icon-button-main-color: #{get-color(orange, 800)};
+  }
+
+  &.light {
+    --icon-button-main-color: #{get-color(orange, 100)};
+    --icon-button-color: #{get-color(orange, 700)};
+
+    &:hover {
+      --icon-button-main-color: #{get-color(orange, 200)};
+    }
+  }
+}
+
+.success {
+  --icon-button-main-color: #{get-color(green, 700)};
+
+  &:hover {
+    --icon-button-main-color: #{get-color(green, 800)};
+  }
+
+  &.light {
+    --icon-button-main-color: #{get-color(green, 100)};
+    --icon-button-color: #{get-color(green, 700)};
+
+    &:hover {
+      --icon-button-main-color: #{get-color(green, 200)};
+    }
+  }
+}
+
+// Sizes (hit target dimensions)
+.small {
+  width: 32px;
+  height: 32px;
+}
+
+.medium {
+  width: 40px;
+  height: 40px;
+}
+
+.large {
+  width: 48px;
+  height: 48px;
+}
+
+// Disabled
+.disabled {
+  --icon-button-color: #{get-color(grey, 600)};
+  --icon-button-main-color: #{get-color(grey, 400)};
+  cursor: not-allowed;
+
+  &:hover {
+    --icon-button-main-color: #{get-color(grey, 400)};
+  }
+
+  &.outlined {
+    --icon-button-main-color: #{get-color(grey, 600)};
+    color: var(--icon-button-color);
+  }
+
+  &.light {
+    --icon-button-color: #{get-color(grey, 600)};
+    --icon-button-main-color: #{get-color(grey, 400)};
+  }
+}
+
+// Loading spinner
+.spinner {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
