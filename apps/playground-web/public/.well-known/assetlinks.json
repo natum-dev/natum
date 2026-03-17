@@ -1,0 +1,163 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls",
+      "delegate_permission/common.use_as_origin",
+      "delegate_permission/common.get_login_creds"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.zhiliaoapp.musically",
+      "sha256_cert_fingerprints": [
+        "90:41:80:3E:91:BC:B8:14:B4:B4:39:9F:B5:C8:5A:91:64:0B:75:5E:5E:8B:A7:68:13:81:4B:F4:CF:2A:B5:BA"
+      ]
+    }
+  },
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls",
+      "delegate_permission/common.use_as_origin",
+      "delegate_permission/common.get_login_creds"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.nc.tiktok.usmain",
+      "sha256_cert_fingerprints": [
+        "90:41:80:3E:91:BC:B8:14:B4:B4:39:9F:B5:C8:5A:91:64:0B:75:5E:5E:8B:A7:68:13:81:4B:F4:CF:2A:B5:BA"
+      ]
+    }
+  },
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls",
+      "delegate_permission/common.use_as_origin",
+      "delegate_permission/common.get_login_creds"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.zhiliaoapp.musically",
+      "sha256_cert_fingerprints": [
+        "67:1A:78:EE:55:38:98:07:50:75:B4:5F:C7:46:F2:E2:95:1C:98:3D:E8:6F:50:82:F7:00:6D:D9:3F:E6:E3:17"
+      ]
+    }
+  },
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls",
+      "delegate_permission/common.use_as_origin",
+      "delegate_permission/common.get_login_creds"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.zhiliaoapp.musically",
+      "sha256_cert_fingerprints": [
+        "D7:81:1E:C4:16:6F:EA:6C:C7:20:BA:66:69:9D:C8:4B:58:4A:C9:E6:98:66:13:A7:6D:4E:43:D8:CB:E3:2B:27"
+      ]
+    }
+  },
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls",
+      "delegate_permission/common.use_as_origin",
+      "delegate_permission/common.get_login_creds"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.ss.android.ugc.trill",
+      "sha256_cert_fingerprints": [
+        "D7:81:1E:C4:16:6F:EA:6C:C7:20:BA:66:69:9D:C8:4B:58:4A:C9:E6:98:66:13:A7:6D:4E:43:D8:CB:E3:2B:27"
+      ]
+    }
+  },
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls",
+      "delegate_permission/common.use_as_origin"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.zhiliaoapp.musically.go",
+      "sha256_cert_fingerprints": [
+        "D7:81:1E:C4:16:6F:EA:6C:C7:20:BA:66:69:9D:C8:4B:58:4A:C9:E6:98:66:13:A7:6D:4E:43:D8:CB:E3:2B:27"
+      ]
+    }
+  },
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls",
+      "delegate_permission/common.use_as_origin"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.app2021.video",
+      "sha256_cert_fingerprints": [
+        "B2:61:47:52:05:D6:04:59:B7:86:F3:BD:67:B0:C0:3F:D8:ED:CF:7C:21:E8:8F:65:AA:1B:CE:AC:A8:F7:37:99"
+      ]
+    }
+  },
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls",
+      "delegate_permission/common.use_as_origin",
+      "delegate_permission/common.get_login_creds"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.ss.android.tt.creator",
+      "sha256_cert_fingerprints": [
+        "D7:81:1E:C4:16:6F:EA:6C:C7:20:BA:66:69:9D:C8:4B:58:4A:C9:E6:98:66:13:A7:6D:4E:43:D8:CB:E3:2B:27"
+      ]
+    }
+  },
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls",
+      "delegate_permission/common.get_login_creds"
+    ],
+    "target": {
+      "namespace": "web",
+      "site": "https://playground.natum.dev"
+    }
+  },
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls",
+      "delegate_permission/common.use_as_origin"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.tiktok.lite.go",
+      "sha256_cert_fingerprints": [
+        "D7:81:1E:C4:16:6F:EA:6C:C7:20:BA:66:69:9D:C8:4B:58:4A:C9:E6:98:66:13:A7:6D:4E:43:D8:CB:E3:2B:27"
+      ]
+    }
+  },
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls",
+      "delegate_permission/common.use_as_origin",
+      "delegate_permission/common.get_login_creds"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.ss.android.ugc.tiktok.lite",
+      "sha256_cert_fingerprints": [
+        "D7:81:1E:C4:16:6F:EA:6C:C7:20:BA:66:69:9D:C8:4B:58:4A:C9:E6:98:66:13:A7:6D:4E:43:D8:CB:E3:2B:27"
+      ]
+    }
+  },
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls",
+      "delegate_permission/common.use_as_origin",
+      "delegate_permission/common.get_login_creds"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.ss.android.ugc.tiktok.pro",
+      "sha256_cert_fingerprints": [
+        "D7:81:1E:C4:16:6F:EA:6C:C7:20:BA:66:69:9D:C8:4B:58:4A:C9:E6:98:66:13:A7:6D:4E:43:D8:CB:E3:2B:27"
+      ]
+    }
+  }
+]
