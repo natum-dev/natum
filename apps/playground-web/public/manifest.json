@@ -14,6 +14,11 @@
       "platform": "webapp",
       "url": "/unified-wallet/static/coin/manifest.json",
       "id": "https://www.tiktok.com/coin/76EdtfM"
+    },
+    {
+      "platform": "webapp",
+      "url": "https://playground.natum.dev/manifest.json",
+      "id": "https://playground.natum.dev"
     }
   ],
   "icons": [
