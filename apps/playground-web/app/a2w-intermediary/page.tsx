@@ -4,6 +4,14 @@ import A2WIntermediary from "./A2WIntermediary";
 export default async function A2WIntermediaryPage() {
   const headersList = await headers();
   const token = headersList.get("X-A2W-Token") ?? "";
+  const contentLanguage = headersList.get("Content-Language") ?? "";
+  const contentType = headersList.get("Content-Type") ?? "";
 
-  return <A2WIntermediary token={token} />;
+  return (
+    <A2WIntermediary
+      token={token}
+      contentLanguage={contentLanguage}
+      contentType={contentType}
+    />
+  );
 }

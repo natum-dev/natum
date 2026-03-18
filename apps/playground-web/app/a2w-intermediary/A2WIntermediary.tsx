@@ -2,7 +2,15 @@
 
 import { useEffect, useState } from "react";
 
-export default function A2WIntermediary({ token }: { token: string }) {
+export default function A2WIntermediary({
+  token,
+  contentLanguage,
+  contentType,
+}: {
+  token: string;
+  contentLanguage: string;
+  contentType: string;
+}) {
   const [countdown, setCountdown] = useState(3);
 
   useEffect(() => {
@@ -30,6 +38,12 @@ export default function A2WIntermediary({ token }: { token: string }) {
     >
       <p style={{ fontSize: "16px", color: "#333" }}>
         <strong>X-A2W-Token:</strong> {token || "(none)"}
+      </p>
+      <p style={{ fontSize: "16px", color: "#333" }}>
+        <strong>Content-Language:</strong> {contentLanguage || "(none)"}
+      </p>
+      <p style={{ fontSize: "16px", color: "#333" }}>
+        <strong>Content-Type:</strong> {contentType || "(none)"}
       </p>
 
       <p style={{ fontSize: "14px", color: "#666" }}>
