@@ -48,6 +48,12 @@
       "type": "image/png"
     }
   ],
+  "protocol_handlers": [
+    {
+      "protocol": "web+natumcoins",
+      "url": "/protocol-handler?url=%s"
+    }
+  ],
   "screenshots": [
     {
       "src": "/assets/coin.png",

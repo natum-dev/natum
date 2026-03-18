@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Playground V1",
   description: "Playground description",
-  manifest: '/manifest.json?v1',
+  manifest: '/manifest.json?v2',
   icons: {
     icon: '/assets/icons/index_logo_dark.png',
     apple: [

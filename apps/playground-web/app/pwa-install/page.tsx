@@ -72,7 +72,7 @@ export default function PWAInstallPage() {
       setPromptCaptured(false);
       setIsInstalled(true);
       addToast("App installed!", "success");
-      setTimeout(() => window.open("/", "_blank"), 500);
+      setTimeout(() => { window.location.href = "web+natumcoins://open"; }, 500);
     };
     window.addEventListener("appinstalled", onInstalled);
 
@@ -99,10 +99,7 @@ export default function PWAInstallPage() {
   };
 
   const handleContinueToPWA = () => {
-    // Open the installed PWA — use the app's URL/id if available, fallback to start_url
-    const app = installedAppRef.current;
-    const pwaUrl = app?.id || app?.url || "/";
-    window.open(pwaUrl, "_blank");
+    window.location.href = "web+natumcoins://open";
   };
 
   const handleContinueInBrowser = () => {
