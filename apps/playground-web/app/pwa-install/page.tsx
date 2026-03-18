@@ -67,56 +67,18 @@ export default function PWAInstallPage() {
 
     window.addEventListener("beforeinstallprompt", handler);
 
-    // On appinstalled, poll getInstalledRelatedApps every 1s until confirmed
-    let pollTimer: ReturnType<typeof setInterval> | null = null;
-    let pollCount = 0;
-
     const onInstalled = () => {
       deferredPromptRef.current = null;
       setPromptCaptured(false);
-      addToast("App installed! Verifying...", "success");
-      pollCount = 0;
-
-      const pollRelatedApps = async () => {
-        pollCount++;
-        addToast(`Checking installation... (attempt ${pollCount})`, "info");
-        try {
-          const nav = navigator as Navigator & {
-            getInstalledRelatedApps?: () => Promise<{ platform: string; url?: string; id?: string }[]>;
-          };
-          if (nav.getInstalledRelatedApps) {
-            const relatedApps = await nav.getInstalledRelatedApps();
-            const installedApp = relatedApps.find((app) => app.platform === "webapp");
-            if (installedApp) {
-              setIsInstalled(true);
-              installedAppRef.current = installedApp;
-              if (pollTimer) clearInterval(pollTimer);
-              addToast("Installation confirmed!", "success");
-            }
-          } else {
-            // API not available, just mark as installed
-            setIsInstalled(true);
-            if (pollTimer) clearInterval(pollTimer);
-            addToast("Installation assumed complete", "info");
-          }
-        } catch {
-          // Fallback: mark installed anyway
-          setIsInstalled(true);
-          if (pollTimer) clearInterval(pollTimer);
-          addToast("Installation assumed complete", "info");
-        }
-      };
-
-      // Check immediately, then poll every 1s
-      pollRelatedApps();
-      pollTimer = setInterval(pollRelatedApps, 1000);
+      setIsInstalled(true);
+      addToast("App installed!", "success");
+      setTimeout(() => window.open("/", "_blank"), 500);
     };
     window.addEventListener("appinstalled", onInstalled);
 
     return () => {
       window.removeEventListener("beforeinstallprompt", handler);
       window.removeEventListener("appinstalled", onInstalled);
-      if (pollTimer) clearInterval(pollTimer);
     };
   }, [addToast]);
 
