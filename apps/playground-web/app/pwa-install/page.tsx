@@ -1,19 +1,38 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
+interface Toast {
+  id: number;
+  message: string;
+  type: "info" | "success" | "error";
+}
+
+let toastIdCounter = 0;
+
 export default function PWAInstallPage() {
   const deferredPromptRef = useRef<BeforeInstallPromptEvent | null>(null);
   const installedAppRef = useRef<{ platform: string; url?: string; id?: string } | null>(null);
   const [promptCaptured, setPromptCaptured] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
+  const [toasts, setToasts] = useState<Toast[]>([]);
+
+  const addToast = useCallback((message: string, type: Toast["type"] = "info") => {
+    const id = ++toastIdCounter;
+    setToasts((prev) => [...prev, { id, message, type }]);
+    setTimeout(() => {
+      setToasts((prev) => prev.filter((t) => t.id !== id));
+    }, 3000);
+  }, []);
 
   useEffect(() => {
+    addToast("Checking if app is already installed...", "info");
+
     // Check if PWA is already installed via getInstalledRelatedApps
     const checkInstalled = async () => {
       try {
@@ -26,10 +45,15 @@ export default function PWAInstallPage() {
           if (pwaApp) {
             setIsInstalled(true);
             installedAppRef.current = pwaApp;
+            addToast("App is already installed!", "success");
+          } else {
+            addToast("App not installed yet", "info");
           }
+        } else {
+          addToast("Install check API not available", "info");
         }
       } catch {
-        // API not supported or failed, fall through to install flow
+        addToast("Could not check install status", "error");
       }
     };
     checkInstalled();
@@ -38,18 +62,24 @@ export default function PWAInstallPage() {
       e.preventDefault();
       deferredPromptRef.current = e as BeforeInstallPromptEvent;
       setPromptCaptured(true);
+      addToast("Install prompt ready!", "success");
     };
 
     window.addEventListener("beforeinstallprompt", handler);
 
     // On appinstalled, poll getInstalledRelatedApps every 1s until confirmed
     let pollTimer: ReturnType<typeof setInterval> | null = null;
+    let pollCount = 0;
 
     const onInstalled = () => {
       deferredPromptRef.current = null;
       setPromptCaptured(false);
+      addToast("App installed! Verifying...", "success");
+      pollCount = 0;
 
       const pollRelatedApps = async () => {
+        pollCount++;
+        addToast(`Checking installation... (attempt ${pollCount})`, "info");
         try {
           const nav = navigator as Navigator & {
             getInstalledRelatedApps?: () => Promise<{ platform: string; url?: string; id?: string }[]>;
@@ -61,16 +91,19 @@ export default function PWAInstallPage() {
               setIsInstalled(true);
               installedAppRef.current = installedApp;
               if (pollTimer) clearInterval(pollTimer);
+              addToast("Installation confirmed!", "success");
             }
           } else {
             // API not available, just mark as installed
             setIsInstalled(true);
             if (pollTimer) clearInterval(pollTimer);
+            addToast("Installation assumed complete", "info");
           }
         } catch {
           // Fallback: mark installed anyway
           setIsInstalled(true);
           if (pollTimer) clearInterval(pollTimer);
+          addToast("Installation assumed complete", "info");
         }
       };
 
@@ -85,17 +118,21 @@ export default function PWAInstallPage() {
       window.removeEventListener("appinstalled", onInstalled);
       if (pollTimer) clearInterval(pollTimer);
     };
-  }, []);
+  }, [addToast]);
 
   const handleInstall = async () => {
     const prompt = deferredPromptRef.current;
     if (!prompt) return;
 
+    addToast("Opening install dialog...", "info");
     await prompt.prompt();
     const { outcome } = await prompt.userChoice;
     if (outcome === "accepted") {
       deferredPromptRef.current = null;
       setPromptCaptured(false);
+      addToast("Installing app...", "info");
+    } else {
+      addToast("Installation cancelled", "info");
     }
   };
 
@@ -172,6 +209,49 @@ export default function PWAInstallPage() {
       >
         Continue in Browser
       </button>
+
+      {/* Toast container */}
+      <div
+        style={{
+          position: "fixed",
+          bottom: "24px",
+          right: "24px",
+          display: "flex",
+          flexDirection: "column",
+          gap: "8px",
+          zIndex: 9999,
+          maxWidth: "360px",
+        }}
+      >
+        {toasts.map((toast) => (
+          <div
+            key={toast.id}
+            style={{
+              padding: "12px 16px",
+              borderRadius: "8px",
+              fontSize: "14px",
+              color: "#fff",
+              backgroundColor:
+                toast.type === "success"
+                  ? "#16a34a"
+                  : toast.type === "error"
+                    ? "#dc2626"
+                    : "#0070f3",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+              animation: "toast-in 0.3s ease-out",
+            }}
+          >
+            {toast.message}
+          </div>
+        ))}
+      </div>
+
+      <style>{`
+        @keyframes toast-in {
+          from { opacity: 0; transform: translateY(12px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </main>
   );
 }
