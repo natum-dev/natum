@@ -9,6 +9,7 @@ interface BeforeInstallPromptEvent extends Event {
 
 export default function PWAInstallPage() {
   const deferredPromptRef = useRef<BeforeInstallPromptEvent | null>(null);
+  const installedAppRef = useRef<{ platform: string; url?: string; id?: string } | null>(null);
   const [promptCaptured, setPromptCaptured] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
 
@@ -21,9 +22,10 @@ export default function PWAInstallPage() {
         };
         if (nav.getInstalledRelatedApps) {
           const relatedApps = await nav.getInstalledRelatedApps();
-          const hasPWA = relatedApps.some((app) => app.platform === "webapp");
-          if (hasPWA) {
+          const pwaApp = relatedApps.find((app) => app.platform === "webapp");
+          if (pwaApp) {
             setIsInstalled(true);
+            installedAppRef.current = pwaApp;
           }
         }
       } catch {
@@ -40,17 +42,48 @@ export default function PWAInstallPage() {
 
     window.addEventListener("beforeinstallprompt", handler);
 
-    // Listen for successful installation
+    // On appinstalled, poll getInstalledRelatedApps every 1s until confirmed
+    let pollTimer: ReturnType<typeof setInterval> | null = null;
+
     const onInstalled = () => {
-      setIsInstalled(true);
       deferredPromptRef.current = null;
       setPromptCaptured(false);
+
+      const pollRelatedApps = async () => {
+        try {
+          const nav = navigator as Navigator & {
+            getInstalledRelatedApps?: () => Promise<{ platform: string; url?: string; id?: string }[]>;
+          };
+          if (nav.getInstalledRelatedApps) {
+            const relatedApps = await nav.getInstalledRelatedApps();
+            const installedApp = relatedApps.find((app) => app.platform === "webapp");
+            if (installedApp) {
+              setIsInstalled(true);
+              installedAppRef.current = installedApp;
+              if (pollTimer) clearInterval(pollTimer);
+            }
+          } else {
+            // API not available, just mark as installed
+            setIsInstalled(true);
+            if (pollTimer) clearInterval(pollTimer);
+          }
+        } catch {
+          // Fallback: mark installed anyway
+          setIsInstalled(true);
+          if (pollTimer) clearInterval(pollTimer);
+        }
+      };
+
+      // Check immediately, then poll every 1s
+      pollRelatedApps();
+      pollTimer = setInterval(pollRelatedApps, 1000);
     };
     window.addEventListener("appinstalled", onInstalled);
 
     return () => {
       window.removeEventListener("beforeinstallprompt", handler);
       window.removeEventListener("appinstalled", onInstalled);
+      if (pollTimer) clearInterval(pollTimer);
     };
   }, []);
 
@@ -67,7 +100,10 @@ export default function PWAInstallPage() {
   };
 
   const handleContinueToPWA = () => {
-    window.location.href = "/";
+    // Open the installed PWA — use the app's URL/id if available, fallback to start_url
+    const app = installedAppRef.current;
+    const pwaUrl = app?.id || app?.url || "/";
+    window.open(pwaUrl, "_blank");
   };
 
   const handleContinueInBrowser = () => {
