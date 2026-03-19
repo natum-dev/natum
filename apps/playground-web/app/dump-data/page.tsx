@@ -3,9 +3,17 @@
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
+function getCookie(name: string): string | null {
+  const match = document.cookie.match(
+    new RegExp("(?:^|; )" + name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "=([^;]*)")
+  );
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
 function DumpDataContent() {
   const searchParams = useSearchParams();
   const data = searchParams.get("data") ?? "";
+  const redirectTimestamp = getCookie("Redirect-Timestamp");
 
   let parsed: unknown;
   try {
@@ -19,6 +27,11 @@ function DumpDataContent() {
     return (
       <main className="p-8">
         <h1 className="text-xl font-bold mb-4">Dump Data</h1>
+        {redirectTimestamp && (
+          <p className="mb-4 font-mono text-sm">
+            Redirect-Timestamp: {redirectTimestamp}
+          </p>
+        )}
         <table className="border-collapse border border-gray-300 w-full">
           <thead>
             <tr>
@@ -52,6 +65,11 @@ function DumpDataContent() {
   return (
     <main className="p-8">
       <h1 className="text-xl font-bold mb-4">Dump Data</h1>
+      {redirectTimestamp && (
+        <p className="mb-4 font-mono text-sm">
+          Redirect-Timestamp: {redirectTimestamp}
+        </p>
+      )}
       <pre className="whitespace-pre-wrap break-all bg-gray-50 p-4 rounded border">
         {data || "(empty)"}
       </pre>
