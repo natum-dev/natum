@@ -1,7 +1,7 @@
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-export default async function RedirectHeaderPage() {
+export async function GET() {
   const headersList = await headers();
   const headersObject: Record<string, string> = {};
 

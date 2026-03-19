@@ -1,19 +1,14 @@
-"use client";
+import { cookies } from "next/headers";
 
-import { useSearchParams } from "next/navigation";
-import { Suspense } from "react";
-
-function getCookie(name: string): string | null {
-  const match = document.cookie.match(
-    new RegExp("(?:^|; )" + name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "=([^;]*)")
-  );
-  return match ? decodeURIComponent(match[1]) : null;
-}
-
-function DumpDataContent() {
-  const searchParams = useSearchParams();
-  const data = searchParams.get("data") ?? "";
-  const redirectTimestamp = getCookie("Redirect-Timestamp");
+export default async function DumpDataPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const params = await searchParams;
+  const data = typeof params.data === "string" ? params.data : "";
+  const cookieStore = await cookies();
+  const redirectTimestamp = cookieStore.get("Redirect-Timestamp")?.value ?? null;
 
   let parsed: unknown;
   try {
@@ -74,13 +69,5 @@ function DumpDataContent() {
         {data || "(empty)"}
       </pre>
     </main>
-  );
-}
-
-export default function DumpDataPage() {
-  return (
-    <Suspense fallback={<div className="p-8">Loading...</div>}>
-      <DumpDataContent />
-    </Suspense>
   );
 }
