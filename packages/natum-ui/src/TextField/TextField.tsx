@@ -54,6 +54,7 @@ const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
   ) => {
     const autoId = useId();
     const inputId = id ?? autoId;
+    const messageId = `${inputId}-message`;
     const isControlled = value !== undefined;
     const [internalHasValue, setInternalHasValue] = useState(
       () => defaultValue !== undefined && defaultValue !== ""
@@ -126,6 +127,10 @@ const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
             value={value}
             defaultValue={defaultValue}
             onChange={handleChange}
+            aria-invalid={hasError || undefined}
+            aria-describedby={
+              errorMessage || helperText ? messageId : undefined
+            }
             {...rest}
           />
           {showClear && (
@@ -145,6 +150,7 @@ const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
         </div>
         {(errorMessage || helperText) && (
           <span
+            id={messageId}
             className={cx(styles.message, { [styles.error_text]: hasError })}
           >
             {errorMessage ?? helperText}

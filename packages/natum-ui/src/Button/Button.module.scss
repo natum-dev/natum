@@ -10,6 +10,11 @@
   align-items: center;
   justify-content: center;
 
+  &:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+  }
+
   &.full_width {
     display: flex;
     width: 100%;
@@ -44,7 +49,7 @@
     --button-color: #{get-color(blue, 700)};
 
     &:hover {
-      --button-main-color: #{get-color(blue, 200)};
+      --button-main-color: #{get-color(blue, 50)};
     }
   }
 }
@@ -95,7 +100,7 @@
     --button-color: #{get-color(orange, 700)};
 
     &:hover {
-      --button-main-color: #{get-color(orange, 200)};
+      --button-main-color: #{get-color(orange, 50)};
     }
   }
 }

@@ -55,40 +55,31 @@
   min-width: 300px;
   max-width: 420px;
 
-  --toast-accent-color: #{get-color(blue, 400)};
+  --toast-accent-color: #{get-color(blue, 500)};
 }
 
 // Type colors
 .success {
   --toast-accent-color: #{get-color(green, 700)};
-
-  .type_icon {
-    color: #{get-color(green, 700)};
-  }
 }
 
 .error {
   --toast-accent-color: #{get-color(red, 700)};
-
-  .type_icon {
-    color: #{get-color(red, 700)};
-  }
 }
 
 .warning {
   --toast-accent-color: #{get-color(orange, 700)};
-
-  .type_icon {
-    color: #{get-color(orange, 700)};
-  }
 }
 
 .info {
-  --toast-accent-color: #{get-color(blue, 400)};
+  --toast-accent-color: #{get-color(blue, 500)};
+}
 
-  .type_icon {
-    color: #{get-color(blue, 400)};
-  }
+:global(body[data-theme="dark"]) {
+  .success { --toast-accent-color: #{get-color(green, 200)}; }
+  .error { --toast-accent-color: #{get-color(red, 200)}; }
+  .warning { --toast-accent-color: #{get-color(orange, 200)}; }
+  .info { --toast-accent-color: #{get-color(blue, 200)}; }
 }
 
 // Animation
@@ -126,6 +117,7 @@
 .type_icon {
   flex-shrink: 0;
   margin-top: 2px;
+  color: var(--toast-accent-color);
 }
 
 .content {
@@ -157,6 +149,11 @@
 
   &:hover {
     text-decoration: underline;
+  }
+
+  &:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
   }
 }
 

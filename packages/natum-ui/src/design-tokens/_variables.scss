@@ -316,17 +316,17 @@ $typography-light-scheme: map.deep-merge((
   error: map-get($red, 700),
   info: map-get($blue, 700),
   success: map-get($green, 700),
-  warning: map-get($yellow, 700),
+  warning: map-get($yellow, 900),
 ), $typography-light-scheme-overrides);
 
 $typography-dark-scheme: map.deep-merge((
   primary: map-get($grey, 100),
-  secondary: map-get($grey, 400),
+  secondary: map-get($grey, 300),
   disabled: map-get($grey, 300),
   link: map-get($blue, 200),
   inverse: map-get($grey, 900),
-  error: map-get($red, 300),
-  info: map-get($blue, 300),
-  success: map-get($green, 300),
+  error: map-get($red, 100),
+  info: map-get($blue, 200),
+  success: map-get($green, 100),
   warning: map-get($yellow, 300),
 ), $typography-dark-scheme-overrides);

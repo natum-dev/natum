@@ -6,13 +6,15 @@
   gap: 4px;
   font-family: inherit;
 
-  --textfield-border-color: #{get-color(grey, 400)};
-  --textfield-focus-color: #{get-color(blue, 700)};
+  --textfield-border-color: var(--border-color);
+  --textfield-focus-color: var(--palette-primary-main);
+  --textfield-error-color: var(--typography-error);
   --textfield-bg: transparent;
-  --textfield-label-color: #{get-color(grey, 800)};
-  --textfield-text-color: #{get-color(grey, 900)};
-  --textfield-message-color: #{get-color(grey, 600)};
-  --textfield-placeholder-color: #{get-color(grey, 500)};
+  --textfield-label-color: var(--typography-primary);
+  --textfield-text-color: var(--typography-primary);
+  --textfield-message-color: var(--typography-secondary);
+  --textfield-placeholder-color: var(--typography-disabled);
+  --textfield-icon-color: var(--typography-secondary);
   --textfield-font-size: 16px;
   --textfield-padding: 10px 12px;
   --textfield-radius: 8px;
@@ -60,7 +62,7 @@
 .right_section {
   display: flex;
   align-items: center;
-  color: #{get-color(grey, 600)};
+  color: var(--textfield-icon-color);
 }
 
 .left_section {
@@ -79,11 +81,11 @@
   cursor: pointer;
   padding: 0 8px;
   font-size: calc(var(--textfield-font-size) + 2px);
-  color: #{get-color(grey, 500)};
+  color: var(--textfield-icon-color);
   line-height: 1;
 
   &:hover {
-    color: #{get-color(grey, 700)};
+    color: var(--textfield-text-color);
   }
 }
 
@@ -93,73 +95,54 @@
 }
 
 .error_text {
-  color: var(--textfield-focus-color);
+  color: var(--textfield-error-color);
 }
 
 // --- Colors ---
 
 .primary {
-  --textfield-border-color: #{get-color(blue, 300)};
-  --textfield-focus-color: #{get-color(blue, 700)};
-  --textfield-label-color: #{get-color(blue, 700)};
-  --textfield-text-color: #{get-color(blue, 800)};
-  --textfield-message-color: #{get-color(blue, 600)};
-  --textfield-placeholder-color: color-mix(in srgb, #{get-color(blue, 100)} 50%, #{get-color(grey, 100)});
+  --textfield-focus-color: var(--text-primary);
+  --textfield-label-color: var(--text-primary);
 }
 
 .secondary {
-  --textfield-border-color: #{get-color(purple, 300)};
-  --textfield-focus-color: #{get-color(purple, 700)};
-  --textfield-label-color: #{get-color(purple, 700)};
-  --textfield-text-color: #{get-color(purple, 800)};
-  --textfield-message-color: #{get-color(purple, 600)};
-  --textfield-placeholder-color: color-mix(in srgb, #{get-color(purple, 100)} 50%, #{get-color(grey, 100)});
+  --textfield-focus-color: var(--text-secondary);
+  --textfield-label-color: var(--text-secondary);
 }
 
 .error {
-  --textfield-border-color: #{get-color(red, 300)};
-  --textfield-focus-color: #{get-color(red, 700)};
-  --textfield-label-color: #{get-color(red, 700)};
-  --textfield-text-color: #{get-color(red, 800)};
-  --textfield-message-color: #{get-color(red, 600)};
-  --textfield-placeholder-color: color-mix(in srgb, #{get-color(red, 100)} 50%, #{get-color(grey, 100)});
+  --textfield-focus-color: var(--text-error);
+  --textfield-label-color: var(--text-error);
 }
 
 .success {
-  --textfield-border-color: #{get-color(green, 300)};
-  --textfield-focus-color: #{get-color(green, 700)};
-  --textfield-label-color: #{get-color(green, 700)};
-  --textfield-text-color: #{get-color(green, 800)};
-  --textfield-message-color: #{get-color(green, 600)};
-  --textfield-placeholder-color: color-mix(in srgb, #{get-color(green, 100)} 50%, #{get-color(grey, 100)});
+  --textfield-focus-color: var(--text-success);
+  --textfield-label-color: var(--text-success);
 }
 
 .warning {
-  --textfield-border-color: #{get-color(orange, 300)};
-  --textfield-focus-color: #{get-color(orange, 700)};
-  --textfield-label-color: #{get-color(orange, 700)};
-  --textfield-text-color: #{get-color(orange, 800)};
-  --textfield-message-color: #{get-color(orange, 600)};
-  --textfield-placeholder-color: color-mix(in srgb, #{get-color(orange, 100)} 50%, #{get-color(grey, 100)});
+  --textfield-focus-color: var(--text-warning);
+  --textfield-label-color: var(--text-warning);
 }
 
-// --- Error state ---
+// --- Error state (higher specificity to always win) ---
 
-.has_error {
-  --textfield-border-color: #{get-color(red, 700)};
-  --textfield-focus-color: #{get-color(red, 700)};
-  --textfield-label-color: #{get-color(red, 700)};
+.textfield.has_error {
+  --textfield-border-color: var(--typography-error);
+  --textfield-focus-color: var(--typography-error);
+  --textfield-label-color: var(--typography-error);
+  --textfield-error-color: var(--typography-error);
 }
 
 // --- Disabled ---
 
 .disabled {
-  --textfield-border-color: #{get-color(grey, 300)};
-  --textfield-label-color: #{get-color(grey, 500)};
-  --textfield-text-color: #{get-color(grey, 500)};
-  --textfield-message-color: #{get-color(grey, 400)};
-  --textfield-placeholder-color: #{get-color(grey, 300)};
-  --textfield-bg: #{get-color(grey, 100)};
+  --textfield-border-color: var(--border-color-subtle);
+  --textfield-label-color: var(--typography-disabled);
+  --textfield-text-color: var(--typography-disabled);
+  --textfield-message-color: var(--typography-disabled);
+  --textfield-placeholder-color: var(--typography-disabled);
+  --textfield-bg: var(--bg-inset);
   cursor: not-allowed;
 
   .input {
@@ -177,7 +160,9 @@
 // --- Variants ---
 
 .outlined {
-  // uses default .input_wrapper styling
+  .input_wrapper {
+    background-color: transparent;
+  }
 }
 
 .filled {
@@ -185,7 +170,7 @@
     border-color: transparent;
     border-bottom: 2px solid var(--textfield-border-color);
     border-radius: var(--textfield-radius);
-    background-color: #{get-color(grey, 50)};
+    background-color: var(--bg-inset);
 
     &:focus-within {
       border-bottom-color: var(--textfield-focus-color);
@@ -194,11 +179,11 @@
   }
 
   &.has_error .input_wrapper {
-    border-bottom-color: #{get-color(red, 700)};
+    border-bottom-color: var(--typography-error);
   }
 
   &.disabled .input_wrapper {
-    background-color: #{get-color(grey, 100)};
+    background-color: var(--bg-inset);
   }
 }
 
