@@ -1,0 +1,180 @@
+@use "../design-tokens" as *;
+
+.toast_container {
+  position: fixed;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  pointer-events: none;
+}
+
+.top_right {
+  top: 0;
+  right: 0;
+}
+
+.top_left {
+  top: 0;
+  left: 0;
+}
+
+.top_center {
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.bottom_right {
+  bottom: 0;
+  right: 0;
+}
+
+.bottom_left {
+  bottom: 0;
+  left: 0;
+}
+
+.bottom_center {
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: var(--bg-overlay);
+  box-shadow: var(--shadow-high);
+  border-left: 4px solid var(--toast-accent-color);
+  min-width: 300px;
+  max-width: 420px;
+
+  --toast-accent-color: #{get-color(blue, 400)};
+}
+
+// Type colors
+.success {
+  --toast-accent-color: #{get-color(green, 700)};
+
+  .type_icon {
+    color: #{get-color(green, 700)};
+  }
+}
+
+.error {
+  --toast-accent-color: #{get-color(red, 700)};
+
+  .type_icon {
+    color: #{get-color(red, 700)};
+  }
+}
+
+.warning {
+  --toast-accent-color: #{get-color(orange, 700)};
+
+  .type_icon {
+    color: #{get-color(orange, 700)};
+  }
+}
+
+.info {
+  --toast-accent-color: #{get-color(blue, 400)};
+
+  .type_icon {
+    color: #{get-color(blue, 400)};
+  }
+}
+
+// Animation
+.entering {
+  animation: toast_slide_in 0.2s ease-out forwards;
+}
+
+.exiting {
+  animation: toast_slide_out 0.15s ease-in forwards;
+}
+
+@keyframes toast_slide_in {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes toast_slide_out {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+// Content
+.type_icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--typography-primary);
+  margin-bottom: 2px;
+}
+
+.message {
+  font-size: 14px;
+  color: var(--typography-secondary);
+  line-height: 1.4;
+}
+
+.action_button {
+  all: unset;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--toast-accent-color);
+  margin-top: 6px;
+  display: inline-block;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.close_button {
+  all: unset;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  color: var(--typography-disabled);
+  transition: all 0.15s ease;
+
+  &:hover {
+    background-color: var(--bg-inset);
+    color: var(--typography-primary);
+  }
+}
