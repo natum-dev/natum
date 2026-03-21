@@ -1,0 +1,141 @@
+@use "../design-tokens" as *;
+
+.divider {
+  --divider-color: var(--border-color);
+  --divider-thickness: 1px;
+  --divider-spacing: 16px;
+  border: none;
+  margin: 0;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.horizontal {
+  width: 100%;
+  height: 0;
+  border-top: var(--divider-thickness) solid var(--divider-color);
+  margin-top: var(--divider-spacing);
+  margin-bottom: var(--divider-spacing);
+}
+
+.vertical {
+  display: inline-block;
+  align-self: stretch;
+  width: 0;
+  border-left: var(--divider-thickness) solid var(--divider-color);
+  margin-left: var(--divider-spacing);
+  margin-right: var(--divider-spacing);
+}
+
+// Variant overrides border-style
+.solid {
+  &.horizontal {
+    border-top-style: solid;
+  }
+  &.vertical {
+    border-left-style: solid;
+  }
+}
+
+.dashed {
+  &.horizontal {
+    border-top-style: dashed;
+  }
+  &.vertical {
+    border-left-style: dashed;
+  }
+}
+
+.dotted {
+  &.horizontal {
+    border-top-style: dotted;
+  }
+  &.vertical {
+    border-left-style: dotted;
+  }
+}
+
+// Colors
+.primary {
+  --divider-color: var(--palette-primary-main);
+}
+
+.secondary {
+  --divider-color: var(--palette-secondary-main);
+}
+
+.neutral {
+  --divider-color: var(--border-color);
+}
+
+.light {
+  --divider-color: var(--border-color-subtle);
+}
+
+// Spacing
+.spacing_none {
+  --divider-spacing: 0;
+}
+
+.spacing_small {
+  --divider-spacing: 8px;
+}
+
+.spacing_medium {
+  --divider-spacing: 16px;
+}
+
+.spacing_large {
+  --divider-spacing: 32px;
+}
+
+// With label (horizontal only)
+.with_label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: none !important;
+
+  &::before,
+  &::after {
+    content: "";
+    flex: 1;
+    height: 0;
+    border-top: var(--divider-thickness) solid var(--divider-color);
+  }
+}
+
+// When with_label + a variant, apply border-style to pseudo-elements
+.with_label.dashed {
+  &::before,
+  &::after {
+    border-top-style: dashed;
+  }
+}
+
+.with_label.dotted {
+  &::before,
+  &::after {
+    border-top-style: dotted;
+  }
+}
+
+.label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--typography-secondary);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.label_left {
+  &::before {
+    flex: 0 0 24px;
+  }
+}
+
+.label_right {
+  &::after {
+    flex: 0 0 24px;
+  }
+}

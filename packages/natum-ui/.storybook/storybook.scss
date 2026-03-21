@@ -1,0 +1,21 @@
+// Ensure body fills the entire Storybook canvas
+html, body, #storybook-root {
+  height: 100%;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+// Body background follows theme via data-theme attribute
+body {
+  background-color: var(--bg-color) !important;
+  color: var(--typography-primary);
+}
+
+// Override Storybook's default story padding
+.sb-show-main.sb-main-padded {
+  padding: 0 !important;
+}
+
+.sb-show-main.sb-main-centered {
+  padding: 0 !important;
+}
