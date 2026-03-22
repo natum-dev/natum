@@ -220,15 +220,67 @@ export const DisabledStates: Story = {
 // --- 10. ReadOnly ---
 export const ReadOnly: Story = {
   render: () => (
-    <div style={{ maxWidth: 320 }}>
-      <h3 style={{ ...headingStyle, margin: "0 0 8px" }}>Read Only</h3>
+    <div style={{ display: "flex", flexDirection: "column", gap: 24, maxWidth: 480 }}>
+      <h3 style={{ ...headingStyle, margin: "0 0 8px" }}>ReadOnly vs Disabled</h3>
+
+      <div style={rowStyle}>
+        <div style={{ flex: 1, minWidth: 200 }}>
+          <p style={labelStyle}>readOnly</p>
+          <TextField
+            label="API Key"
+            value="sk-natum-abc123def456"
+            readOnly
+            onChange={() => {}}
+            helperText="Selectable, not editable"
+          />
+        </div>
+        <div style={{ flex: 1, minWidth: 200 }}>
+          <p style={labelStyle}>disabled</p>
+          <TextField
+            label="API Key"
+            value="sk-natum-abc123def456"
+            disabled
+            onChange={() => {}}
+            helperText="Not selectable, not editable"
+          />
+        </div>
+      </div>
+
+      <h3 style={headingStyle}>ReadOnly with Icon</h3>
       <TextField
-        label="API Key"
-        value="sk-natum-abc123def456"
         readOnly
+        label="API Key"
+        value="sk-abc123..."
+        rightSection={<IconEye size="sm" color="currentColor" />}
         onChange={() => {}}
-        helperText="This value cannot be modified"
+        helperText="Click the eye to reveal full key"
       />
+
+      <h3 style={headingStyle}>ReadOnly in Form Context</h3>
+      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        <TextField
+          label="Account ID"
+          value="ACC-00421"
+          readOnly
+          onChange={() => {}}
+        />
+        <TextField
+          label="Display Name"
+          placeholder="Enter your name"
+          defaultValue="Jonathan"
+        />
+        <TextField
+          label="Email"
+          value="jonathan@example.com"
+          readOnly
+          onChange={() => {}}
+          helperText="Contact support to change"
+        />
+        <TextField
+          label="Bio"
+          placeholder="Tell us about yourself..."
+        />
+      </div>
     </div>
   ),
 };

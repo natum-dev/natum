@@ -6,6 +6,7 @@
   display: flex;
   flex-direction: column;
   width: 100%;
+  min-width: 0; // Allow shrinking in flex containers
 }
 
 // --- Label ---
@@ -22,12 +23,15 @@
   }
 }
 
+// Focus label color — comes first
 .focused .label,
 .wrapper:has(.focused) .label {
   color: var(--palette-primary-main);
 }
 
-.error .label {
+// Error label color — comes AFTER focused, so it wins via source order
+.error .label,
+.error:has(.focused) .label {
   color: var(--palette-error-main);
 }
 
@@ -66,8 +70,13 @@
     box-shadow: 0 0 0 1px var(--palette-primary-main);
   }
 
+  // Error state must override ALL other states
   .error & {
     border-color: var(--palette-error-main);
+
+    &:hover {
+      border-color: var(--palette-error-main);
+    }
 
     &.focused {
       border-color: var(--palette-error-main);
@@ -90,8 +99,13 @@
     background-color: var(--bg-elevated);
   }
 
+  // Error state must override ALL other states
   .error & {
     border-block-end-color: var(--palette-error-main);
+
+    &:hover {
+      border-block-end-color: var(--palette-error-main);
+    }
 
     &.focused {
       border-block-end-color: var(--palette-error-main);
@@ -249,13 +263,43 @@
 // --- ReadOnly ---
 
 .readonly_state {
+  .label {
+    color: var(--typography-secondary);
+  }
+
   .input_container {
     background-color: var(--bg-inset);
+    border-color: transparent;
+    cursor: default;
 
+    // Suppress hover — no editability signal
+    &:hover {
+      border-color: transparent;
+    }
+
+    // For filled variant, also suppress bottom border
+    &.filled {
+      border-block-end-color: transparent;
+
+      &:hover {
+        border-block-end-color: transparent;
+      }
+    }
+
+    // Neutral focus — subtle border, no primary ring
     &.focused {
       box-shadow: none;
       border-color: var(--border-color-subtle);
     }
+  }
+
+  .input {
+    color: var(--typography-primary);
+  }
+
+  // Suppress label focus color change — ReadOnly isn't editing
+  &:has(.focused) .label {
+    color: var(--typography-secondary);
   }
 }
 
