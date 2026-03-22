@@ -1,208 +1,283 @@
 @use "../design-tokens" as *;
 
-.textfield {
-  display: inline-flex;
+// --- Wrapper ---
+
+.wrapper {
+  display: flex;
   flex-direction: column;
-  gap: 4px;
-  font-family: inherit;
-
-  --textfield-border-color: var(--border-color);
-  --textfield-focus-color: var(--palette-primary-main);
-  --textfield-error-color: var(--typography-error);
-  --textfield-bg: transparent;
-  --textfield-label-color: var(--typography-primary);
-  --textfield-text-color: var(--typography-primary);
-  --textfield-message-color: var(--typography-secondary);
-  --textfield-placeholder-color: var(--typography-disabled);
-  --textfield-icon-color: var(--typography-secondary);
-  --textfield-font-size: 16px;
-  --textfield-padding: 10px 12px;
-  --textfield-radius: 8px;
-
-  &.full_width {
-    display: flex;
-    width: 100%;
-  }
+  width: 100%;
 }
+
+// --- Label ---
 
 .label {
-  font-size: calc(var(--textfield-font-size) - 2px);
+  display: block;
+  font-size: 14px;
   font-weight: 500;
-  color: var(--textfield-label-color);
+  color: var(--typography-secondary);
+  margin-block-end: 4px;
+
+  .error & {
+    color: var(--palette-error-main);
+  }
 }
 
-.input_wrapper {
+.focused .label,
+.wrapper:has(.focused) .label {
+  color: var(--palette-primary-main);
+}
+
+.error .label {
+  color: var(--palette-error-main);
+}
+
+.required_asterisk {
+  color: var(--palette-error-main);
+  margin-inline-start: 2px;
+}
+
+// --- Input Container ---
+
+.input_container {
   display: flex;
   align-items: center;
-  border: 1px solid var(--textfield-border-color);
-  border-radius: var(--textfield-radius);
-  background-color: var(--textfield-bg);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  cursor: text;
+  box-sizing: border-box;
 
-  &:focus-within {
-    border-color: var(--textfield-focus-color);
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--textfield-focus-color) 20%, transparent);
-  }
-}
-
-.input {
-  all: unset;
-  flex: 1;
-  min-width: 0;
-  font-size: var(--textfield-font-size);
-  padding: var(--textfield-padding);
-  color: var(--textfield-text-color);
-
-  &::placeholder {
-    color: var(--textfield-placeholder-color);
-  }
-}
-
-.left_section,
-.right_section {
-  display: flex;
-  align-items: center;
-  color: var(--textfield-icon-color);
-}
-
-.left_section {
-  padding-left: 12px;
-}
-
-.right_section {
-  padding-right: 12px;
-}
-
-.clear_button {
-  all: unset;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  padding: 0 8px;
-  font-size: calc(var(--textfield-font-size) + 2px);
-  color: var(--textfield-icon-color);
-  line-height: 1;
-
-  &:hover {
-    color: var(--textfield-text-color);
-  }
-}
-
-.message {
-  font-size: calc(var(--textfield-font-size) - 2px);
-  color: var(--textfield-message-color);
-}
-
-.error_text {
-  color: var(--textfield-error-color);
-}
-
-// --- Colors ---
-
-.primary {
-  --textfield-focus-color: var(--text-primary);
-  --textfield-label-color: var(--text-primary);
-}
-
-.secondary {
-  --textfield-focus-color: var(--text-secondary);
-  --textfield-label-color: var(--text-secondary);
-}
-
-.error {
-  --textfield-focus-color: var(--text-error);
-  --textfield-label-color: var(--text-error);
-}
-
-.success {
-  --textfield-focus-color: var(--text-success);
-  --textfield-label-color: var(--text-success);
-}
-
-.warning {
-  --textfield-focus-color: var(--text-warning);
-  --textfield-label-color: var(--text-warning);
-}
-
-// --- Error state (higher specificity to always win) ---
-
-.textfield.has_error {
-  --textfield-border-color: var(--typography-error);
-  --textfield-focus-color: var(--typography-error);
-  --textfield-label-color: var(--typography-error);
-  --textfield-error-color: var(--typography-error);
-}
-
-// --- Disabled ---
-
-.disabled {
-  --textfield-border-color: var(--border-color-subtle);
-  --textfield-label-color: var(--typography-disabled);
-  --textfield-text-color: var(--typography-disabled);
-  --textfield-message-color: var(--typography-disabled);
-  --textfield-placeholder-color: var(--typography-disabled);
-  --textfield-bg: var(--bg-inset);
-  cursor: not-allowed;
-
-  .input {
-    cursor: not-allowed;
-  }
-
-  .input_wrapper {
-    &:focus-within {
-      border-color: var(--textfield-border-color);
-      box-shadow: none;
-    }
+  @media (prefers-reduced-motion: no-preference) {
+    transition: border-color var(--duration-fast, 100ms) var(--easing-default, ease),
+      box-shadow var(--duration-fast, 100ms) var(--easing-default, ease),
+      background-color var(--duration-fast, 100ms) var(--easing-default, ease);
   }
 }
 
 // --- Variants ---
 
 .outlined {
-  .input_wrapper {
-    background-color: transparent;
+  border: 1px solid var(--border-color-subtle);
+  background-color: var(--bg-elevated);
+
+  &:hover:not(.focused) {
+    border-color: var(--border-color);
+  }
+
+  &.focused {
+    border-color: var(--palette-primary-main);
+    box-shadow: 0 0 0 1px var(--palette-primary-main);
+  }
+
+  .error & {
+    border-color: var(--palette-error-main);
+
+    &.focused {
+      border-color: var(--palette-error-main);
+      box-shadow: 0 0 0 1px var(--palette-error-main);
+    }
   }
 }
 
 .filled {
-  .input_wrapper {
-    border-color: transparent;
-    border-bottom: 2px solid var(--textfield-border-color);
-    border-radius: var(--textfield-radius);
-    background-color: var(--bg-inset);
+  border: 1px solid transparent;
+  border-block-end: 1px solid var(--border-color-subtle);
+  background-color: var(--bg-inset);
 
-    &:focus-within {
-      border-bottom-color: var(--textfield-focus-color);
-      box-shadow: none;
+  &:hover:not(.focused) {
+    border-block-end-color: var(--border-color);
+  }
+
+  &.focused {
+    border-block-end-color: var(--palette-primary-main);
+    background-color: var(--bg-elevated);
+  }
+
+  .error & {
+    border-block-end-color: var(--palette-error-main);
+
+    &.focused {
+      border-block-end-color: var(--palette-error-main);
     }
-  }
-
-  &.has_error .input_wrapper {
-    border-bottom-color: var(--typography-error);
-  }
-
-  &.disabled .input_wrapper {
-    background-color: var(--bg-inset);
   }
 }
 
 // --- Sizes ---
 
-.small {
-  --textfield-font-size: 14px;
-  --textfield-padding: 8px 10px;
-  --textfield-radius: 6px;
+.sm {
+  min-height: 36px;
+  padding: 4px 8px;
+  font-size: 14px;
+  border-radius: var(--radius-sm, 4px);
 }
 
-.medium {
-  --textfield-font-size: 16px;
-  --textfield-padding: 10px 12px;
-  --textfield-radius: 8px;
+.md {
+  min-height: 44px;
+  padding: 8px 12px;
+  font-size: 16px;
+  border-radius: var(--radius-md, 8px);
 }
 
-.large {
-  --textfield-font-size: 18px;
-  --textfield-padding: 12px 14px;
-  --textfield-radius: 10px;
+.lg {
+  min-height: 52px;
+  padding: 12px 16px;
+  font-size: 18px;
+  border-radius: var(--radius-md, 8px);
+}
+
+// --- Input ---
+
+.input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--typography-primary);
+  font: inherit;
+  font-size: inherit;
+  text-align: start;
+  padding: 0;
+  margin: 0;
+
+  &::placeholder {
+    color: var(--typography-disabled);
+  }
+
+  &:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px var(--bg-elevated) inset;
+    -webkit-text-fill-color: var(--typography-primary);
+    caret-color: var(--typography-primary);
+    transition: background-color 5000s ease-in-out 0s;
+  }
+}
+
+// --- Sections ---
+
+.left_section,
+.right_section {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: var(--typography-secondary);
+  pointer-events: none;
+
+  // Restore pointer events on interactive children
+  button,
+  a,
+  [role="button"] {
+    pointer-events: auto;
+  }
+}
+
+.left_section {
+  margin-inline-end: 8px;
+}
+
+.right_section {
+  margin-inline-start: 8px;
+}
+
+// --- Clear Button ---
+
+.clear_button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 4px;
+  margin: 0;
+  margin-inline-start: 4px;
+  border: none;
+  border-radius: var(--radius-sm, 4px);
+  background: transparent;
+  color: var(--typography-secondary);
+  cursor: pointer;
+  appearance: none;
+
+  &:hover {
+    background-color: var(--bg-inset);
+    color: var(--typography-primary);
+  }
+}
+
+// --- Message (Helper / Error) ---
+
+.message {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  margin-block-start: 4px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.message_helper {
+  color: var(--typography-secondary);
+}
+
+.message_error {
+  color: var(--palette-error-main);
+}
+
+.error_icon {
+  flex-shrink: 0;
+  margin-block-start: 1px;
+}
+
+// --- Disabled ---
+
+.disabled_state {
+  .label {
+    color: var(--typography-disabled);
+  }
+
+  .input_container {
+    cursor: not-allowed;
+    background-color: #{get-color(grey, 100)};
+    border-color: #{get-color(grey, 200)};
+    color: #{get-color(grey, 400)};
+  }
+
+  .input {
+    cursor: not-allowed;
+    color: #{get-color(grey, 400)};
+
+    &::placeholder {
+      color: #{get-color(grey, 300)};
+    }
+  }
+}
+
+// --- ReadOnly ---
+
+.readonly_state {
+  .input_container {
+    background-color: var(--bg-inset);
+
+    &.focused {
+      box-shadow: none;
+      border-color: var(--border-color-subtle);
+    }
+  }
+}
+
+// --- Dark Mode ---
+
+:global(body[data-theme="dark"]) {
+  .disabled_state {
+    .input_container {
+      background-color: #{get-color(grey, 800)};
+      border-color: #{get-color(grey, 700)};
+    }
+
+    .input {
+      color: #{get-color(grey, 500)};
+
+      &::placeholder {
+        color: #{get-color(grey, 600)};
+      }
+    }
+  }
+
+  .input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px #{get-color(grey, 800)} inset;
+  }
 }

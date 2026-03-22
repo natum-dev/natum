@@ -3,5 +3,6 @@ export * from "./Card";
 export * from "./Divider";
 export * from "./Typography";
 export * from "./IconButton";
+export * from "./TextField";
 export * from "./Toast";
 export * from "./ThemeProvider";
