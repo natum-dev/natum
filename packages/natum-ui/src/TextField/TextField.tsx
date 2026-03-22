@@ -10,7 +10,7 @@ import {
   useCallback,
 } from "react";
 import { IconAlertTriangle, IconX } from "@natum/icons";
-import { useMergedRef } from "../hooks/useMergedRef";
+import { mergeRefs } from "../hooks/mergeRefs";
 import { useControllable } from "../hooks/useControllable";
 import styles from "./TextField.module.scss";
 import cx from "classnames";
@@ -68,7 +68,7 @@ const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
     const messageId = `${inputId}-message`;
 
     const innerRef = useRef<HTMLInputElement>(null);
-    const mergedRef = useMergedRef(ref, innerRef);
+    const mergedRef = mergeRefs(ref, innerRef);
 
     const [isFocused, setIsFocused] = useState(false);
 

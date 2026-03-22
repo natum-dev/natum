@@ -11,7 +11,7 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 import { IconX } from "@natum/icons";
-import { useMergedRef } from "../hooks/useMergedRef";
+import { mergeRefs } from "../hooks/mergeRefs";
 import styles from "./Modal.module.scss";
 import cx from "classnames";
 
@@ -58,7 +58,7 @@ const Modal = forwardRef<HTMLDivElement, ModalProps>(
     const titleId = idProp ?? `${autoId}-title`;
 
     const panelRef = useRef<HTMLDivElement>(null);
-    const mergedRef = useMergedRef(ref, panelRef);
+    const mergedRef = mergeRefs(ref, panelRef);
     const previousActiveElement = useRef<Element | null>(null);
 
     const [mounted, setMounted] = useState(false);

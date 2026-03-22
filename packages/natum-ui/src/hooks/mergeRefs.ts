@@ -1,13 +1,12 @@
-import { useCallback } from "react";
-
 type ReactRef<T> = React.Ref<T> | React.MutableRefObject<T | null> | null | undefined;
 
 /**
  * Merges multiple refs into a single callback ref.
- * Supports forwarded refs, callback refs, and MutableRefObjects.
+ * Not a hook — a plain utility function. Consumers memoize at the call site if needed.
+ * Follows Mantine's mergeRefs pattern.
  */
-export function useMergedRef<T>(...refs: ReactRef<T>[]): React.RefCallback<T> {
-  return useCallback((node: T | null) => {
+export function mergeRefs<T>(...refs: ReactRef<T>[]): React.RefCallback<T> {
+  return (node: T | null) => {
     for (const ref of refs) {
       if (typeof ref === "function") {
         ref(node);
@@ -15,5 +14,5 @@ export function useMergedRef<T>(...refs: ReactRef<T>[]): React.RefCallback<T> {
         (ref as React.MutableRefObject<T | null>).current = node;
       }
     }
-  }, refs); // eslint-disable-line react-hooks/exhaustive-deps
+  };
 }
