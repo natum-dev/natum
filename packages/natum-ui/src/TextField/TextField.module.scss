@@ -267,26 +267,31 @@
     color: var(--typography-secondary);
   }
 
+  // Suppress label focus color change
+  &:has(.focused) .label {
+    color: var(--typography-secondary);
+  }
+
   .input_container {
     background-color: var(--bg-inset);
-    border-color: transparent;
+    border-color: var(--border-color-subtle);
     cursor: default;
 
-    // Suppress hover — no editability signal
+    // No hover change
     &:hover {
-      border-color: transparent;
+      border-color: var(--border-color-subtle);
     }
 
-    // For filled variant, also suppress bottom border
+    // For filled variant, keep bottom border visible but static
     &.filled {
-      border-block-end-color: transparent;
+      border-block-end-color: var(--border-color-subtle);
 
       &:hover {
-        border-block-end-color: transparent;
+        border-block-end-color: var(--border-color-subtle);
       }
     }
 
-    // Neutral focus — subtle border, no primary ring
+    // Neutral focus — no primary ring
     &.focused {
       box-shadow: none;
       border-color: var(--border-color-subtle);
@@ -295,11 +300,6 @@
 
   .input {
     color: var(--typography-primary);
-  }
-
-  // Suppress label focus color change — ReadOnly isn't editing
-  &:has(.focused) .label {
-    color: var(--typography-secondary);
   }
 }
 
