@@ -1,63 +1,51 @@
-import { forwardRef, type ComponentPropsWithoutRef } from "react";
+import { type ComponentPropsWithoutRef, forwardRef } from "react";
 import styles from "./Divider.module.scss";
 import cx from "classnames";
 
-export type DividerProps = Omit<
-  ComponentPropsWithoutRef<"div">,
-  "color"
-> & {
+export type DividerProps = Omit<ComponentPropsWithoutRef<"div">, "children"> & {
   orientation?: "horizontal" | "vertical";
   variant?: "solid" | "dashed" | "dotted";
-  color?: "primary" | "secondary" | "neutral" | "light";
-  thickness?: number;
-  spacing?: "none" | "small" | "medium" | "large";
-  label?: string;
-  labelPosition?: "left" | "center" | "right";
+  spacing?: "none" | "sm" | "md" | "lg";
+  className?: string;
 };
 
-const Divider = forwardRef<HTMLDivElement, DividerProps>(
+const Divider = forwardRef<HTMLElement, DividerProps>(
   (
     {
       orientation = "horizontal",
       variant = "solid",
-      color = "neutral",
-      thickness = 1,
-      spacing = "medium",
-      label,
-      labelPosition = "center",
+      spacing = "sm",
       className,
       ...rest
     },
     ref
   ) => {
-    const showLabel = !!label && orientation === "horizontal";
+    const classes = cx(
+      styles.divider,
+      styles[variant],
+      styles[spacing],
+      styles[orientation],
+      className
+    );
+
+    if (orientation === "vertical") {
+      return (
+        <div
+          ref={ref as React.Ref<HTMLDivElement>}
+          role="separator"
+          aria-orientation="vertical"
+          className={classes}
+          {...rest}
+        />
+      );
+    }
 
     return (
-      <div
-        ref={ref}
-        role="separator"
-        aria-orientation={orientation === "vertical" ? "vertical" : undefined}
-        {...(showLabel ? { "aria-label": label } : {})}
-        className={cx(
-          className,
-          styles.divider,
-          styles[orientation],
-          styles[variant],
-          styles[color],
-          styles[`spacing_${spacing}`],
-          {
-            [styles.with_label]: showLabel,
-            [styles.label_left]: showLabel && labelPosition === "left",
-            [styles.label_right]: showLabel && labelPosition === "right",
-          }
-        )}
-        style={
-          { "--divider-thickness": `${thickness}px` } as React.CSSProperties
-        }
+      <hr
+        ref={ref as React.Ref<HTMLHRElement>}
+        className={classes}
         {...rest}
-      >
-        {showLabel && <span className={styles.label}>{label}</span>}
-      </div>
+      />
     );
   }
 );
