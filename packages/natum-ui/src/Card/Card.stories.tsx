@@ -402,7 +402,81 @@ export const AuthFormCard: Story = {
   ),
 };
 
-// --- 13. Real-World: Empty State ---
+// --- 13. RTL ---
+export const RTL: Story = {
+  render: () => (
+    <div dir="rtl" style={{ maxWidth: 400 }}>
+      <h3 style={{ ...headingStyle, margin: "0 0 8px" }}>RTL Layout</h3>
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <Card variant="elevated">
+          <Typography variant="h6" tag="p">
+            بطاقة مرتفعة
+          </Typography>
+          <Typography variant="body2" color="secondary">
+            هذه بطاقة بالتخطيط من اليمين إلى اليسار. يجب أن يتكيف الحشو والمحاذاة تلقائيًا.
+          </Typography>
+        </Card>
+        <Card variant="outlined" isInteractive>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <div
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: 8,
+                backgroundColor: "var(--bg-inset)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+              }}
+            >
+              📄
+            </div>
+            <div style={{ minWidth: 0 }}>
+              <Typography variant="body1" tag="p" style={{ margin: 0 }}>
+                تقرير المبيعات.pdf
+              </Typography>
+              <Typography variant="caption" color="secondary" tag="p" style={{ margin: 0 }}>
+                ٢.٤ م.ب · ١٥ مارس ٢٠٢٦
+              </Typography>
+            </div>
+          </div>
+        </Card>
+      </div>
+    </div>
+  ),
+};
+
+// --- 14. Responsive ---
+export const Responsive: Story = {
+  render: () => (
+    <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+      <h3 style={{ ...headingStyle, margin: "0 0 8px" }}>Responsive Padding</h3>
+      <Typography variant="body2" color="secondary" tag="p" style={{ margin: 0 }}>
+        Resize your browser to see padding adapt. On mobile (&lt;600px): md=12px, lg=16px.
+        At sm breakpoint (600px+): md=16px, lg=24px. sm stays at 12px always.
+      </Typography>
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        {sizes.map((size) => (
+          <Card key={size} size={size} variant="outlined">
+            <Typography variant="h6" tag="p">
+              Size: {size}
+            </Typography>
+            <Typography variant="body2" color="secondary">
+              {size === "sm"
+                ? "Padding: 12px at all viewports"
+                : size === "md"
+                  ? "Padding: 12px on mobile, 16px at ≥600px"
+                  : "Padding: 16px on mobile, 24px at ≥600px"}
+            </Typography>
+          </Card>
+        ))}
+      </div>
+    </div>
+  ),
+};
+
+// --- 15. Real-World: Empty State ---
 export const EmptyState: Story = {
   name: "Real-World: Empty State",
   render: () => (

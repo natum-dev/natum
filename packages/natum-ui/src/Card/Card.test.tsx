@@ -199,6 +199,35 @@ describe("Card", () => {
     expect(screen.getByTestId("card")).toHaveAttribute("tabindex", "-1");
   });
 
+  it("does not fire onClick on Enter when disabled and isInteractive", async () => {
+    const user = userEvent.setup();
+    const onClick = vi.fn();
+    render(<Card data-testid="card" disabled isInteractive onClick={onClick}>Content</Card>);
+    const card = screen.getByTestId("card");
+    card.focus();
+    await user.keyboard("{Enter}");
+    expect(onClick).not.toHaveBeenCalled();
+  });
+
+  it("does not fire onClick on Space when disabled and isInteractive", async () => {
+    const user = userEvent.setup();
+    const onClick = vi.fn();
+    render(<Card data-testid="card" disabled isInteractive onClick={onClick}>Content</Card>);
+    const card = screen.getByTestId("card");
+    card.focus();
+    await user.keyboard(" ");
+    expect(onClick).not.toHaveBeenCalled();
+  });
+
+  // --- Disabled + Selected compound state ---
+  it("applies both disabled and selected classes when both are set", () => {
+    render(<Card data-testid="card" disabled isSelected>Content</Card>);
+    const card = screen.getByTestId("card");
+    expect(card).toHaveClass("disabled", "selected");
+    expect(card).toHaveAttribute("aria-disabled", "true");
+    expect(card).toHaveAttribute("aria-selected", "true");
+  });
+
   // --- Disabled + as="button" ---
   it("sets native disabled attribute when as='button' and disabled", () => {
     render(<Card as="button" disabled>Content</Card>);
