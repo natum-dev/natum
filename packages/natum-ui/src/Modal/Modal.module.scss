@@ -156,7 +156,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 16px 20px;
-  border-block-end: 1px solid color-mix(in srgb, var(--border-color-subtle) 30%, transparent);
+  border-block-end: 1px solid color-mix(in srgb, var(--border-color-subtle) 25%, transparent);
   flex-shrink: 0;
 }
 
@@ -213,7 +213,7 @@
   justify-content: flex-end;
   gap: 8px;
   padding: 16px 20px;
-  border-block-start: 1px solid color-mix(in srgb, var(--border-color-subtle) 30%, transparent);
+  border-block-start: 1px solid color-mix(in srgb, var(--border-color-subtle) 25%, transparent);
   flex-shrink: 0;
 }
 
