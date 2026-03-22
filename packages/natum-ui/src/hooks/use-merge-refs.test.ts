@@ -1,7 +1,7 @@
 import { renderHook } from "@testing-library/react";
 import { createRef } from "react";
 import { describe, it, expect, vi } from "vitest";
-import { mergeRefs, useMergedRefs } from "./mergeRefs";
+import { mergeRefs, useMergedRefs } from "./use-merge-refs";
 
 describe("mergeRefs", () => {
   it("merges forwarded ref + internal ref", () => {

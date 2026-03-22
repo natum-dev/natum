@@ -11,7 +11,7 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 import { IconX } from "@natum/icons";
-import { useMergedRefs } from "../hooks/mergeRefs";
+import { useMergedRefs } from "../hooks/use-merge-refs";
 import styles from "./Modal.module.scss";
 import cx from "classnames";
 

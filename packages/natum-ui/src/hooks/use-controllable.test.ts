@@ -1,6 +1,6 @@
 import { renderHook, act } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
-import { useControllable } from "./useControllable";
+import { useControllable } from "./use-controllable";
 
 describe("useControllable", () => {
   // --- isControlled ---

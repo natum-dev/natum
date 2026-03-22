@@ -10,8 +10,8 @@ import {
   useCallback,
 } from "react";
 import { IconAlertTriangle, IconX } from "@natum/icons";
-import { useMergedRefs } from "../hooks/mergeRefs";
-import { useControllable } from "../hooks/useControllable";
+import { useMergedRefs } from "../hooks/use-merge-refs";
+import { useControllable } from "../hooks/use-controllable";
 import styles from "./TextField.module.scss";
 import cx from "classnames";
 
