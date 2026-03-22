@@ -11,7 +11,7 @@ import {
 } from "react";
 import { IconAlertTriangle, IconX } from "@natum/icons";
 import { useMergedRef } from "../hooks/useMergedRef";
-import { useUncontrolledValue } from "../hooks/useUncontrolledValue";
+import { useControllable } from "../hooks/useControllable";
 import styles from "./TextField.module.scss";
 import cx from "classnames";
 
@@ -72,17 +72,46 @@ const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
 
     const [isFocused, setIsFocused] = useState(false);
 
-    const { showClear: showClearBase, handleChange, handleClear } =
-      useUncontrolledValue({
+    const { value: currentValue, setValue, isControlled } =
+      useControllable<string>({
         value: value as string | undefined,
-        defaultValue: defaultValue as string | undefined,
-        onChange,
-        onClear,
-        clearable,
+        defaultValue: (defaultValue as string) ?? "",
+        onChange: undefined,
       });
 
-    const showClear = showClearBase && !disabled && !readOnly;
+    const hasValue = !!currentValue && currentValue.length > 0;
+    const showClear = clearable && hasValue && !disabled && !readOnly;
     const hasError = !!errorMessage;
+
+    const handleChange = useCallback(
+      (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!isControlled) {
+          setValue(e.target.value);
+        }
+        onChange?.(e);
+      },
+      [isControlled, setValue, onChange]
+    );
+
+    const doClear = useCallback(() => {
+      const input = innerRef.current;
+      if (!input) return;
+
+      const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+        HTMLInputElement.prototype,
+        "value"
+      )?.set;
+      nativeInputValueSetter?.call(input, "");
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+      input.dispatchEvent(new Event("change", { bubbles: true }));
+
+      if (!isControlled) {
+        setValue("");
+      }
+
+      onClear?.();
+      input.focus();
+    }, [isControlled, setValue, onClear]);
 
     const handleFocus = useCallback(
       (e: React.FocusEvent<HTMLInputElement>) => {
@@ -99,10 +128,6 @@ const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
       },
       [onBlur]
     );
-
-    const doClear = useCallback(() => {
-      handleClear(innerRef);
-    }, [handleClear]);
 
     const handleKeyDown = useCallback(
       (e: React.KeyboardEvent<HTMLInputElement>) => {
