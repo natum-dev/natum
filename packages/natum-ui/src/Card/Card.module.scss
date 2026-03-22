@@ -1,130 +1,154 @@
 @use "../design-tokens" as *;
 
 .card {
-  --card-radius: 12px;
-  --card-padding: 20px;
+  box-sizing: border-box;
+  color: var(--typography-primary);
+  transition: box-shadow var(--duration-normal, 200ms) var(--easing-default, ease),
+    background-color var(--duration-normal, 200ms) var(--easing-default, ease),
+    border-color var(--duration-normal, 200ms) var(--easing-default, ease);
 
-  background-color: var(--bg-elevated);
-  border-radius: var(--card-radius);
-  padding: var(--card-padding);
-  overflow: hidden;
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
 }
 
-// Variants
+// --- Variants ---
+
 .elevated {
+  background-color: var(--bg-elevated);
   box-shadow: var(--shadow-low);
   border: none;
 }
 
 .outlined {
+  background-color: var(--bg-elevated);
+  border: 1px solid var(--border-color-subtle);
   box-shadow: none;
-  border: 1px solid var(--border-color);
 }
 
 .filled {
-  box-shadow: none;
-  border: none;
   background-color: var(--bg-inset);
-}
-
-// Elevations
-.elevation_none {
+  border: none;
   box-shadow: none;
 }
 
-.elevation_low {
-  &.elevated {
-    box-shadow: var(--shadow-low);
+// --- Sizes ---
+
+.sm {
+  padding: var(--space-3, 12px);
+  border-radius: var(--radius-md, 8px);
+}
+
+.md {
+  padding: var(--space-3, 12px);
+  border-radius: var(--radius-lg, 12px);
+
+  @include breakpoint(sm) {
+    padding: var(--space-4, 16px);
   }
 }
 
-.elevation_medium {
-  &.elevated {
-    box-shadow: var(--shadow-medium);
+.lg {
+  padding: var(--space-4, 16px);
+  border-radius: var(--radius-lg, 12px);
+
+  @include breakpoint(sm) {
+    padding: var(--space-6, 24px);
   }
 }
 
-.elevation_high {
-  &.elevated {
-    box-shadow: var(--shadow-high);
-  }
-}
+// --- Interactive ---
 
-// Padding
-.padding_none {
-  --card-padding: 0;
-}
-
-.padding_small {
-  --card-padding: 12px;
-}
-
-.padding_medium {
-  --card-padding: 20px;
-}
-
-.padding_large {
-  --card-padding: 32px;
-}
-
-// Radius
-.radius_small {
-  --card-radius: 8px;
-}
-
-.radius_medium {
-  --card-radius: 12px;
-}
-
-.radius_large {
-  --card-radius: 16px;
-}
-
-// Interactive
 .interactive {
   cursor: pointer;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-hover);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
 
   &:focus-visible {
     outline: var(--focus-ring-width) solid var(--focus-ring-color);
     outline-offset: var(--focus-ring-offset);
   }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  // Hover per variant
+  &.elevated:hover {
+    box-shadow: var(--shadow-hover);
+  }
+
+  &.outlined:hover {
+    border-color: var(--border-color);
+    background-color: color-mix(in srgb, var(--bg-elevated) 95%, #{get-color(grey, 300)});
+  }
+
+  &.filled:hover {
+    background-color: color-mix(in srgb, var(--bg-inset) 90%, #{get-color(grey, 400)});
+  }
 }
 
-// Full width
-.full_width {
-  width: 100%;
+// --- Selected ---
+
+.selected {
+  border: 2px solid #{get-color(blue, 600)};
+  background-color: #{get-color(blue, 50)};
 }
 
-// When sub-components are used, remove card padding and let sections handle it
-.has_sections {
-  padding: 0;
+// --- Disabled ---
+
+.disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+  background-color: #{get-color(grey, 100)};
+  color: #{get-color(grey, 400)};
+
+  &.elevated {
+    box-shadow: none;
+  }
+
+  &.outlined {
+    border-color: #{get-color(grey, 200)};
+  }
 }
 
-// Sub-components
-.header {
-  padding: var(--card-padding);
-  border-bottom: 1px solid var(--border-color-subtle);
-}
+// --- Dark mode ---
 
-.body {
-  padding: var(--card-padding);
-}
+:global(body[data-theme="dark"]) {
+  .elevated {
+    background-color: #{get-color(grey, 800)};
+    box-shadow: var(--shadow-low);
+  }
 
-.footer {
-  padding: var(--card-padding);
-  border-top: 1px solid var(--border-color-subtle);
-}
+  .outlined {
+    background-color: #{get-color(grey, 800)};
+    border-color: #{get-color(grey, 600)};
+  }
 
-.header + .footer {
-  border-top: none;
+  .filled {
+    background-color: #{get-color(grey, 700)};
+  }
+
+  .selected {
+    border-color: #{get-color(blue, 400)};
+    background-color: color-mix(in srgb, #{get-color(blue, 500)} 15%, transparent);
+  }
+
+  .disabled {
+    background-color: #{get-color(grey, 800)};
+    color: #{get-color(grey, 500)};
+
+    &.outlined {
+      border-color: #{get-color(grey, 700)};
+    }
+  }
+
+  .interactive {
+    &.outlined:hover {
+      border-color: #{get-color(grey, 500)};
+      background-color: color-mix(in srgb, #{get-color(grey, 800)} 90%, #{get-color(grey, 600)});
+    }
+
+    &.filled:hover {
+      background-color: color-mix(in srgb, #{get-color(grey, 700)} 85%, #{get-color(grey, 500)});
+    }
+  }
 }

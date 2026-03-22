@@ -1,111 +1,104 @@
 import {
-  forwardRef,
-  type ReactNode,
   type ComponentPropsWithoutRef,
-  Children,
-  isValidElement,
+  type ReactNode,
+  type KeyboardEvent,
+  forwardRef,
 } from "react";
 import styles from "./Card.module.scss";
 import cx from "classnames";
 
-export type CardProps = Omit<ComponentPropsWithoutRef<"div">, "color"> & {
-  variant?: "elevated" | "outlined" | "filled";
-  elevation?: "none" | "low" | "medium" | "high";
-  padding?: "none" | "small" | "medium" | "large";
-  radius?: "small" | "medium" | "large";
-  interactive?: boolean;
-  fullWidth?: boolean;
-};
+type CardElementType = "div" | "article" | "section" | "a" | "button";
 
-type CardSectionProps = {
+type CardBaseProps<T extends CardElementType = "div"> = {
+  variant?: "elevated" | "outlined" | "filled";
+  size?: "sm" | "md" | "lg";
+  as?: T;
+  isInteractive?: boolean;
+  isSelected?: boolean;
+  disabled?: boolean;
   children?: ReactNode;
   className?: string;
 };
 
-const Card = forwardRef<HTMLDivElement, CardProps>(
-  (
-    {
-      variant = "elevated",
-      elevation = "low",
-      padding = "medium",
-      radius = "medium",
-      interactive,
-      fullWidth,
-      className,
-      children,
-      onKeyDown,
-      onClick,
-      ...rest
-    },
-    ref
-  ) => {
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-      if (interactive && (e.key === "Enter" || e.key === " ")) {
-        e.preventDefault();
-        (e.currentTarget as HTMLDivElement).click();
-      }
-      onKeyDown?.(e);
-    };
+export type CardProps<T extends CardElementType = "div"> = CardBaseProps<T> &
+  Omit<ComponentPropsWithoutRef<T>, keyof CardBaseProps<T>>;
 
-    const hasSections = Children.toArray(children).some(
-      (child) =>
-        isValidElement(child) &&
-        (child.type === CardHeader ||
-          child.type === CardBody ||
-          child.type === CardFooter)
-    );
+const needsButtonRole = (tag: CardElementType): boolean =>
+  tag !== "a" && tag !== "button";
 
-    return (
-      <div
-        ref={ref}
-        className={cx(
-          styles.card,
-          styles[variant],
-          styles[`elevation_${elevation}`],
-          styles[`padding_${padding}`],
-          styles[`radius_${radius}`],
-          {
-            [styles.interactive]: interactive,
-            [styles.full_width]: fullWidth,
-            [styles.has_sections]: hasSections,
-          },
-          className
-        )}
-        {...(interactive
-          ? { role: "button", tabIndex: 0, onKeyDown: handleKeyDown }
-          : {})}
-        onClick={onClick}
-        {...rest}
-      >
-        {children}
-      </div>
-    );
+const CardInner = <T extends CardElementType = "div">(
+  {
+    variant = "elevated",
+    size = "md",
+    as,
+    isInteractive = false,
+    isSelected = false,
+    disabled = false,
+    children,
+    className,
+    onClick,
+    ...rest
+  }: CardProps<T> & { onClick?: (e: unknown) => void },
+  ref: React.ForwardedRef<Element>
+) => {
+  const Tag = (as ?? "div") as CardElementType;
+  const isNonNative = needsButtonRole(Tag);
+
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (!isInteractive || !isNonNative || disabled) return;
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      onClick?.(e);
+    }
+  };
+
+  const interactiveProps =
+    isInteractive && isNonNative
+      ? {
+          role: "button" as const,
+          tabIndex: disabled ? -1 : 0,
+        }
+      : {};
+
+  // For anchor tags: remove href when disabled
+  const spreadProps = { ...rest } as Record<string, unknown>;
+  if (Tag === "a" && disabled) {
+    delete spreadProps.href;
   }
-);
 
-Card.displayName = "Card";
+  return (
+    // @ts-expect-error — polymorphic element type
+    <Tag
+      ref={ref}
+      className={cx(
+        styles.card,
+        styles[variant],
+        styles[size],
+        {
+          [styles.interactive]: isInteractive,
+          [styles.selected]: isSelected,
+          [styles.disabled]: disabled,
+        },
+        className
+      )}
+      aria-disabled={disabled ? true : undefined}
+      aria-selected={isSelected ? true : undefined}
+      disabled={Tag === "button" && disabled ? true : undefined}
+      onClick={disabled ? undefined : onClick}
+      onKeyDown={isInteractive && isNonNative ? handleKeyDown : undefined}
+      {...interactiveProps}
+      {...spreadProps}
+    >
+      {children}
+    </Tag>
+  );
+};
 
-const CardHeader = ({ children, className }: CardSectionProps) => (
-  <div className={cx(styles.header, className)}>{children}</div>
-);
+const Card = forwardRef(CardInner) as <T extends CardElementType = "div">(
+  props: CardProps<T> & { ref?: React.Ref<Element> }
+) => JSX.Element;
 
+(Card as { displayName?: string }).displayName = "Card";
 
-const CardBody = ({ children, className }: CardSectionProps) => (
-  <div className={cx(styles.body, className)}>{children}</div>
-);
-
-
-const CardFooter = ({ children, className }: CardSectionProps) => (
-  <div className={cx(styles.footer, className)}>{children}</div>
-);
-
-
-// Attach sub-components as static properties
-const CardNamespace = Object.assign(Card, {
-  Header: CardHeader,
-  Body: CardBody,
-  Footer: CardFooter,
-});
-
-export { CardNamespace as Card, CardHeader, CardBody, CardFooter };
-export type { CardSectionProps };
+export { Card };
+export type { CardElementType };
