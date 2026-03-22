@@ -57,6 +57,7 @@ const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
       onChange,
       onFocus,
       onBlur,
+      onKeyDown,
       ...rest
     },
     ref
@@ -129,6 +130,17 @@ const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
       input.focus();
     }, [isControlled, onClear]);
 
+    const handleKeyDown = useCallback(
+      (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Escape" && clearable && showClear) {
+          e.preventDefault();
+          handleClear();
+        }
+        onKeyDown?.(e);
+      },
+      [clearable, showClear, handleClear, onKeyDown]
+    );
+
     const handleContainerClick = useCallback(() => {
       innerRef.current?.focus();
     }, []);
@@ -186,6 +198,7 @@ const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
             onChange={handleChange}
             onFocus={handleFocus}
             onBlur={handleBlur}
+            onKeyDown={handleKeyDown}
             disabled={disabled}
             readOnly={readOnly}
             required={required}

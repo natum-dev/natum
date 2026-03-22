@@ -117,6 +117,37 @@ describe("TextField", () => {
     expect(screen.getByLabelText("Test")).toHaveFocus();
   });
 
+  // --- Escape-to-clear ---
+  it("Escape clears value when clearable and has value", async () => {
+    const user = userEvent.setup();
+    const onClear = vi.fn();
+    render(<TextField label="Test" clearable defaultValue="hello" onClear={onClear} />);
+    const input = screen.getByLabelText("Test");
+    await user.click(input);
+    await user.keyboard("{Escape}");
+    expect(input).toHaveValue("");
+    expect(onClear).toHaveBeenCalledOnce();
+  });
+
+  it("Escape does nothing when clearable but empty", async () => {
+    const user = userEvent.setup();
+    const onClear = vi.fn();
+    render(<TextField label="Test" clearable onClear={onClear} />);
+    const input = screen.getByLabelText("Test");
+    await user.click(input);
+    await user.keyboard("{Escape}");
+    expect(onClear).not.toHaveBeenCalled();
+  });
+
+  it("Escape does nothing when not clearable", async () => {
+    const user = userEvent.setup();
+    render(<TextField label="Test" defaultValue="hello" />);
+    const input = screen.getByLabelText("Test");
+    await user.click(input);
+    await user.keyboard("{Escape}");
+    expect(input).toHaveValue("hello");
+  });
+
   it("does not show clear button when disabled", () => {
     render(<TextField label="Test" clearable value="hello" onChange={() => {}} disabled />);
     expect(screen.queryByLabelText("Clear input")).not.toBeInTheDocument();
