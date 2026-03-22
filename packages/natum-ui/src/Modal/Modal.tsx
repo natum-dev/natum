@@ -4,8 +4,8 @@ import {
   type ReactNode,
   forwardRef,
   useCallback,
-  useEffect,
   useId,
+  useLayoutEffect,
   useRef,
   useState,
 } from "react";
@@ -61,13 +61,14 @@ const Modal = forwardRef<HTMLDivElement, ModalProps>(
     const [mounted, setMounted] = useState(false);
     const [animationState, setAnimationState] = useState<AnimationState>("exited");
 
-    // SSR safety
-    useEffect(() => {
+    // SSR safety — useLayoutEffect doesn't run during SSR, so mounted stays
+    // false on the server. On the client it fires synchronously before paint.
+    useLayoutEffect(() => {
       setMounted(true);
     }, []);
 
-    // Animation state machine
-    useEffect(() => {
+    // Animation state machine — useLayoutEffect to prevent flash
+    useLayoutEffect(() => {
       if (isOpen) {
         setAnimationState("entering");
         const timer = setTimeout(() => setAnimationState("entered"), ENTER_DURATION);
@@ -88,8 +89,8 @@ const Modal = forwardRef<HTMLDivElement, ModalProps>(
       containerRef: panelRef,
     });
 
-    // Scroll lock
-    useEffect(() => {
+    // Scroll lock — useLayoutEffect to apply before paint
+    useLayoutEffect(() => {
       if (!isOpen) return;
 
       const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;

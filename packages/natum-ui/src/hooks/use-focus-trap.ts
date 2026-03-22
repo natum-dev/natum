@@ -24,7 +24,7 @@ export function useFocusTrap(options: UseFocusTrapOptions): UseFocusTrapReturn {
 
     previousActiveElement.current = document.activeElement;
 
-    // Use microtask to ensure DOM is ready
+    // Use microtask to ensure DOM is ready after portal render
     Promise.resolve().then(() => {
       if (!containerRef.current) return;
       const firstFocusable =
