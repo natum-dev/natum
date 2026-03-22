@@ -156,7 +156,62 @@ export const RTL: Story = {
   ),
 };
 
-// --- 8. Real-World: Card Sections ---
+// --- 8. Flex Container Tip ---
+export const FlexContainerTip: Story = {
+  name: "Flex Container Tip",
+  render: () => (
+    <div style={{ display: "flex", flexDirection: "column", gap: 32, maxWidth: 480 }}>
+      <div>
+        <h3 style={{ ...headingStyle, margin: "0 0 8px" }}>With gap + spacing="sm" (double-spacing)</h3>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 16,
+            padding: 16,
+            border: "1px dashed var(--border-color-subtle)",
+            borderRadius: 8,
+          }}
+        >
+          <Typography variant="body1">Item A</Typography>
+          <Divider spacing="sm" />
+          <Typography variant="body1">Item B</Typography>
+          <Divider spacing="sm" />
+          <Typography variant="body1">Item C</Typography>
+        </div>
+        <Typography variant="caption" color="secondary" tag="p" style={{ marginBlockStart: 4 }}>
+          The flex gap (16px) adds to the divider's own margin (8px top + 8px bottom), creating 32px total spacing.
+        </Typography>
+      </div>
+
+      <div>
+        <h3 style={{ ...headingStyle, margin: "0 0 8px" }}>With gap + spacing="none" (correct)</h3>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 16,
+            padding: 16,
+            border: "1px dashed var(--border-color-subtle)",
+            borderRadius: 8,
+          }}
+        >
+          <Typography variant="body1">Item A</Typography>
+          <Divider spacing="none" />
+          <Typography variant="body1">Item B</Typography>
+          <Divider spacing="none" />
+          <Typography variant="body1">Item C</Typography>
+        </div>
+        <Typography variant="caption" color="secondary" tag="p" style={{ marginBlockStart: 4 }}>
+          When using Divider inside a flex container with gap, use spacing="none" to avoid
+          double-spacing. The flex gap handles the spacing.
+        </Typography>
+      </div>
+    </div>
+  ),
+};
+
+// --- 9. Real-World: Card Sections ---
 export const CardSections: Story = {
   name: "Real-World: Card Sections",
   render: () => (
