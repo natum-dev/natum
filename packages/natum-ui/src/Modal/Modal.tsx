@@ -127,7 +127,7 @@ const Modal = forwardRef<HTMLDivElement, ModalProps>(
       // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
       <div
         className={cx(styles.overlay, {
-          [styles.overlay_entering]: isEntering || animationState === "entered",
+          [styles.overlay_entering]: isEntering,
           [styles.overlay_exiting]: isExiting,
         })}
         onClick={handleOverlayClick}

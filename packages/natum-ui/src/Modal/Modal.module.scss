@@ -11,6 +11,7 @@
   justify-content: center;
   padding: 24px;
   background-color: rgba(0, 0, 0, 0.5);
+  opacity: 1;
 
   @include breakpoint(xs) {
     // Mobile: align to bottom for sheet behavior
@@ -58,6 +59,8 @@
   box-shadow: var(--shadow-high);
   outline: none;
   overflow: hidden;
+  opacity: 1;
+  transform: none;
 
   // Mobile: bottom sheet
   @media (max-width: 599px) {
