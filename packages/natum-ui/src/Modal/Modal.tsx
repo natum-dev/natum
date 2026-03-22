@@ -219,23 +219,25 @@ const Modal = forwardRef<HTMLDivElement, ModalProps>(
           )}
           onKeyDown={handleKeyDown}
         >
-          <div className={styles.header}>
-            {title && (
-              <h2 id={titleId} className={styles.title}>
-                {title}
-              </h2>
-            )}
-            {!hideCloseButton && (
-              <button
-                type="button"
-                className={styles.close_button}
-                onClick={onClose}
-                aria-label="Close dialog"
-              >
-                <IconX size="sm" color="currentColor" />
-              </button>
-            )}
-          </div>
+          {(title || !hideCloseButton) && (
+            <div className={styles.header}>
+              {title && (
+                <h2 id={titleId} className={styles.title}>
+                  {title}
+                </h2>
+              )}
+              {!hideCloseButton && (
+                <button
+                  type="button"
+                  className={styles.close_button}
+                  onClick={onClose}
+                  aria-label="Close dialog"
+                >
+                  <IconX size="sm" color="currentColor" />
+                </button>
+              )}
+            </div>
+          )}
 
           <div className={styles.body}>{children}</div>
 
