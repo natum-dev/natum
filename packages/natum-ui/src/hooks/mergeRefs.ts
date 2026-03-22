@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+
 type ReactRef<T> = React.Ref<T> | React.MutableRefObject<T | null> | null | undefined;
 
 /**
@@ -15,4 +17,13 @@ export function mergeRefs<T>(...refs: ReactRef<T>[]): React.RefCallback<T> {
       }
     }
   };
+}
+
+/**
+ * Hook wrapper around mergeRefs — memoizes the callback ref.
+ * Use this in components. Use plain mergeRefs for non-hook contexts.
+ */
+export function useMergedRefs<T>(...refs: ReactRef<T>[]): React.RefCallback<T> {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  return useMemo(() => mergeRefs(...refs), refs);
 }

@@ -1,3 +1,3 @@
 export { useControllable } from "./useControllable";
 export { useCountdown } from "./useCountdown";
-export { mergeRefs } from "./mergeRefs";
+export { mergeRefs, useMergedRefs } from "./mergeRefs";

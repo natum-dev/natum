@@ -1,6 +1,7 @@
+import { renderHook } from "@testing-library/react";
 import { createRef } from "react";
 import { describe, it, expect, vi } from "vitest";
-import { mergeRefs } from "./mergeRefs";
+import { mergeRefs, useMergedRefs } from "./mergeRefs";
 
 describe("mergeRefs", () => {
   it("merges forwarded ref + internal ref", () => {
@@ -59,5 +60,46 @@ describe("mergeRefs", () => {
     merged(null);
     expect(ref1.current).toBeNull();
     expect(ref2).toHaveBeenCalledWith(null);
+  });
+});
+
+describe("useMergedRefs", () => {
+  it("merges refs via hook", () => {
+    const ref1 = createRef<HTMLDivElement>();
+    const ref2 = createRef<HTMLDivElement>();
+
+    const { result } = renderHook(() => useMergedRefs(ref1, ref2));
+
+    const node = document.createElement("div");
+    result.current(node);
+
+    expect(ref1.current).toBe(node);
+    expect(ref2.current).toBe(node);
+  });
+
+  it("returns stable ref across re-renders when input refs don't change", () => {
+    const ref1 = createRef<HTMLDivElement>();
+    const ref2 = createRef<HTMLDivElement>();
+
+    const { result, rerender } = renderHook(() => useMergedRefs(ref1, ref2));
+
+    const firstResult = result.current;
+    rerender();
+    expect(result.current).toBe(firstResult);
+  });
+
+  it("returns new ref when input refs change", () => {
+    const ref1 = createRef<HTMLDivElement>();
+    const ref2 = createRef<HTMLDivElement>();
+    const ref3 = createRef<HTMLDivElement>();
+
+    const { result, rerender } = renderHook(
+      ({ refs }) => useMergedRefs(...refs),
+      { initialProps: { refs: [ref1, ref2] as React.RefObject<HTMLDivElement>[] } }
+    );
+
+    const firstResult = result.current;
+    rerender({ refs: [ref1, ref3] });
+    expect(result.current).not.toBe(firstResult);
   });
 });
