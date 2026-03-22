@@ -9,7 +9,7 @@ import {
   useState,
   useCallback,
 } from "react";
-import { IconAlertTriangle, IconX } from "@natum/icons";
+import { IconX } from "@natum/icons";
 import { useMergedRefs } from "../hooks/use-merge-refs";
 import { useControllable } from "../hooks/use-controllable";
 import styles from "./TextField.module.scss";
@@ -233,13 +233,6 @@ const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
             )}
             role={hasError ? "alert" : undefined}
           >
-            {hasError && (
-              <IconAlertTriangle
-                size="xs"
-                color="currentColor"
-                className={styles.error_icon}
-              />
-            )}
             {messageContent}
           </div>
         )}
