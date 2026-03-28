@@ -54,7 +54,7 @@
   flex-direction: column;
   width: 100%;
   max-height: calc(100vh - 48px);
-  background-color: var(--bg-overlay);
+  background-color: var(--neutral-bg-overlay);
   border-radius: var(--radius-lg, 12px);
   box-shadow: var(--shadow-high);
   outline: none;
@@ -164,7 +164,7 @@
   font-size: 18px;
   font-weight: 600;
   line-height: 1.4;
-  color: var(--typography-primary);
+  color: var(--neutral-text);
   margin: 0;
 }
 
@@ -180,14 +180,14 @@
   border: none;
   border-radius: var(--radius-sm, 4px);
   background: transparent;
-  color: var(--typography-secondary);
+  color: var(--neutral-text-secondary);
   cursor: pointer;
   appearance: none;
   flex-shrink: 0;
 
   &:hover {
-    background-color: var(--bg-inset);
-    color: var(--typography-primary);
+    background-color: var(--neutral-bg-inset);
+    color: var(--neutral-text);
   }
 
   &:focus-visible {
@@ -202,7 +202,7 @@
   flex: 1;
   overflow-y: auto;
   overscroll-behavior: contain;
-  color: var(--typography-primary);
+  color: var(--neutral-text);
 }
 
 // --- Footer ---
@@ -217,10 +217,3 @@
   flex-shrink: 0;
 }
 
-// --- Dark mode ---
-
-:global(body[data-theme="dark"]) {
-  .overlay {
-    background-color: rgba(0, 0, 0, 0.7);
-  }
-}
