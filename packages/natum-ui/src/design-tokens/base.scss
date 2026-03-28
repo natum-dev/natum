@@ -1,4 +1,5 @@
 @use "index" as *;
+@use "sass:color";
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
 @import "modern-normalize/modern-normalize.css";
 
@@ -74,6 +75,23 @@
   --shadow-medium: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
   --shadow-high: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
   --shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.08);
+
+  // Soft backgrounds (surface-first design — tinted fills for soft variant)
+  --primary-soft: #{color.mix(get-color(blue, 500), get-color(grey, 50), 12%)};
+  --secondary-soft: #{color.mix(get-color(purple, 500), get-color(grey, 50), 12%)};
+  --error-soft: #{color.mix(get-color(red, 500), get-color(grey, 50), 12%)};
+  --success-soft: #{color.mix(get-color(green, 500), get-color(grey, 50), 12%)};
+  --warning-soft: #{color.mix(get-color(yellow, 500), get-color(grey, 50), 12%)};
+  --info-soft: #{color.mix(get-color(blue, 400), get-color(grey, 50), 12%)};
+  --neutral-soft: #{color.mix(get-color(grey, 500), get-color(grey, 50), 12%)};
+
+  --primary-soft-hover: #{color.mix(get-color(blue, 500), get-color(grey, 50), 20%)};
+  --secondary-soft-hover: #{color.mix(get-color(purple, 500), get-color(grey, 50), 20%)};
+  --error-soft-hover: #{color.mix(get-color(red, 500), get-color(grey, 50), 20%)};
+  --success-soft-hover: #{color.mix(get-color(green, 500), get-color(grey, 50), 20%)};
+  --warning-soft-hover: #{color.mix(get-color(yellow, 500), get-color(grey, 50), 20%)};
+  --info-soft-hover: #{color.mix(get-color(blue, 400), get-color(grey, 50), 20%)};
+  --neutral-soft-hover: #{color.mix(get-color(grey, 500), get-color(grey, 50), 20%)};
 
   // Focus
   --focus-ring-color: #{get-color(blue, 500)};
@@ -153,6 +171,23 @@
   --shadow-medium: 0 4px 6px rgba(0, 0, 0, 0.35), 0 2px 4px rgba(0, 0, 0, 0.25);
   --shadow-high: 0 10px 15px rgba(0, 0, 0, 0.45), 0 4px 6px rgba(0, 0, 0, 0.3);
   --shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(0, 0, 0, 0.3);
+
+  // Soft backgrounds (surface-first design — tinted fills for soft variant)
+  --primary-soft: #{color.mix(get-color(blue, 400), get-color(grey, 900), 12%)};
+  --secondary-soft: #{color.mix(get-color(purple, 400), get-color(grey, 900), 12%)};
+  --error-soft: #{color.mix(get-color(red, 400), get-color(grey, 900), 12%)};
+  --success-soft: #{color.mix(get-color(green, 400), get-color(grey, 900), 12%)};
+  --warning-soft: #{color.mix(get-color(yellow, 300), get-color(grey, 900), 12%)};
+  --info-soft: #{color.mix(get-color(blue, 300), get-color(grey, 900), 12%)};
+  --neutral-soft: #{color.mix(get-color(grey, 400), get-color(grey, 900), 12%)};
+
+  --primary-soft-hover: #{color.mix(get-color(blue, 400), get-color(grey, 900), 20%)};
+  --secondary-soft-hover: #{color.mix(get-color(purple, 400), get-color(grey, 900), 20%)};
+  --error-soft-hover: #{color.mix(get-color(red, 400), get-color(grey, 900), 20%)};
+  --success-soft-hover: #{color.mix(get-color(green, 400), get-color(grey, 900), 20%)};
+  --warning-soft-hover: #{color.mix(get-color(yellow, 300), get-color(grey, 900), 20%)};
+  --info-soft-hover: #{color.mix(get-color(blue, 300), get-color(grey, 900), 20%)};
+  --neutral-soft-hover: #{color.mix(get-color(grey, 400), get-color(grey, 900), 20%)};
 
   // Focus
   --focus-ring-color: #{get-color(blue, 200)};
