@@ -7,17 +7,19 @@
   background: none;
   border: none;
   margin: 0;
-  padding: 10px 16px;
+  padding: var(--space-3) var(--space-4);
   font: inherit;
   font-size: 16px;
   font-weight: 500;
   text-decoration: none;
   -webkit-appearance: none;
   appearance: none;
-  transition: all 0.25s ease;
+  transition: background-color var(--duration-fast) var(--easing-default),
+              color var(--duration-fast) var(--easing-default),
+              filter var(--duration-fast) var(--easing-default);
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
 
   &:focus-visible {
     outline: var(--focus-ring-width) solid var(--focus-ring-color);
@@ -60,17 +62,17 @@
 
 // Disabled
 .disabled {
-  color: var(--neutral-text-disabled);
+  color: var(--disabled-text);
   cursor: not-allowed;
   pointer-events: none;
 
   &.filled {
-    background-color: var(--neutral-bg-inset);
+    background-color: var(--disabled-bg);
   }
 
   &.soft {
-    background-color: var(--neutral-bg-inset);
-    color: var(--neutral-text-disabled);
+    background-color: var(--disabled-bg);
+    color: var(--disabled-text);
   }
 
   &.text {
