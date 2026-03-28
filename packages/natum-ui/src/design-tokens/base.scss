@@ -97,6 +97,11 @@
   --focus-ring-color: #{get-color(blue, 500)};
   --focus-ring-width: 2px;
   --focus-ring-offset: 2px;
+
+  // Disabled
+  --disabled-text: #{get-color(grey, 400)};
+  --disabled-bg: #{get-color(grey, 100)};
+  --disabled-border: #{get-color(grey, 300)};
 }
 
 @mixin dark-scheme {
@@ -193,6 +198,11 @@
   --focus-ring-color: #{get-color(blue, 200)};
   --focus-ring-width: 2px;
   --focus-ring-offset: 2px;
+
+  // Disabled
+  --disabled-text: #{get-color(grey, 500)};
+  --disabled-bg: #{get-color(grey, 800)};
+  --disabled-border: #{get-color(grey, 600)};
 }
 
 :root {
@@ -236,6 +246,15 @@
   // Prevent flash: match bg-color to user preference before JS hydrates
   @media (prefers-color-scheme: dark) {
     --neutral-bg: #{get-color(grey, 900)};
+  }
+}
+
+// Reduced motion: shorten all durations, components handle spatial→opacity swap
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 100ms;
+    --duration-normal: 100ms;
+    --duration-slow: 100ms;
   }
 }
 
