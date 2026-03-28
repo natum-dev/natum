@@ -1,7 +1,7 @@
 @use "../design-tokens" as *;
 
 .typography {
-  color: var(--typography-primary);
+  color: var(--neutral-text);
 
   @each $property, $value in map-get($typography-preset, "body1") {
     #{$property}: $value;
@@ -16,8 +16,39 @@
   }
 }
 
-@each $color in map-keys($typography-light-scheme) {
-  .#{$color} {
-    color: var(--typography-#{$color});
-  }
+// Color classes mapped to semantic tokens
+.primary {
+  color: var(--neutral-text);
+}
+
+.secondary {
+  color: var(--neutral-text-secondary);
+}
+
+.disabled {
+  color: var(--neutral-text-disabled);
+}
+
+.link {
+  color: var(--neutral-text-link);
+}
+
+.inverse {
+  color: var(--neutral-text-inverse);
+}
+
+.error {
+  color: var(--error-text);
+}
+
+.info {
+  color: var(--info-text);
+}
+
+.success {
+  color: var(--success-text);
+}
+
+.warning {
+  color: var(--warning-text);
 }
