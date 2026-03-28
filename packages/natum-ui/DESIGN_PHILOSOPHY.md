@@ -59,9 +59,22 @@ Under `@media (prefers-reduced-motion: reduce)`, all `--duration-*` tokens are o
 
 - **4px base grid**, components default to **8px-aligned** sizes
 - 4px increments reserved for internal component details (icon gaps, border offsets)
+- Spacing token scale (selective, multiplier naming — `--space-N` = N × 4px):
+
+| Token | Value |
+|-------|-------|
+| `--space-1` | 4px |
+| `--space-2` | 8px |
+| `--space-3` | 12px |
+| `--space-4` | 16px |
+| `--space-6` | 24px |
+| `--space-8` | 32px |
+| `--space-12` | 48px |
+| `--space-16` | 64px |
+
+- Gaps in numbering are intentional constraints — excluded values are not part of the scale
 - Three core sizes: `sm`, `md`, `lg` — every component supports these
 - Opt-in extremes: `xs`, `xl` — only added to a component when justified by a real use case
-- Spacing tokens: `--space-1` (4px) through `--space-16` (64px)
 
 ### 5. Proportional Shape
 
