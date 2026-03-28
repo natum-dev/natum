@@ -139,6 +139,149 @@ Additional tokens for text hierarchy and surface hierarchy:
 
 ---
 
+## Spacing
+
+4px base grid with selective scale. Token naming uses multipliers: `--space-N` = N × 4px.
+
+| Token | Value |
+|-------|-------|
+| `--space-1` | 4px |
+| `--space-2` | 8px |
+| `--space-3` | 12px |
+| `--space-4` | 16px |
+| `--space-6` | 24px |
+| `--space-8` | 32px |
+| `--space-12` | 48px |
+| `--space-16` | 64px |
+
+Gaps in numbering are intentional — excluded values are not part of the scale.
+
+```scss
+.card {
+  padding: var(--space-4);
+  gap: var(--space-2);
+}
+```
+
+---
+
+## Radius
+
+Border radius scales with component size. Proportional shape — small elements stay crisp, large surfaces feel warmer.
+
+| Token | Value | Default for |
+|-------|-------|-------------|
+| `--radius-sm` | 4px | Small elements |
+| `--radius-md` | 8px | Buttons, inputs |
+| `--radius-lg` | 12px | Cards |
+| `--radius-xl` | 16px | Large surfaces |
+| `--radius-full` | 9999px | Pills, avatars |
+
+```scss
+.button {
+  border-radius: var(--radius-md);
+}
+
+.card {
+  border-radius: var(--radius-lg);
+}
+```
+
+---
+
+## Motion
+
+Duration maps to **cognitive weight** of the UI event, not physical size.
+
+### Duration
+
+| Token | Value | Use |
+|-------|-------|-----|
+| `--duration-fast` | 125ms | Micro-feedback: hover, focus, toggle |
+| `--duration-normal` | 250ms | Informational feedback: toast, expand/collapse |
+| `--duration-slow` | 450ms | Significant UI events: modal entrance, bottom sheet |
+
+### Easing
+
+| Token | Value | Use |
+|-------|-------|-----|
+| `--easing-default` | `cubic-bezier(0.2, 0, 0, 1)` | General state changes |
+| `--easing-enter` | `cubic-bezier(0, 0, 0, 1)` | Elements entering (decelerate) |
+| `--easing-exit` | `cubic-bezier(0.3, 0, 1, 1)` | Elements exiting (accelerate) |
+
+```scss
+.button {
+  transition: background-color var(--duration-fast) var(--easing-default);
+}
+
+.modal {
+  animation: fade-scale-in var(--duration-slow) var(--easing-enter);
+}
+```
+
+### Reduced Motion
+
+Under `@media (prefers-reduced-motion: reduce)`, all `--duration-*` tokens are overridden to `100ms`. Components should also replace spatial motion (translate, scale) with opacity crossfades where appropriate:
+
+```scss
+.modal-enter {
+  animation: fade-scale-in var(--duration-slow) var(--easing-enter);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-enter {
+    animation-name: fade-in; // opacity-only fallback
+  }
+}
+```
+
+---
+
+## Z-Index
+
+1000-base, 100-gap scale. Gaps provide room for sub-layers when needed.
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| `--z-base` | 0 | Default stacking |
+| `--z-dropdown` | 1000 | Dropdown menus, selects, popovers |
+| `--z-sticky` | 1100 | Sticky headers, floating actions |
+| `--z-overlay` | 1200 | Modal/drawer backdrop |
+| `--z-modal` | 1300 | Modal/dialog content |
+| `--z-toast` | 1400 | Toast notifications |
+| `--z-tooltip` | 1500 | Tooltips |
+
+```scss
+.toast-container {
+  z-index: var(--z-toast);
+}
+```
+
+---
+
+## Disabled
+
+Shared disabled tokens using explicit muted colors (not opacity). Theme-aware — values switch between light and dark mode.
+
+| Token | Light | Dark | Usage |
+|-------|-------|------|-------|
+| `--disabled-text` | grey-400 | grey-500 | Labels, icons |
+| `--disabled-bg` | grey-100 | grey-800 | Container fills |
+| `--disabled-border` | grey-300 | grey-600 | Outlines |
+
+Components use shared tokens by default. Override with grey palette values when component anatomy demands different treatment.
+
+```scss
+.button.disabled {
+  color: var(--disabled-text);
+  background-color: var(--disabled-bg);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+```
+
+---
+
 ## Raw Color Palette
 
 Low-level access to the full shade range. **Use semantic tokens instead in component styles.** Reserve `get-color()` for token definitions and rare static values only.
