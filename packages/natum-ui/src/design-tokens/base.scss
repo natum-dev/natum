@@ -3,18 +3,71 @@
 @import "modern-normalize/modern-normalize.css";
 
 @mixin light-scheme {
-  --bg-color: #{get-color(grey, 50)};
-  @include register-variable($typography-light-scheme, "typography");
+  // --- Semantic color tokens ---
 
-  // Surface
-  --bg: #{get-color(grey, 50)};
-  --bg-elevated: #fff;
-  --bg-overlay: #fff;
-  --bg-inset: #{get-color(grey, 100)};
+  // Primary (blue)
+  --primary-bg: #{get-color(blue, 500)};
+  --primary-surface: #{get-color(blue, 50)};
+  --primary-text: #{get-color(blue, 700)};
+  --primary-contrast: #{get-color(grey, 50)};
+  --primary-border: #{get-color(blue, 500)};
+
+  // Secondary (purple)
+  --secondary-bg: #{get-color(purple, 500)};
+  --secondary-surface: #{get-color(purple, 50)};
+  --secondary-text: #{get-color(purple, 700)};
+  --secondary-contrast: #{get-color(grey, 50)};
+  --secondary-border: #{get-color(purple, 500)};
+
+  // Error (red)
+  --error-bg: #{get-color(red, 500)};
+  --error-surface: #{get-color(red, 50)};
+  --error-text: #{get-color(red, 700)};
+  --error-contrast: #{get-color(grey, 50)};
+  --error-border: #{get-color(red, 500)};
+
+  // Success (green)
+  --success-bg: #{get-color(green, 500)};
+  --success-surface: #{get-color(green, 50)};
+  --success-text: #{get-color(green, 700)};
+  --success-contrast: #{get-color(grey, 50)};
+  --success-border: #{get-color(green, 500)};
+
+  // Warning (yellow)
+  --warning-bg: #{get-color(yellow, 500)};
+  --warning-surface: #{get-color(yellow, 50)};
+  --warning-text: #{get-color(yellow, 900)};
+  --warning-contrast: #{get-color(grey, 900)};
+  --warning-border: #{get-color(yellow, 500)};
+
+  // Info (blue)
+  --info-bg: #{get-color(blue, 400)};
+  --info-surface: #{get-color(blue, 50)};
+  --info-text: #{get-color(blue, 700)};
+  --info-contrast: #{get-color(grey, 50)};
+  --info-border: #{get-color(blue, 400)};
+
+  // Neutral (grey)
+  --neutral-bg: #{get-color(grey, 50)};
+  --neutral-surface: #{get-color(grey, 50)};
+  --neutral-text: #{get-color(grey, 900)};
+  --neutral-contrast: #{get-color(grey, 50)};
+  --neutral-border: #{get-color(grey, 500)};
+
+  // Neutral extras — text hierarchy
+  --neutral-text-secondary: #{get-color(grey, 700)};
+  --neutral-text-disabled: #{get-color(grey, 400)};
+  --neutral-text-link: #{get-color(blue, 700)};
+  --neutral-text-inverse: #{get-color(grey, 50)};
+
+  // Neutral extras — surface hierarchy
+  --neutral-bg-elevated: #fff;
+  --neutral-bg-overlay: #fff;
+  --neutral-bg-inset: #{get-color(grey, 100)};
 
   // Border
-  --border-color: #{get-color(grey, 500)};
-  --border-color-subtle: #{get-color(grey, 300)};
+  --border-color: #{get-color(grey, 600)};
+  --border-color-subtle: #{get-color(grey, 500)};
 
   // Shadow
   --shadow-low: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
@@ -26,28 +79,74 @@
   --focus-ring-color: #{get-color(blue, 500)};
   --focus-ring-width: 2px;
   --focus-ring-offset: 2px;
-
-  --text-primary: #{get-color(blue, 700)};
-  --text-secondary: #{get-color(orange, 700)};
-  --text-error: #{get-color(red, 700)};
-  --text-info: #{get-color(blue, 500)};
-  --text-success: #{get-color(green, 700)};
-  --text-warning: #{get-color(yellow, 900)};
 }
 
 @mixin dark-scheme {
-  --bg-color: #{get-color(grey, 900)};
-  @include register-variable($typography-dark-scheme, "typography");
+  // --- Semantic color tokens ---
 
-  // Surface
-  --bg: #{get-color(grey, 900)};
-  --bg-elevated: #{get-color(grey, 800)};
-  --bg-overlay: #{get-color(grey, 800)};
-  --bg-inset: #{get-color(grey, 900)};
+  // Primary (blue)
+  --primary-bg: #{get-color(blue, 400)};
+  --primary-surface: #{get-color(blue, 900)};
+  --primary-text: #{get-color(blue, 200)};
+  --primary-contrast: #{get-color(grey, 900)};
+  --primary-border: #{get-color(blue, 400)};
+
+  // Secondary (purple)
+  --secondary-bg: #{get-color(purple, 400)};
+  --secondary-surface: #{get-color(purple, 900)};
+  --secondary-text: #{get-color(purple, 200)};
+  --secondary-contrast: #{get-color(grey, 900)};
+  --secondary-border: #{get-color(purple, 400)};
+
+  // Error (red)
+  --error-bg: #{get-color(red, 400)};
+  --error-surface: #{get-color(red, 900)};
+  --error-text: #{get-color(red, 200)};
+  --error-contrast: #{get-color(grey, 900)};
+  --error-border: #{get-color(red, 400)};
+
+  // Success (green)
+  --success-bg: #{get-color(green, 400)};
+  --success-surface: #{get-color(green, 900)};
+  --success-text: #{get-color(green, 200)};
+  --success-contrast: #{get-color(grey, 900)};
+  --success-border: #{get-color(green, 400)};
+
+  // Warning (yellow)
+  --warning-bg: #{get-color(yellow, 300)};
+  --warning-surface: #{get-color(yellow, 900)};
+  --warning-text: #{get-color(yellow, 200)};
+  --warning-contrast: #{get-color(grey, 900)};
+  --warning-border: #{get-color(yellow, 300)};
+
+  // Info (blue)
+  --info-bg: #{get-color(blue, 300)};
+  --info-surface: #{get-color(blue, 900)};
+  --info-text: #{get-color(blue, 200)};
+  --info-contrast: #{get-color(grey, 900)};
+  --info-border: #{get-color(blue, 300)};
+
+  // Neutral (grey)
+  --neutral-bg: #{get-color(grey, 900)};
+  --neutral-surface: #{get-color(grey, 800)};
+  --neutral-text: #{get-color(grey, 100)};
+  --neutral-contrast: #{get-color(grey, 900)};
+  --neutral-border: #{get-color(grey, 400)};
+
+  // Neutral extras — text hierarchy
+  --neutral-text-secondary: #{get-color(grey, 200)};
+  --neutral-text-disabled: #{get-color(grey, 300)};
+  --neutral-text-link: #{get-color(blue, 200)};
+  --neutral-text-inverse: #{get-color(grey, 900)};
+
+  // Neutral extras — surface hierarchy
+  --neutral-bg-elevated: #{get-color(grey, 800)};
+  --neutral-bg-overlay: #{get-color(grey, 800)};
+  --neutral-bg-inset: #393837;
 
   // Border
   --border-color: #{get-color(grey, 400)};
-  --border-color-subtle: #{get-color(grey, 600)};
+  --border-color-subtle: #{get-color(grey, 400)};
 
   // Shadow
   --shadow-low: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
@@ -59,13 +158,6 @@
   --focus-ring-color: #{get-color(blue, 200)};
   --focus-ring-width: 2px;
   --focus-ring-offset: 2px;
-
-  --text-primary: #{get-color(blue, 200)};
-  --text-secondary: #{get-color(orange, 300)};
-  --text-error: #{get-color(red, 100)};
-  --text-info: #{get-color(blue, 200)};
-  --text-success: #{get-color(green, 100)};
-  --text-warning: #{get-color(yellow, 300)};
 }
 
 :root {
@@ -74,12 +166,12 @@
 
   // Prevent flash: match bg-color to user preference before JS hydrates
   @media (prefers-color-scheme: dark) {
-    --bg-color: #{get-color(grey, 900)};
+    --neutral-bg: #{get-color(grey, 900)};
   }
 }
 
 body {
-  background-color: var(--bg-color);
+  background-color: var(--neutral-bg);
 
   // All theme tokens are driven by data-theme set by ThemeProvider
   &[data-theme="light"] {
