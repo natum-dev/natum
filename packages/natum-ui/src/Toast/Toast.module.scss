@@ -11,35 +11,37 @@
 }
 
 .top_right {
-  inset-block-start: 0;
-  inset-inline-end: 0;
+  top: 0;
+  right: 0;
 }
 
 .top_left {
-  inset-block-start: 0;
-  inset-inline-start: 0;
+  top: 0;
+  left: 0;
 }
 
 .top_center {
-  inset-block-start: 0;
-  inset-inline-start: 50%;
-  transform: translateX(-50%);
+  top: 0;
+  left: 0;
+  right: 0;
+  align-items: center;
 }
 
 .bottom_right {
-  inset-block-end: 0;
-  inset-inline-end: 0;
+  bottom: 0;
+  right: 0;
 }
 
 .bottom_left {
-  inset-block-end: 0;
-  inset-inline-start: 0;
+  bottom: 0;
+  left: 0;
 }
 
 .bottom_center {
-  inset-block-end: 0;
-  inset-inline-start: 50%;
-  transform: translateX(-50%);
+  bottom: 0;
+  left: 0;
+  right: 0;
+  align-items: center;
 }
 
 .toast {
