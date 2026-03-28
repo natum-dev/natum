@@ -20,58 +20,48 @@ const ThemeDemo = () => {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      <Card variant="elevated" elevation="medium">
-        <Card.Header>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <span style={{ fontWeight: 600, color: "var(--neutral-text)" }}>
-              Current theme: {theme}
-            </span>
-            <button
-              onClick={toggleTheme}
-              style={{
-                padding: "6px 12px",
-                borderRadius: 6,
-                border: "1px solid var(--border-color)",
-                background: "var(--neutral-bg-elevated)",
-                color: "var(--neutral-text)",
-                cursor: "pointer",
-              }}
-            >
-              Toggle Theme
-            </button>
-          </div>
-        </Card.Header>
-        <Card.Body>
-          <p style={{ margin: 0, color: "var(--neutral-text-secondary)" }}>
-            This card uses theme tokens and automatically adapts to the current theme.
-          </p>
-        </Card.Body>
+      <Card variant="elevated">
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+          <span style={{ fontWeight: 600, color: "var(--neutral-text)" }}>
+            Current theme: {theme}
+          </span>
+          <button
+            onClick={toggleTheme}
+            style={{
+              padding: "6px 12px",
+              borderRadius: 6,
+              border: "1px solid var(--border-color)",
+              background: "var(--neutral-bg-elevated)",
+              color: "var(--neutral-text)",
+              cursor: "pointer",
+            }}
+          >
+            Toggle Theme
+          </button>
+        </div>
+        <p style={{ margin: 0, color: "var(--neutral-text-secondary)" }}>
+          This card uses theme tokens and automatically adapts to the current theme.
+        </p>
       </Card>
 
       <div style={{ display: "flex", gap: 12 }}>
         <Card variant="elevated">
-          <Card.Body>
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <IconCheckCircle size="md" color="green" />
-              <span style={{ color: "var(--neutral-text)" }}>Elevated</span>
-            </div>
-          </Card.Body>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <IconCheckCircle size="md" color="green" />
+            <span style={{ color: "var(--neutral-text)" }}>Elevated</span>
+          </div>
         </Card>
         <Card variant="outlined">
-          <Card.Body>
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <IconInfo size="md" color="blue" />
-              <span style={{ color: "var(--neutral-text)" }}>Outlined</span>
-            </div>
-          </Card.Body>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <IconInfo size="md" color="blue" />
+            <span style={{ color: "var(--neutral-text)" }}>Outlined</span>
+          </div>
         </Card>
         <Card variant="filled">
-          <Card.Body>
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <IconStar size="md" color="gold" />
-              <span style={{ color: "var(--neutral-text)" }}>Filled</span>
-            </div>
-          </Card.Body>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <IconStar size="md" color="gold" />
+            <span style={{ color: "var(--neutral-text)" }}>Filled</span>
+          </div>
         </Card>
       </div>
     </div>
