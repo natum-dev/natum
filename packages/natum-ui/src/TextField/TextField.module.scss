@@ -6,7 +6,7 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  min-width: 0; // Allow shrinking in flex containers
+  min-width: 0;
 }
 
 // --- Label ---
@@ -15,28 +15,28 @@
   display: block;
   font-size: 14px;
   font-weight: 500;
-  color: var(--typography-secondary);
+  color: var(--neutral-text-secondary);
   margin-block-end: 4px;
 
   .error & {
-    color: var(--palette-error-main);
+    color: var(--error-text);
   }
 }
 
 // Focus label color — comes first
 .focused .label,
 .wrapper:has(.focused) .label {
-  color: var(--palette-primary-main);
+  color: var(--primary-text);
 }
 
 // Error label color — comes AFTER focused, so it wins via source order
 .error .label,
 .error:has(.focused) .label {
-  color: var(--palette-error-main);
+  color: var(--error-text);
 }
 
 .required_asterisk {
-  color: var(--palette-error-main);
+  color: var(--error-text);
   margin-inline-start: 2px;
 }
 
@@ -59,28 +59,28 @@
 
 .outlined {
   border: 1px solid var(--border-color-subtle);
-  background-color: var(--bg-elevated);
+  background-color: var(--neutral-bg-elevated);
 
   &:hover:not(.focused) {
     border-color: var(--border-color);
   }
 
   &.focused {
-    border-color: var(--palette-primary-main);
-    box-shadow: 0 0 0 1px var(--palette-primary-main);
+    border-color: var(--primary-border);
+    box-shadow: 0 0 0 1px var(--primary-border);
   }
 
   // Error state must override ALL other states
   .error & {
-    border-color: var(--palette-error-main);
+    border-color: var(--error-border);
 
     &:hover {
-      border-color: var(--palette-error-main);
+      border-color: var(--error-border);
     }
 
     &.focused {
-      border-color: var(--palette-error-main);
-      box-shadow: 0 0 0 1px var(--palette-error-main);
+      border-color: var(--error-border);
+      box-shadow: 0 0 0 1px var(--error-border);
     }
   }
 }
@@ -88,27 +88,27 @@
 .filled {
   border: 1px solid transparent;
   border-block-end: 1px solid var(--border-color-subtle);
-  background-color: var(--bg-inset);
+  background-color: var(--neutral-bg-inset);
 
   &:hover:not(.focused) {
     border-block-end-color: var(--border-color);
   }
 
   &.focused {
-    border-block-end-color: var(--palette-primary-main);
-    background-color: var(--bg-elevated);
+    border-block-end-color: var(--primary-border);
+    background-color: var(--neutral-bg-elevated);
   }
 
   // Error state must override ALL other states
   .error & {
-    border-block-end-color: var(--palette-error-main);
+    border-block-end-color: var(--error-border);
 
     &:hover {
-      border-block-end-color: var(--palette-error-main);
+      border-block-end-color: var(--error-border);
     }
 
     &.focused {
-      border-block-end-color: var(--palette-error-main);
+      border-block-end-color: var(--error-border);
     }
   }
 }
@@ -144,7 +144,7 @@
   border: none;
   outline: none;
   background: transparent;
-  color: var(--typography-primary);
+  color: var(--neutral-text);
   font: inherit;
   font-size: inherit;
   text-align: start;
@@ -152,13 +152,13 @@
   margin: 0;
 
   &::placeholder {
-    color: var(--typography-disabled);
+    color: var(--neutral-text-disabled);
   }
 
   &:-webkit-autofill {
-    -webkit-box-shadow: 0 0 0 1000px var(--bg-elevated) inset;
-    -webkit-text-fill-color: var(--typography-primary);
-    caret-color: var(--typography-primary);
+    -webkit-box-shadow: 0 0 0 1000px var(--neutral-bg-elevated) inset;
+    -webkit-text-fill-color: var(--neutral-text);
+    caret-color: var(--neutral-text);
     transition: background-color 5000s ease-in-out 0s;
   }
 }
@@ -170,7 +170,7 @@
   display: flex;
   align-items: center;
   flex-shrink: 0;
-  color: var(--typography-secondary);
+  color: var(--neutral-text-secondary);
   pointer-events: none;
 
   // Restore pointer events on interactive children
@@ -202,13 +202,13 @@
   border: none;
   border-radius: var(--radius-sm, 4px);
   background: transparent;
-  color: var(--typography-secondary);
+  color: var(--neutral-text-secondary);
   cursor: pointer;
   appearance: none;
 
   &:hover {
-    background-color: var(--bg-inset);
-    color: var(--typography-primary);
+    background-color: var(--neutral-bg-inset);
+    color: var(--neutral-text);
   }
 }
 
@@ -224,33 +224,33 @@
 }
 
 .message_helper {
-  color: var(--typography-secondary);
+  color: var(--neutral-text-secondary);
 }
 
 .message_error {
-  color: var(--palette-error-main);
+  color: var(--error-text);
 }
 
 // --- Disabled ---
 
 .disabled_state {
   .label {
-    color: var(--typography-disabled);
+    color: var(--neutral-text-disabled);
   }
 
   .input_container {
     cursor: not-allowed;
-    background-color: #{get-color(grey, 100)};
-    border-color: #{get-color(grey, 200)};
-    color: #{get-color(grey, 400)};
+    background-color: var(--neutral-bg-inset);
+    border-color: var(--neutral-border);
+    color: var(--neutral-text-disabled);
   }
 
   .input {
     cursor: not-allowed;
-    color: #{get-color(grey, 400)};
+    color: var(--neutral-text-disabled);
 
     &::placeholder {
-      color: #{get-color(grey, 300)};
+      color: var(--neutral-text-disabled);
     }
   }
 }
@@ -259,16 +259,16 @@
 
 .readonly_state {
   .label {
-    color: var(--typography-secondary);
+    color: var(--neutral-text-secondary);
   }
 
   // Suppress label focus color change
   &:has(.focused) .label {
-    color: var(--typography-secondary);
+    color: var(--neutral-text-secondary);
   }
 
   .input_container {
-    background-color: var(--bg-inset);
+    background-color: var(--neutral-bg-inset);
     border-color: var(--border-color-subtle);
     cursor: default;
 
@@ -294,29 +294,6 @@
   }
 
   .input {
-    color: var(--typography-primary);
-  }
-}
-
-// --- Dark Mode ---
-
-:global(body[data-theme="dark"]) {
-  .disabled_state {
-    .input_container {
-      background-color: #{get-color(grey, 800)};
-      border-color: #{get-color(grey, 700)};
-    }
-
-    .input {
-      color: #{get-color(grey, 500)};
-
-      &::placeholder {
-        color: #{get-color(grey, 600)};
-      }
-    }
-  }
-
-  .input:-webkit-autofill {
-    -webkit-box-shadow: 0 0 0 1000px #{get-color(grey, 800)} inset;
+    color: var(--neutral-text);
   }
 }
