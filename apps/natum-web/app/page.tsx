@@ -1,5 +1,4 @@
 import { Typography } from "@natum/natum-ui/Typography";
-import { Container } from "@natum/natum-ui";
 import classNames from "classnames";
 import Link from "next/link";
 import styles from "./page.module.scss";
@@ -10,7 +9,7 @@ export const metadata = {
 
 const Home = () => {
   return (
-    <Container as="main" className={styles.main}>
+    <main className={styles.main}>
       <div className={styles.summary}>
         <Typography variant="h2" className={styles.heading}>
           <span>
@@ -57,7 +56,7 @@ const Home = () => {
           </Typography>
         </Typography>
       </div>
-    </Container>
+    </main>
   );
 };
 

@@ -38,7 +38,7 @@
   --warning-surface: #{get-color(yellow, 50)};
   --warning-text: #{get-color(yellow, 900)};
   --warning-contrast: #{get-color(grey, 900)};
-  --warning-border: #{get-color(yellow, 500)};
+  --warning-border: #{get-color(yellow, 400)};
 
   // Info (blue)
   --info-bg: #{get-color(blue, 400)};
@@ -124,7 +124,7 @@
   --info-surface: #{get-color(blue, 900)};
   --info-text: #{get-color(blue, 200)};
   --info-contrast: #{get-color(grey, 900)};
-  --info-border: #{get-color(blue, 300)};
+  --info-border: #{get-color(blue, 400)};
 
   // Neutral (grey)
   --neutral-bg: #{get-color(grey, 900)};

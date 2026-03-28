@@ -1,11 +1,10 @@
-import type { Preview, ReactRenderer } from "@storybook/react";
-import type { DecoratorFunction } from "@storybook/csf";
+import type { Preview, Decorator } from "@storybook/react";
 import { ThemeProvider } from "../src/ThemeProvider";
 import type { Theme } from "../src/ThemeProvider";
 import "../src/design-tokens/base.scss";
 import "./storybook.scss";
 
-const withTheme: DecoratorFunction<ReactRenderer> = (Story, context) => {
+const withTheme: Decorator = (Story, context) => {
   const theme = (context.globals.theme || "light") as Theme;
   return (
     <ThemeProvider defaultTheme={theme} key={theme}>

@@ -78,21 +78,23 @@ export default defineConfig({
     },
     rollupOptions: {
       // Adds all dependencies as external packages so it's not bundled
-      external: ["react", "react/jsx-runtime", "react-dom", "@natum/icons"],
+      external: ["react", "react/jsx-runtime", "react-dom", "@natum/icons", "classnames"],
       output: [
         {
           ...sharedOutput,
           format: "es" as const,
           dir: "dist/esm",
+          preserveModules: true,
+          preserveModulesRoot: "src",
           entryFileNames: "[name].js",
-          chunkFileNames: "[name]-[hash].js",
         },
         {
           ...sharedOutput,
           format: "cjs" as const,
           dir: "dist/cjs",
+          preserveModules: true,
+          preserveModulesRoot: "src",
           entryFileNames: "[name].cjs",
-          chunkFileNames: "[name]-[hash].cjs",
         },
       ],
     },

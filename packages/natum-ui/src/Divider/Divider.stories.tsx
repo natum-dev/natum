@@ -32,7 +32,7 @@ const spacings = ["none", "sm", "md", "lg"] as const;
 const headingStyle: React.CSSProperties = {
   fontSize: 14,
   fontWeight: 700,
-  color: "var(--typography-primary)",
+  color: "var(--neutral-text)",
   margin: "16px 0 8px",
   textTransform: "uppercase",
   letterSpacing: 1,
@@ -41,7 +41,7 @@ const headingStyle: React.CSSProperties = {
 const labelStyle: React.CSSProperties = {
   fontSize: 11,
   fontWeight: 600,
-  color: "var(--typography-secondary)",
+  color: "var(--neutral-text-secondary)",
   fontFamily: "monospace",
   marginBlockEnd: 4,
 };
@@ -251,13 +251,13 @@ export const SidebarNavigation: Story = {
       display: "block",
       padding: "8px 12px",
       borderRadius: 6,
-      color: "var(--typography-primary)",
+      color: "var(--neutral-text)",
       textDecoration: "none",
       fontSize: 14,
     };
 
     return (
-      <div style={{ width: 220, padding: 12, backgroundColor: "var(--bg-elevated)", borderRadius: 12 }}>
+      <div style={{ width: 220, padding: 12, backgroundColor: "var(--neutral-bg-elevated)", borderRadius: 12 }}>
         <h3 style={{ ...headingStyle, margin: "0 0 8px", paddingInlineStart: 12 }}>Navigation</h3>
         <nav>
           <a href="#" style={linkStyle}>Dashboard</a>
@@ -288,8 +288,8 @@ export const FormSections: Story = {
       padding: "8px 12px",
       borderRadius: 8,
       border: "1px solid var(--border-color-subtle)",
-      background: "var(--bg-elevated)",
-      color: "var(--typography-primary)",
+      background: "var(--neutral-bg-elevated)",
+      color: "var(--neutral-text)",
       fontSize: 14,
     };
 
@@ -299,11 +299,11 @@ export const FormSections: Story = {
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           <Typography variant="h6" tag="p" style={{ margin: 0 }}>Profile</Typography>
           <div style={fieldStyle}>
-            <label style={{ fontSize: 13, color: "var(--typography-secondary)" }}>Display Name</label>
+            <label style={{ fontSize: 13, color: "var(--neutral-text-secondary)" }}>Display Name</label>
             <input style={inputStyle} defaultValue="Jonathan" />
           </div>
           <div style={fieldStyle}>
-            <label style={{ fontSize: 13, color: "var(--typography-secondary)" }}>Email</label>
+            <label style={{ fontSize: 13, color: "var(--neutral-text-secondary)" }}>Email</label>
             <input style={inputStyle} defaultValue="jon@example.com" />
           </div>
 
@@ -311,11 +311,11 @@ export const FormSections: Story = {
 
           <Typography variant="h6" tag="p" style={{ margin: 0 }}>Security</Typography>
           <div style={fieldStyle}>
-            <label style={{ fontSize: 13, color: "var(--typography-secondary)" }}>Current Password</label>
+            <label style={{ fontSize: 13, color: "var(--neutral-text-secondary)" }}>Current Password</label>
             <input type="password" style={inputStyle} />
           </div>
           <div style={fieldStyle}>
-            <label style={{ fontSize: 13, color: "var(--typography-secondary)" }}>New Password</label>
+            <label style={{ fontSize: 13, color: "var(--neutral-text-secondary)" }}>New Password</label>
             <input type="password" style={inputStyle} />
           </div>
 

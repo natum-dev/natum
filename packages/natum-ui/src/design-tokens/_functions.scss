@@ -2,6 +2,9 @@
 @use "sass:map";
 @use "variables" as vars;
 
+// Prefer semantic tokens (e.g., --primary-text, --error-border) over get-color()
+// in component styles. Semantic tokens are theme-aware and guarantee WCAG AA contrast.
+// Reserve get-color() for token definitions and rare static values only.
 @function get-color($name, $shade) {
   $family: map.get(vars.$color, $name);
   @if not $family {

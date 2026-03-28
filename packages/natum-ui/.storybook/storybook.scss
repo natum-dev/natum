@@ -7,8 +7,8 @@ html, body, #storybook-root {
 
 // Body background follows theme via data-theme attribute
 body {
-  background-color: var(--bg-color) !important;
-  color: var(--typography-primary);
+  background-color: var(--neutral-bg) !important;
+  color: var(--neutral-text);
 }
 
 // Override Storybook's default story padding

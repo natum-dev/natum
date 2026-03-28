@@ -28,7 +28,7 @@ type Story = StoryObj<typeof Modal>;
 const headingStyle: React.CSSProperties = {
   fontSize: 14,
   fontWeight: 700,
-  color: "var(--typography-primary)",
+  color: "var(--neutral-text)",
   margin: "16px 0 8px",
   textTransform: "uppercase",
   letterSpacing: 1,
@@ -231,7 +231,7 @@ export const DeleteConfirmation: Story = {
               <Button variant="text" onClick={() => setIsOpen(false)}>Cancel</Button>
               <Button
                 onClick={() => setIsOpen(false)}
-                style={{ backgroundColor: "var(--palette-error-main)", color: "white" }}
+                style={{ backgroundColor: "var(--error-bg)", color: "white" }}
               >
                 Delete
               </Button>

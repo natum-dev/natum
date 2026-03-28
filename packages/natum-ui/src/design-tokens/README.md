@@ -1,6 +1,6 @@
 # Design Tokens
 
-Design tokens for the Natum UI component library. Provides colors, typography, palette, breakpoints, and dark mode support.
+Design tokens for the Natum UI component library. Provides semantic color tokens, raw color palette, typography presets, breakpoints, and dark mode support.
 
 ## Setup
 
@@ -24,8 +24,6 @@ All design tokens can be overridden at compile time via `@use ... with()`. Only 
 |---|---|
 | `$palette-overrides` | Semantic palette (primary, secondary, error, etc.) |
 | `$typography-preset-overrides` | Typography scale (h1–h6, body1–3, caption, code) |
-| `$typography-light-scheme-overrides` | Semantic text colors in light mode |
-| `$typography-dark-scheme-overrides` | Semantic text colors in dark mode |
 | `$breakpoints-overrides` | Responsive breakpoints (xs, sm, md, lg, xl) |
 
 ```scss
@@ -65,7 +63,79 @@ For global base styles (font, CSS reset, CSS variable registration), import `bas
 
 ---
 
-## Colors
+## Semantic Color Tokens
+
+The primary way components consume color. These tokens are theme-aware, switch automatically between light and dark mode, and guarantee WCAG AA contrast when used as intended.
+
+**Always prefer semantic tokens over `get-color()` in component styles.**
+
+### Per-semantic tokens
+
+Available for all 7 semantic colors: `primary`, `secondary`, `error`, `success`, `warning`, `info`, `neutral`.
+
+| Token | Role | Example usage |
+|-------|------|---------------|
+| `--{semantic}-bg` | Filled backgrounds | Filled buttons, badges, tags |
+| `--{semantic}-surface` | Tinted/soft backgrounds | Alert panels, hover states, subtle cards |
+| `--{semantic}-text` | Text on page surfaces | Error messages, links, status labels |
+| `--{semantic}-contrast` | Text on `--{semantic}-bg` fills | Filled button labels, badge text |
+| `--{semantic}-border` | Borders and outlines | Input focus ring, alert borders |
+
+```scss
+// Filled button
+.filled {
+  background-color: var(--primary-bg);
+  color: var(--primary-contrast);
+}
+
+// Outlined button
+.outlined {
+  border: 1px solid var(--primary-border);
+  color: var(--primary-text);
+}
+
+// Error alert
+.alert-error {
+  background-color: var(--error-surface);
+  border: 1px solid var(--error-border);
+  color: var(--error-text);
+}
+```
+
+### Neutral extras
+
+Additional tokens for text hierarchy and surface hierarchy:
+
+| Token | Role |
+|-------|------|
+| `--neutral-text-secondary` | Muted/helper text, labels |
+| `--neutral-text-disabled` | Disabled element text |
+| `--neutral-text-link` | Link text color |
+| `--neutral-text-inverse` | Text on dark/light inverse surfaces |
+| `--neutral-bg-elevated` | Cards, modals, inputs |
+| `--neutral-bg-overlay` | Modal/dialog panels |
+| `--neutral-bg-inset` | Recessed areas, inset backgrounds |
+
+```scss
+.card {
+  background-color: var(--neutral-bg-elevated);
+  color: var(--neutral-text);
+}
+
+.helper-text {
+  color: var(--neutral-text-secondary);
+}
+
+.disabled {
+  color: var(--neutral-text-disabled);
+}
+```
+
+---
+
+## Raw Color Palette
+
+Low-level access to the full shade range. **Use semantic tokens instead in component styles.** Reserve `get-color()` for token definitions and rare static values only.
 
 ### `get-color($name, $shade)`
 
@@ -75,12 +145,20 @@ Returns a hex color value at compile time.
 
 | Parameter | Type   | Description                                                                |
 | --------- | ------ | -------------------------------------------------------------------------- |
-| `$name`   | string | Color family: `blue`, `orange`, `red`, `green`, `yellow`, `purple`, `pink`, `teal`, `brown`, `grey` |
+| `$name`   | string | Color family: `blue`, `orange`, `red`, `green`, `yellow`, `purple`, `pink`, `teal`, `grey` |
 | `$shade`  | number | Shade: `50`, `100`, `200`, `300`, `400`, `500`, `600`, `700`, `800`, `900` |
 
 Shade `500` is the main color of each family. Lower shades are lighter, higher shades are darker.
 
-**Usage on regular CSS properties** (no interpolation needed):
+**Usage in token definitions** (the intended use case):
+
+```scss
+// In base.scss — defining semantic tokens
+--primary-bg: #{get-color(blue, 500)};
+--primary-text: #{get-color(blue, 700)};
+```
+
+**Usage on regular CSS properties** (rare, static values only):
 
 ```scss
 .card {
@@ -89,7 +167,7 @@ Shade `500` is the main color of each family. Lower shades are lighter, higher s
 }
 ```
 
-**Usage on CSS custom properties** (`#{}` interpolation required — this is a Sass language constraint):
+**Usage on CSS custom properties** (`#{}` interpolation required — Sass language constraint):
 
 ```scss
 .card {
@@ -97,40 +175,7 @@ Shade `500` is the main color of each family. Lower shades are lighter, higher s
 }
 ```
 
-**Usage inside CSS functions:**
-
-```scss
-.hero {
-  background: linear-gradient(
-    45deg,
-    get-color(blue, 200),
-    get-color(purple, 300)
-  );
-}
-```
-
----
-
-## Palette
-
-Semantic color tokens registered as CSS custom properties on `:root`. Use these for theme-consistent UI elements.
-
-**Available palettes:** `primary`, `secondary`, `error`, `info`, `success`, `warning`, `neutral`
-
-Each palette has three variants: `main`, `dark`, `light`.
-
-```scss
-.alert {
-  background-color: var(--palette-error-light);
-  border: 1px solid var(--palette-error-main);
-}
-```
-
-| Variable pattern               | Example                     |
-| ------------------------------- | --------------------------- |
-| `--palette-{name}-main`        | `var(--palette-primary-main)` |
-| `--palette-{name}-dark`        | `var(--palette-primary-dark)` |
-| `--palette-{name}-light`       | `var(--palette-primary-light)` |
+The raw palette is also available as CSS custom properties (`--palette-{family}-{shade}`) for runtime access, primarily used in Storybook stories.
 
 ---
 
@@ -143,26 +188,6 @@ Typography presets are applied through the `<Typography>` component. See the [Ty
 **Available presets:** `h1`, `h2`, `h3`, `h4`, `h5`, `h6`, `body1`, `body2`, `body3`, `caption`, `code`
 
 Presets can be customized or extended at compile time via `$typography-preset-overrides` (see [Customizing tokens](#customizing-tokens)).
-
-### Semantic text colors
-
-Automatically switch between light and dark schemes based on user preference or `data-theme`.
-
-**Available colors:** `primary`, `secondary`, `disabled`, `link`, `inverse`, `error`, `info`, `success`, `warning`
-
-```scss
-.text {
-  color: var(--typography-primary);
-}
-
-.muted {
-  color: var(--typography-secondary);
-}
-
-.link {
-  color: var(--typography-link);
-}
-```
 
 ---
 
@@ -210,7 +235,7 @@ Dark mode is supported through two mechanisms — both are handled automatically
 <body data-theme="dark">...</body>
 ```
 
-Typography semantic colors (`--typography-*`) and `--bg-color` switch automatically. Palette variables (`--palette-*`) remain constant across themes.
+All semantic color tokens (`--{semantic}-*`, `--neutral-*`) switch automatically between themes. Raw palette variables (`--palette-*`) remain constant across themes.
 
 ---
 

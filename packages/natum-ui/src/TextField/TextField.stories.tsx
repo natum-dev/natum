@@ -37,7 +37,7 @@ const sizes = ["sm", "md", "lg"] as const;
 const headingStyle: React.CSSProperties = {
   fontSize: 14,
   fontWeight: 700,
-  color: "var(--typography-primary)",
+  color: "var(--neutral-text)",
   margin: "16px 0 8px",
   textTransform: "uppercase",
   letterSpacing: 1,
@@ -46,7 +46,7 @@ const headingStyle: React.CSSProperties = {
 const labelStyle: React.CSSProperties = {
   fontSize: 11,
   fontWeight: 600,
-  color: "var(--typography-secondary)",
+  color: "var(--neutral-text-secondary)",
   fontFamily: "monospace",
   marginBlockEnd: 4,
 };
@@ -112,17 +112,17 @@ export const WithSections: Story = {
         label="Website"
         placeholder="example.com"
         leftSection={
-          <span style={{ fontSize: 14, color: "var(--typography-secondary)" }}>https://</span>
+          <span style={{ fontSize: 14, color: "var(--neutral-text-secondary)" }}>https://</span>
         }
       />
       <TextField
         label="Price"
         placeholder="0.00"
         leftSection={
-          <span style={{ fontSize: 14, color: "var(--typography-secondary)" }}>$</span>
+          <span style={{ fontSize: 14, color: "var(--neutral-text-secondary)" }}>$</span>
         }
         rightSection={
-          <span style={{ fontSize: 13, color: "var(--typography-secondary)" }}>USD</span>
+          <span style={{ fontSize: 13, color: "var(--neutral-text-secondary)" }}>USD</span>
         }
       />
     </div>
@@ -442,10 +442,10 @@ export const PaymentForm: Story = {
             placeholder="0.00"
             type="number"
             leftSection={
-              <span style={{ fontSize: 16, fontWeight: 500, color: "var(--typography-secondary)" }}>$</span>
+              <span style={{ fontSize: 16, fontWeight: 500, color: "var(--neutral-text-secondary)" }}>$</span>
             }
             rightSection={
-              <span style={{ fontSize: 13, color: "var(--typography-secondary)" }}>USD</span>
+              <span style={{ fontSize: 13, color: "var(--neutral-text-secondary)" }}>USD</span>
             }
           />
           <TextField

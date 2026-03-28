@@ -60,7 +60,6 @@ const ToastItem = ({ toast: t, onDismiss }: ToastItemProps) => {
     >
       <TypeIcon
         size="md"
-        color="currentColor"
         className={styles.type_icon}
       />
       <div className={styles.content}>

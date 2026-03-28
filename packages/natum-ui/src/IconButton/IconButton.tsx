@@ -44,7 +44,7 @@ const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
           styles.icon_button,
           styles[variant],
           styles[size],
-          styles[color],
+          !(disabled || loading) && styles[color],
           {
             [styles.disabled]: disabled || loading,
           },

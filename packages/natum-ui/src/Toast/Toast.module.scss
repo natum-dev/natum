@@ -55,14 +55,14 @@
   min-width: 300px;
   max-width: 420px;
 
-  --toast-accent-color: var(--info-text);
+  --toast-accent-color: var(--info-border);
 }
 
 // Type colors
-.success { --toast-accent-color: var(--success-text); }
-.error { --toast-accent-color: var(--error-text); }
-.warning { --toast-accent-color: var(--warning-text); }
-.info { --toast-accent-color: var(--info-text); }
+.success { --toast-accent-color: var(--success-border); }
+.error { --toast-accent-color: var(--error-border); }
+.warning { --toast-accent-color: var(--warning-border); }
+.info { --toast-accent-color: var(--info-border); }
 
 // Animation
 .entering {

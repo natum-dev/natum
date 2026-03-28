@@ -100,6 +100,10 @@ describe("Modal", () => {
     const user = userEvent.setup();
     const onClose = vi.fn();
     render(<Modal isOpen onClose={onClose}>Content</Modal>);
+    // Wait for focus to land inside modal
+    await waitFor(() => {
+      expect(screen.getByLabelText("Close dialog")).toHaveFocus();
+    });
     await user.keyboard("{Escape}");
     expect(onClose).toHaveBeenCalledOnce();
   });
@@ -108,6 +112,9 @@ describe("Modal", () => {
     const user = userEvent.setup();
     const onClose = vi.fn();
     render(<Modal isOpen onClose={onClose} closeOnEsc={false}>Content</Modal>);
+    await waitFor(() => {
+      expect(screen.getByLabelText("Close dialog")).toHaveFocus();
+    });
     await user.keyboard("{Escape}");
     expect(onClose).not.toHaveBeenCalled();
   });
@@ -178,8 +185,15 @@ describe("Modal", () => {
   });
 
   // --- Focus management ---
-  it("focus moves to panel on open", async () => {
+  it("focus moves to first focusable element on open", async () => {
     render(<Modal isOpen onClose={() => {}}>Content</Modal>);
+    await waitFor(() => {
+      expect(screen.getByLabelText("Close dialog")).toHaveFocus();
+    });
+  });
+
+  it("focus moves to panel when no focusable elements", async () => {
+    render(<Modal isOpen onClose={() => {}} hideCloseButton>Content</Modal>);
     await waitFor(() => {
       expect(screen.getByRole("dialog")).toHaveFocus();
     });
@@ -187,11 +201,20 @@ describe("Modal", () => {
 
   it("focus returns to trigger element on close", async () => {
     const user = userEvent.setup();
-    render(<ModalWrapper title="Test">Content</ModalWrapper>);
+    render(<ModalWrapper defaultOpen={false} title="Test">Content</ModalWrapper>);
 
-    // Modal is open, close it
+    // Click Open button to open modal (sets previousActiveElement to Open button)
+    await user.click(screen.getByRole("button", { name: "Open" }));
+
+    // Wait for modal to appear and focus to settle
+    await waitFor(() => {
+      expect(screen.getByRole("dialog")).toBeInTheDocument();
+    });
+
+    // Close the modal
     await user.click(screen.getByLabelText("Close dialog"));
 
+    // Focus should return to Open button
     await waitFor(() => {
       expect(screen.getByRole("button", { name: "Open" })).toHaveFocus();
     });
@@ -205,24 +228,23 @@ describe("Modal", () => {
       </Modal>
     );
 
-    const dialog = screen.getByRole("dialog");
-    dialog.focus();
-
-    // Tab through focusable elements, should cycle
     const closeBtn = screen.getByLabelText("Close dialog");
     const innerBtn = screen.getByRole("button", { name: "Inner" });
     const confirmBtn = screen.getByRole("button", { name: "Confirm" });
 
-    await user.tab();
-    expect(closeBtn).toHaveFocus();
+    // Focus starts on close button (first focusable)
+    await waitFor(() => {
+      expect(closeBtn).toHaveFocus();
+    });
 
+    // Tab through: close → inner → confirm → close (cycle)
     await user.tab();
     expect(innerBtn).toHaveFocus();
 
     await user.tab();
     expect(confirmBtn).toHaveFocus();
 
-    // Should cycle back
+    // Should cycle back to first
     await user.tab();
     expect(closeBtn).toHaveFocus();
   });

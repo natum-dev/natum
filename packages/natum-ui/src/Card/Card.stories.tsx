@@ -35,7 +35,7 @@ const sizes = ["sm", "md", "lg"] as const;
 const headingStyle: React.CSSProperties = {
   fontSize: 14,
   fontWeight: 700,
-  color: "var(--typography-primary)",
+  color: "var(--neutral-text)",
   margin: "16px 0 8px",
   textTransform: "uppercase",
   letterSpacing: 1,
@@ -51,7 +51,7 @@ const rowStyle: React.CSSProperties = {
 const labelStyle: React.CSSProperties = {
   fontSize: 11,
   fontWeight: 600,
-  color: "var(--typography-secondary)",
+  color: "var(--neutral-text-secondary)",
   fontFamily: "monospace",
   marginBlockEnd: 4,
 };
@@ -274,7 +274,7 @@ export const FileCard: Story = {
                   width: 40,
                   height: 40,
                   borderRadius: 8,
-                  backgroundColor: "var(--bg-inset)",
+                  backgroundColor: "var(--neutral-bg-inset)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -349,7 +349,7 @@ export const AuthFormCard: Story = {
           <div>
             <label
               htmlFor="email-input"
-              style={{ display: "block", marginBlockEnd: 4, fontSize: 14, color: "var(--typography-primary)" }}
+              style={{ display: "block", marginBlockEnd: 4, fontSize: 14, color: "var(--neutral-text)" }}
             >
               Email
             </label>
@@ -362,8 +362,8 @@ export const AuthFormCard: Story = {
                 padding: "10px 12px",
                 borderRadius: 8,
                 border: "1px solid var(--border-color-subtle)",
-                background: "var(--bg-elevated)",
-                color: "var(--typography-primary)",
+                background: "var(--neutral-bg-elevated)",
+                color: "var(--neutral-text)",
                 fontSize: 14,
                 boxSizing: "border-box",
               }}
@@ -372,7 +372,7 @@ export const AuthFormCard: Story = {
           <div>
             <label
               htmlFor="password-input"
-              style={{ display: "block", marginBlockEnd: 4, fontSize: 14, color: "var(--typography-primary)" }}
+              style={{ display: "block", marginBlockEnd: 4, fontSize: 14, color: "var(--neutral-text)" }}
             >
               Password
             </label>
@@ -385,8 +385,8 @@ export const AuthFormCard: Story = {
                 padding: "10px 12px",
                 borderRadius: 8,
                 border: "1px solid var(--border-color-subtle)",
-                background: "var(--bg-elevated)",
-                color: "var(--typography-primary)",
+                background: "var(--neutral-bg-elevated)",
+                color: "var(--neutral-text)",
                 fontSize: 14,
                 boxSizing: "border-box",
               }}
@@ -423,7 +423,7 @@ export const RTL: Story = {
                 width: 40,
                 height: 40,
                 borderRadius: 8,
-                backgroundColor: "var(--bg-inset)",
+                backgroundColor: "var(--neutral-bg-inset)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -497,12 +497,12 @@ export const EmptyState: Story = {
               width: 80,
               height: 80,
               borderRadius: "50%",
-              backgroundColor: "var(--bg-inset)",
+              backgroundColor: "var(--neutral-bg-inset)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               fontSize: 32,
-              color: "var(--typography-secondary)",
+              color: "var(--neutral-text-secondary)",
             }}
           >
             ?
