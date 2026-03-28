@@ -49,20 +49,19 @@
   gap: 12px;
   padding: 12px 16px;
   border-radius: 8px;
-  background: var(--neutral-bg-overlay);
+  background: var(--toast-bg, var(--info-soft));
   box-shadow: var(--shadow-high);
-  border-left: 4px solid var(--toast-accent-color);
   min-width: 300px;
   max-width: 420px;
 
-  --toast-accent-color: var(--info-border);
+  --toast-accent-color: var(--info-text);
 }
 
 // Type colors
-.success { --toast-accent-color: var(--success-border); }
-.error { --toast-accent-color: var(--error-border); }
-.warning { --toast-accent-color: var(--warning-border); }
-.info { --toast-accent-color: var(--info-border); }
+.success { --toast-bg: var(--success-soft); --toast-accent-color: var(--success-text); }
+.error { --toast-bg: var(--error-soft); --toast-accent-color: var(--error-text); }
+.warning { --toast-bg: var(--warning-soft); --toast-accent-color: var(--warning-text); }
+.info { --toast-bg: var(--info-soft); --toast-accent-color: var(--info-text); }
 
 // Animation
 .entering {
