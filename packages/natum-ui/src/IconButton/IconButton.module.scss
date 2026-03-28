@@ -1,15 +1,21 @@
 @use "../design-tokens" as *;
 
 .icon_button {
-  all: unset;
+  box-sizing: border-box;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   border-radius: 50%;
   transition: all 0.25s ease;
-  color: var(--icon-button-color, #{get-color(grey, 50)});
-  box-sizing: border-box;
+  color: var(--icon-button-color, var(--neutral-text-inverse));
+  background: none;
+  border: none;
+  margin: 0;
+  padding: 0;
+  font: inherit;
+  -webkit-appearance: none;
+  appearance: none;
 
   &:focus-visible {
     outline: var(--focus-ring-width) solid var(--focus-ring-color);
@@ -35,89 +41,114 @@
   color: var(--icon-button-main-color);
 }
 
-// Colors
+// Colors — each semantic color maps to the token system
 .primary {
-  --icon-button-main-color: #{get-color(blue, 700)};
+  --icon-button-main-color: var(--primary-text);
 
   &:hover {
-    --icon-button-main-color: #{get-color(blue, 800)};
+    filter: brightness(0.85);
   }
 
   &.light {
-    --icon-button-main-color: #{get-color(blue, 100)};
-    --icon-button-color: #{get-color(blue, 700)};
+    --icon-button-main-color: var(--primary-surface);
+    --icon-button-color: var(--primary-text);
 
     &:hover {
-      --icon-button-main-color: #{get-color(blue, 200)};
+      filter: brightness(0.95);
     }
+  }
+
+  &.filled {
+    --icon-button-main-color: var(--primary-bg);
+    --icon-button-color: var(--primary-contrast);
   }
 }
 
 .secondary {
-  --icon-button-main-color: #{get-color(purple, 700)};
+  --icon-button-main-color: var(--secondary-text);
 
   &:hover {
-    --icon-button-main-color: #{get-color(purple, 800)};
+    filter: brightness(0.85);
   }
 
   &.light {
-    --icon-button-main-color: #{get-color(purple, 100)};
-    --icon-button-color: #{get-color(purple, 700)};
+    --icon-button-main-color: var(--secondary-surface);
+    --icon-button-color: var(--secondary-text);
 
     &:hover {
-      --icon-button-main-color: #{get-color(purple, 200)};
+      filter: brightness(0.95);
     }
+  }
+
+  &.filled {
+    --icon-button-main-color: var(--secondary-bg);
+    --icon-button-color: var(--secondary-contrast);
   }
 }
 
 .error {
-  --icon-button-main-color: #{get-color(red, 700)};
+  --icon-button-main-color: var(--error-text);
 
   &:hover {
-    --icon-button-main-color: #{get-color(red, 800)};
+    filter: brightness(0.85);
   }
 
   &.light {
-    --icon-button-main-color: #{get-color(red, 100)};
-    --icon-button-color: #{get-color(red, 700)};
+    --icon-button-main-color: var(--error-surface);
+    --icon-button-color: var(--error-text);
 
     &:hover {
-      --icon-button-main-color: #{get-color(red, 200)};
+      filter: brightness(0.95);
     }
+  }
+
+  &.filled {
+    --icon-button-main-color: var(--error-bg);
+    --icon-button-color: var(--error-contrast);
   }
 }
 
 .warning {
-  --icon-button-main-color: #{get-color(orange, 700)};
+  --icon-button-main-color: var(--warning-text);
 
   &:hover {
-    --icon-button-main-color: #{get-color(orange, 800)};
+    filter: brightness(0.85);
   }
 
   &.light {
-    --icon-button-main-color: #{get-color(orange, 100)};
-    --icon-button-color: #{get-color(orange, 700)};
+    --icon-button-main-color: var(--warning-surface);
+    --icon-button-color: var(--warning-text);
 
     &:hover {
-      --icon-button-main-color: #{get-color(orange, 200)};
+      filter: brightness(0.95);
     }
+  }
+
+  &.filled {
+    --icon-button-main-color: var(--warning-bg);
+    --icon-button-color: var(--warning-contrast);
   }
 }
 
 .success {
-  --icon-button-main-color: #{get-color(green, 700)};
+  --icon-button-main-color: var(--success-text);
 
   &:hover {
-    --icon-button-main-color: #{get-color(green, 800)};
+    filter: brightness(0.85);
   }
 
   &.light {
-    --icon-button-main-color: #{get-color(green, 100)};
-    --icon-button-color: #{get-color(green, 700)};
+    --icon-button-main-color: var(--success-surface);
+    --icon-button-color: var(--success-text);
 
     &:hover {
-      --icon-button-main-color: #{get-color(green, 200)};
+      filter: brightness(0.95);
     }
+  }
+
+  &.filled {
+    --icon-button-main-color: var(--success-bg);
+    --icon-button-color: var(--success-contrast);
   }
 }
 
@@ -139,23 +170,11 @@
 
 // Disabled
 .disabled {
-  --icon-button-color: #{get-color(grey, 600)};
-  --icon-button-main-color: #{get-color(grey, 400)};
+  --icon-button-color: var(--neutral-text-disabled);
+  --icon-button-main-color: var(--neutral-bg-inset);
   cursor: not-allowed;
-
-  &:hover {
-    --icon-button-main-color: #{get-color(grey, 400)};
-  }
-
-  &.outlined {
-    --icon-button-main-color: #{get-color(grey, 600)};
-    color: var(--icon-button-color);
-  }
-
-  &.light {
-    --icon-button-color: #{get-color(grey, 600)};
-    --icon-button-main-color: #{get-color(grey, 400)};
-  }
+  pointer-events: none;
+  box-shadow: none;
 }
 
 // Loading spinner
