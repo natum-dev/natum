@@ -12,7 +12,7 @@ const meta: Meta<typeof IconButton> = {
     },
     variant: {
       control: "select",
-      options: ["filled", "light", "outlined", "text"],
+      options: ["filled", "light", "soft", "text"],
     },
     color: {
       control: "select",
@@ -52,8 +52,8 @@ export const Light: Story = {
   args: { variant: "light", icon: IconHeart, "aria-label": "Favorite" },
 };
 
-export const Outlined: Story = {
-  args: { variant: "outlined", icon: IconHeart, "aria-label": "Favorite" },
+export const Soft: Story = {
+  args: { variant: "soft", icon: IconHeart, "aria-label": "Favorite" },
 };
 
 export const Text: Story = {
