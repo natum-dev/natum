@@ -199,6 +199,40 @@
   @include register-variable($palette, "palette");
   @include light-scheme;
 
+  // --- Spacing tokens (4px base grid, multiplier naming) ---
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  // --- Radius tokens ---
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  // --- Motion tokens ---
+  --duration-fast: 125ms;
+  --duration-normal: 250ms;
+  --duration-slow: 450ms;
+  --easing-default: cubic-bezier(0.2, 0, 0, 1);
+  --easing-enter: cubic-bezier(0, 0, 0, 1);
+  --easing-exit: cubic-bezier(0.3, 0, 1, 1);
+
+  // --- Z-index tokens ---
+  --z-base: 0;
+  --z-dropdown: 1000;
+  --z-sticky: 1100;
+  --z-overlay: 1200;
+  --z-modal: 1300;
+  --z-toast: 1400;
+  --z-tooltip: 1500;
+
   // Prevent flash: match bg-color to user preference before JS hydrates
   @media (prefers-color-scheme: dark) {
     --neutral-bg: #{get-color(grey, 900)};
