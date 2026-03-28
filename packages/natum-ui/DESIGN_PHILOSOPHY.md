@@ -166,14 +166,17 @@ Prefer surfaces — elevation, fill, and color — over borders to define compon
 
 ## Z-Index Scale
 
+1000-base, 100-gap scale. Follows MUI/Chakra convention. Gaps of 100 provide room for sub-layers when needed.
+
 | Token | Value | Usage |
 |-------|-------|-------|
 | `--z-base` | 0 | Default stacking |
-| `--z-dropdown` | 100 | Dropdown menus, selects |
-| `--z-sticky` | 200 | Sticky headers, floating actions |
-| `--z-modal` | 300 | Modal overlays |
-| `--z-toast` | 400 | Toast notifications |
-| `--z-tooltip` | 500 | Tooltips |
+| `--z-dropdown` | 1000 | Dropdown menus, selects, popovers |
+| `--z-sticky` | 1100 | Sticky headers, floating actions |
+| `--z-overlay` | 1200 | Modal/drawer backdrop |
+| `--z-modal` | 1300 | Modal/dialog content |
+| `--z-toast` | 1400 | Toast notifications |
+| `--z-tooltip` | 1500 | Tooltips (always on top) |
 
 ---
 
