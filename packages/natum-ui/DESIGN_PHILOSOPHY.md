@@ -79,9 +79,17 @@ Under `@media (prefers-reduced-motion: reduce)`, all `--duration-*` tokens are o
 ### 5. Proportional Shape
 
 - Border radius scales with component size
-- Token scale: `--radius-sm` (4px), `--radius-md` (8px), `--radius-lg` (12px), `--radius-xl` (16px), `--radius-full` (pill/circle)
+- Token scale:
+
+| Token | Value | Default for |
+|-------|-------|-------------|
+| `--radius-sm` | 4px | Small elements |
+| `--radius-md` | 8px | Buttons, inputs |
+| `--radius-lg` | 12px | Cards |
+| `--radius-xl` | 16px | Large surfaces |
+| `--radius-full` | 9999px | Pills, avatars |
+
 - Small interactive elements stay crisp, large surfaces feel warmer
-- Component defaults: buttons/inputs → `radius-md`, cards → `radius-lg`, avatars → `radius-full`
 
 ### 6. Universal Rendering
 
