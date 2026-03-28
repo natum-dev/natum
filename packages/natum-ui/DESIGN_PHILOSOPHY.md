@@ -39,9 +39,21 @@ When trade-offs arise, resolve them in this order:
 - **CSS transitions** for state changes (hover, focus, active)
 - **CSS keyframe animations** for entrances/exits (toast slide-in, modal fade-scale, skeleton shimmer)
 - No animation library dependencies — pure CSS
-- All motion wrapped in `@media (prefers-reduced-motion: no-preference)`
-- Duration tokens: `--duration-fast` (100ms), `--duration-normal` (200ms), `--duration-slow` (300ms)
-- Easing token: `--easing-default` (cubic-bezier(0.2, 0, 0, 1))
+- All motion wrapped in `@media (prefers-reduced-motion: no-preference)` or handled via reduced-motion token overrides
+- Duration maps to **cognitive weight** of the UI event, not physical size:
+  - `--duration-fast` (125ms) — micro-feedback: hover, focus, toggle, checkbox
+  - `--duration-normal` (250ms) — informational feedback: toast slide-in, expand/collapse
+  - `--duration-slow` (450ms) — significant UI events: modal entrance, bottom sheet
+- Easing curves (Material Design 3 standard set):
+  - `--easing-default` (`cubic-bezier(0.2, 0, 0, 1)`) — general state changes
+  - `--easing-enter` (`cubic-bezier(0, 0, 0, 1)`) — elements entering (decelerate)
+  - `--easing-exit` (`cubic-bezier(0.3, 0, 1, 1)`) — elements exiting (accelerate)
+
+#### Reduced Motion
+
+Under `@media (prefers-reduced-motion: reduce)`, all `--duration-*` tokens are overridden to `100ms`. Components should replace spatial motion (translate, scale) with opacity crossfades where it makes sense. When a crossfade doesn't fit the animation, the shortened duration alone is the fallback.
+
+**Principle:** "Reduced means reduced, not removed." Eliminate vestibular triggers (large spatial movement) while preserving the "something changed" signal (opacity, color).
 
 ### 4. Progressive Density
 
