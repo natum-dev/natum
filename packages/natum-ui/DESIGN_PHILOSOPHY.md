@@ -125,12 +125,19 @@ This ensures colorblind, low-vision, and screen reader users all receive state i
 
 ## Disabled State Convention
 
-- Use explicit muted colors (e.g., `grey-300` text on `grey-100` background in light mode) — **not opacity**
+- Use shared disabled tokens — **not opacity**:
+
+| Token | Light | Dark | Usage |
+|-------|-------|------|-------|
+| `--disabled-text` | grey-400 | grey-500 | Labels, icons |
+| `--disabled-bg` | grey-100 | grey-800 | Container fills |
+| `--disabled-border` | grey-300 | grey-600 | Outlines |
+
+- Components use shared tokens by default; may override with grey palette values when component anatomy demands it
 - `cursor: not-allowed`
 - `pointer-events: none` on interactive children
 - Keep in DOM — screen readers should find it via `aria-disabled="true"`
 - Removed from tab order (`tabIndex: -1` for non-native elements), matching native `<button disabled>` behavior. Screen readers discover disabled elements via browse mode regardless of tabIndex.
-- Each component defines its disabled color palette using semantic tokens
 
 ---
 
