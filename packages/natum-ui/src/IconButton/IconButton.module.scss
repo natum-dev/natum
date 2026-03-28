@@ -6,8 +6,10 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  border-radius: 50%;
-  transition: all 0.25s ease;
+  border-radius: var(--radius-full);
+  transition: background-color var(--duration-fast) var(--easing-default),
+              color var(--duration-fast) var(--easing-default),
+              filter var(--duration-fast) var(--easing-default);
   color: var(--icon-button-color, var(--neutral-text-inverse));
   background: none;
   border: none;
@@ -203,8 +205,8 @@
 
 // Disabled
 .disabled {
-  --icon-button-color: var(--neutral-text-disabled);
-  --icon-button-main-color: var(--neutral-bg-inset);
+  --icon-button-color: var(--disabled-text);
+  --icon-button-main-color: var(--disabled-bg);
   cursor: not-allowed;
   pointer-events: none;
   box-shadow: none;
