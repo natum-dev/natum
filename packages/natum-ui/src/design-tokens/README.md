@@ -80,6 +80,8 @@ Available for all 7 semantic colors: `primary`, `secondary`, `error`, `success`,
 | `--{semantic}-text` | Text on page surfaces | Error messages, links, status labels |
 | `--{semantic}-contrast` | Text on `--{semantic}-bg` fills | Filled button labels, badge text |
 | `--{semantic}-border` | Borders and outlines | Input focus ring, alert borders |
+| `--{semantic}-soft` | Soft/tinted backgrounds | Soft buttons, toast backgrounds |
+| `--{semantic}-soft-hover` | Hover state for soft backgrounds | Soft button hover |
 
 ```scss
 // Filled button
@@ -88,10 +90,14 @@ Available for all 7 semantic colors: `primary`, `secondary`, `error`, `success`,
   color: var(--primary-contrast);
 }
 
-// Outlined button
-.outlined {
-  border: 1px solid var(--primary-border);
+// Soft button (surface-first — tinted fill, no border)
+.soft {
+  background-color: var(--primary-soft);
   color: var(--primary-text);
+
+  &:hover {
+    background-color: var(--primary-soft-hover);
+  }
 }
 
 // Error alert
