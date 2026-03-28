@@ -146,6 +146,14 @@ Update the Component API Conventions table:
 
 The `outlined` example is replaced with `soft`.
 
+### 7. Design Tokens README Update
+
+Update `packages/natum-ui/src/design-tokens/README.md`:
+
+- Add `--{semantic}-soft` and `--{semantic}-soft-hover` to the per-semantic tokens table
+- Replace the `outlined` button code example with a `soft` variant example
+- Document `color-mix()` usage pattern
+
 ## Browser Compatibility
 
 `color-mix()` is supported in all modern browsers (Chrome 111+, Firefox 113+, Safari 16.2+). Given this is a component library targeting modern applications, this is acceptable.
