@@ -3,7 +3,7 @@ import styles from "./Button.module.scss";
 import cx from "classnames";
 
 export type ButtonProps = Omit<ComponentPropsWithoutRef<"button">, "children"> & {
-  variant?: "filled" | "outlined" | "text";
+  variant?: "filled" | "soft" | "text";
   fullWidth?: boolean;
   children?: React.ReactNode;
 };

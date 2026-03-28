@@ -40,12 +40,12 @@
   }
 }
 
-.outlined {
-  border: 1px solid var(--primary-border);
+.soft {
+  background-color: var(--primary-soft);
   color: var(--primary-text);
 
   &:hover {
-    background-color: var(--primary-surface);
+    background-color: var(--primary-soft-hover);
   }
 }
 
@@ -68,8 +68,8 @@
     background-color: var(--neutral-bg-inset);
   }
 
-  &.outlined {
-    border-color: var(--neutral-border);
+  &.soft {
+    background-color: var(--neutral-bg-inset);
     color: var(--neutral-text-disabled);
   }
 
