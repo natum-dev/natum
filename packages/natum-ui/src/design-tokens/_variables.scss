@@ -2,180 +2,134 @@
 
 $palette-overrides: () !default;
 $typography-preset-overrides: () !default;
-$typography-light-scheme-overrides: () !default;
-$typography-dark-scheme-overrides: () !default;
 
 $blue: (
-  // Lightest
-  50: #eaedf1,
-  100: #c9d1dc,
-  200: #a5b2c4,
-  300: #8193ac,
-  400: #667c9b,
-  // Main color
-  500: #4b658a,
-  600: #435b7d,
-  700: #384e6c,
-  800: #2e415c,
-  // Darkest
-  900: #1e2e44
-);
-
-$orange: (
-  // Lightest
-  50: #f9ece4,
-  100: #f0ccb5,
-  200: #e4a983,
-  300: #d88753,
-  400: #cf6f30,
-  // Main color
-  500: #c65a12,
-  600: #b74f10,
-  700: #a2420d,
-  800: #8b360a,
-  // Darkest
-  900: #652506
+  50: #f1f5ff,
+  100: #dee8ff,
+  200: #c2d4ff,
+  300: #98b5ff,
+  400: #7498ff,
+  500: #4b70ec,
+  600: #4262cc,
+  700: #364f9d,
+  800: #2d3f73,
+  900: #202c4d,
 );
 
 $red: (
-  // Lightest
-  50: #f3e4e5,
-  100: #e1b9be,
-  200: #cd8b93,
-  300: #b95d68,
-  400: #aa3a47,
-  // Main color
-  500: #9b1726,
-  600: #8e1422,
-  700: #7d101c,
-  800: #6c0c17,
-  // Darkest
-  900: #4e060e
+  50: #fff2f0,
+  100: #ffdfdc,
+  200: #ffc3bd,
+  300: #ff958c,
+  400: #ff635d,
+  500: #e73b3c,
+  600: #bf2d2e,
+  700: #942b29,
+  800: #6e2925,
+  900: #4a1e1c,
 );
 
 $green: (
-  // Lightest
-  50: #e4ebe7,
-  100: #bbcec3,
-  200: #8ead9b,
-  300: #618c73,
-  400: #407455,
-  // Main color
-  500: #1f5c37,
-  600: #1b5331,
-  700: #174829,
-  800: #123d22,
-  // Darkest
-  900: #0b2b16
+  50: #edf9ef,
+  100: #c5f6d0,
+  200: #a1e8b3,
+  300: #71cf8c,
+  400: #47b86d,
+  500: #2fa55b,
+  600: #188043,
+  700: #1e6537,
+  800: #214d2f,
+  900: #1a3521,
 );
 
 $yellow: (
-  // Lightest
-  50: #fbf4e1,
-  100: #f5e2b5,
-  200: #eecf84,
-  300: #e7bc53,
-  400: #e2ad2e,
-  // Main color
-  500: #dd9e09,
-  600: #ca9008,
-  700: #b27e07,
-  800: #9a6d06,
-  // Darkest
-  900: #734f04
+  50: #fbf5e6,
+  100: #f6e6c3,
+  200: #f1d086,
+  300: #deb13a,
+  400: #c59701,
+  500: #a37d00,
+  600: #876700,
+  700: #6b5100,
+  800: #543f00,
+  900: #3b2b01,
 );
 
 $purple: (
-  // Lightest
-  50: #ebe4f0,
-  100: #cdbbda,
-  200: #ac8ec1,
-  300: #8b61a8,
-  400: #724095,
-  // Main color
-  500: #591f82,
-  600: #511b77,
-  700: #461769,
-  800: #3c125b,
-  // Darkest
-  900: #2a0b41
-);
-
-$pink: (
-  // Lightest
-  50: #f2e7ed,
-  100: #ddc4d3,
-  200: #c69db6,
-  300: #ae7699,
-  400: #9c5a83,
-  // Main color
-  500: #8a3f6e,
-  600: #7d3764,
-  700: #6c2d56,
-  800: #5b2448,
-  // Darkest
-  900: #3f1732
-);
-
-$teal: (
-  // Lightest
-  50: #e2ecec,
-  100: #b7d0d1,
-  200: #87b0b3,
-  300: #579095,
-  400: #33797e,
-  // Main color
-  500: #0f6267,
-  600: #0d595e,
-  700: #0b4d52,
-  800: #094146,
-  // Darkest
-  900: #062f33
-);
-
-$brown: (
-  // Lightest
-  50: #eeeae3,
-  100: #d6cab9,
-  200: #bba88b,
-  300: #a0865d,
-  400: #8c6d3b,
-  // Main color
-  500: #785419,
-  600: #6e4c16,
-  700: #5f4213,
-  800: #51380f,
-  // Darkest
-  900: #3b280a
+  50: #f6f3ff,
+  100: #eae3ff,
+  200: #d8cbff,
+  300: #bfa6ff,
+  400: #ab82ff,
+  500: #8856de,
+  600: #784fc2,
+  700: #5e4196,
+  800: #48366e,
+  900: #31264a,
 );
 
 $grey: (
-  // Lightest
-  50: #f0eeef,
-  100: #d9d6d7,
-  200: #bfbbbd,
-  300: #a5a1a3,
-  400: #918d8f,
-  // Main color
-  500: #7d797b,
-  600: #716d6f,
-  700: #615d5f,
-  800: #514d4f,
-  // Darkest
-  900: #383436
+  50: #f6f5f3,
+  100: #e9e7e6,
+  200: #d5d4d2,
+  300: #b9b7b5,
+  400: #a09e9c,
+  500: #848381,
+  600: #6d6b6a,
+  700: #565553,
+  800: #434241,
+  900: #2f2e2c,
+);
+
+$orange: (
+  50: #fff2eb,
+  100: #ffe1d1,
+  200: #ffc6a7,
+  300: #fd9b64,
+  400: #ea7d39,
+  500: #df732d,
+  600: #a84e0b,
+  700: #834015,
+  800: #62351b,
+  900: #422616,
+);
+
+$teal: (
+  50: #e9f9f6,
+  100: #c4f4eb,
+  200: #9fe4d8,
+  300: #6dcbbd,
+  400: #3fb4a4,
+  500: #209e8f,
+  600: #0a7d71,
+  700: #186259,
+  800: #1f4b45,
+  900: #18332f,
+);
+
+$pink: (
+  50: #fff1f5,
+  100: #ffdde8,
+  200: #ffc0d5,
+  300: #ff8eb9,
+  400: #f266a1,
+  500: #d84e8a,
+  600: #af3a6e,
+  700: #883257,
+  800: #652c43,
+  900: #45202e,
 );
 
 $color: (
   blue: $blue,
-  orange: $orange,
   red: $red,
   green: $green,
   yellow: $yellow,
   purple: $purple,
-  pink: $pink,
-  teal: $teal,
-  brown: $brown,
   grey: $grey,
+  orange: $orange,
+  teal: $teal,
+  pink: $pink,
 );
 
 $palette: map.deep-merge((
@@ -185,9 +139,9 @@ $palette: map.deep-merge((
     light: map-get($blue, 300),
   ),
   secondary: (
-    main: map-get($orange, 400),
-    dark: map-get($orange, 700),
-    light: map-get($orange, 300),
+    main: map-get($purple, 500),
+    dark: map-get($purple, 700),
+    light: map-get($purple, 300),
   ),
   error: (
     main: map-get($red, 500),
@@ -306,27 +260,3 @@ $typography-preset: map.deep-merge((
     margin-bottom: 4px,
   ),
 ), $typography-preset-overrides);
-
-$typography-light-scheme: map.deep-merge((
-  primary: map-get($grey, 900),
-  secondary: map-get($grey, 700),
-  disabled: map-get($grey, 400),
-  link: map-get($blue, 500),
-  inverse: map-get($grey, 50),
-  error: map-get($red, 700),
-  info: map-get($blue, 700),
-  success: map-get($green, 700),
-  warning: map-get($yellow, 900),
-), $typography-light-scheme-overrides);
-
-$typography-dark-scheme: map.deep-merge((
-  primary: map-get($grey, 100),
-  secondary: map-get($grey, 300),
-  disabled: map-get($grey, 300),
-  link: map-get($blue, 200),
-  inverse: map-get($grey, 900),
-  error: map-get($red, 100),
-  info: map-get($blue, 200),
-  success: map-get($green, 100),
-  warning: map-get($yellow, 300),
-), $typography-dark-scheme-overrides);
