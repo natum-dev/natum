@@ -81,27 +81,39 @@ Replaces `outlined`. A tinted background with no border, derived from the compon
 
 ### 3. New Design Tokens
 
-7 new `--*-soft` CSS custom properties. Since they reference other custom properties via `var()`, they only need to be defined once on `:root` — they automatically resolve to the correct values in both light and dark themes:
+7 new `--*-soft` CSS custom properties added to both `light-scheme` and `dark-scheme` mixins in `base.scss`, using SCSS `color.mix()` to precompute hex values at build time. This matches the existing token pattern where every value is a static hex resolved via `#{...}` interpolation.
 
 ```scss
-// In light-scheme (mix against --neutral-bg which is grey-50):
---primary-soft: color-mix(in srgb, var(--primary-bg) 12%, var(--neutral-bg));
---secondary-soft: color-mix(in srgb, var(--secondary-bg) 12%, var(--neutral-bg));
---error-soft: color-mix(in srgb, var(--error-bg) 12%, var(--neutral-bg));
---success-soft: color-mix(in srgb, var(--success-bg) 12%, var(--neutral-bg));
---warning-soft: color-mix(in srgb, var(--warning-bg) 12%, var(--neutral-bg));
---info-soft: color-mix(in srgb, var(--info-bg) 12%, var(--neutral-bg));
---neutral-soft: color-mix(in srgb, var(--neutral-border) 12%, var(--neutral-bg));
+@use "sass:color";
 
-// Dark-scheme uses identical declarations — color-mix() references
-// the same custom properties, which resolve to dark values automatically.
-// No separate dark-scheme overrides needed for --*-soft tokens.
+// In light-scheme:
+--primary-soft: #{color.mix(get-color(blue, 500), get-color(grey, 50), 12%)};
+--secondary-soft: #{color.mix(get-color(purple, 500), get-color(grey, 50), 12%)};
+--error-soft: #{color.mix(get-color(red, 500), get-color(grey, 50), 12%)};
+--success-soft: #{color.mix(get-color(green, 500), get-color(grey, 50), 12%)};
+--warning-soft: #{color.mix(get-color(yellow, 500), get-color(grey, 50), 12%)};
+--info-soft: #{color.mix(get-color(blue, 400), get-color(grey, 50), 12%)};
+--neutral-soft: #{color.mix(get-color(grey, 500), get-color(grey, 50), 12%)};
+
+// In dark-scheme (same pattern, dark base values):
+--primary-soft: #{color.mix(get-color(blue, 400), get-color(grey, 900), 12%)};
+--secondary-soft: #{color.mix(get-color(purple, 400), get-color(grey, 900), 12%)};
+--error-soft: #{color.mix(get-color(red, 400), get-color(grey, 900), 12%)};
+--success-soft: #{color.mix(get-color(green, 400), get-color(grey, 900), 12%)};
+--warning-soft: #{color.mix(get-color(yellow, 300), get-color(grey, 900), 12%)};
+--info-soft: #{color.mix(get-color(blue, 300), get-color(grey, 900), 12%)};
+--neutral-soft: #{color.mix(get-color(grey, 400), get-color(grey, 900), 12%)};
 ```
 
-Hover states use a higher mix ratio (20%). Define as separate `--*-soft-hover` tokens alongside the base tokens to keep component SCSS clean:
+Hover states use a higher mix ratio (20%). Define as separate `--*-soft-hover` tokens in both mixins:
 
 ```scss
---primary-soft-hover: color-mix(in srgb, var(--primary-bg) 20%, var(--neutral-bg));
+// In light-scheme:
+--primary-soft-hover: #{color.mix(get-color(blue, 500), get-color(grey, 50), 20%)};
+// ... same pattern for all 7 semantic colors
+
+// In dark-scheme:
+--primary-soft-hover: #{color.mix(get-color(blue, 400), get-color(grey, 900), 20%)};
 // ... same pattern for all 7 semantic colors
 ```
 
@@ -154,16 +166,9 @@ Update `packages/natum-ui/src/design-tokens/README.md`:
 - Replace the `outlined` button code example with a `soft` variant example
 - Document `color-mix()` usage pattern
 
-## Browser Compatibility
-
-`color-mix()` is supported in all modern browsers (Chrome 111+, Firefox 113+, Safari 16.2+). Given this is a component library targeting modern applications, this is acceptable.
-
 ## Dark Mode Behavior
 
-The `color-mix()` approach handles dark mode automatically:
-- Light mode: mixes semantic color with white/light background → subtle light tint
-- Dark mode: mixes semantic color with dark background → subtle dark tint
-- No separate dark mode overrides needed for the soft variant beyond the token definitions
+SCSS `color.mix()` precomputes separate values for each theme at build time. The soft tokens are defined in both `light-scheme` and `dark-scheme` mixins, following the same pattern as all other semantic tokens. No runtime CSS features required.
 
 ## Testing Requirements
 
