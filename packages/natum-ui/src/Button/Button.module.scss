@@ -1,14 +1,23 @@
 @use "../design-tokens" as *;
 
 .button {
-  all: unset;
+  box-sizing: border-box;
   display: inline-flex;
   cursor: pointer;
-  transition: all 0.25s ease;
+  background: none;
+  border: none;
+  margin: 0;
+  padding: 10px 16px;
+  font: inherit;
+  font-size: 16px;
   font-weight: 500;
-  color: var(--button-color, #{get-color(grey, 50)});
+  text-decoration: none;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: all 0.25s ease;
   align-items: center;
   justify-content: center;
+  border-radius: 8px;
 
   &:focus-visible {
     outline: var(--focus-ring-width) solid var(--focus-ring-color);
@@ -21,141 +30,50 @@
   }
 }
 
-.filled,
-.light {
-  background-color: var(--button-main-color);
+// Variants
+.filled {
+  background-color: var(--primary-bg);
+  color: var(--primary-contrast);
+
+  &:hover {
+    filter: brightness(1.1);
+  }
 }
 
 .outlined {
-  border-width: 1px;
-  border-style: solid;
-  border-color: var(--button-main-color);
-  color: var(--button-main-color);
+  border: 1px solid var(--primary-border);
+  color: var(--primary-text);
+
+  &:hover {
+    background-color: var(--primary-surface);
+  }
 }
 
 .text {
-  background-color: transparent;
-}
-
-.primary {
-  --button-main-color: #{get-color(blue, 700)};
+  background: none;
+  color: var(--primary-text);
 
   &:hover {
-    --button-main-color: #{get-color(blue, 800)};
-  }
-
-  &.light {
-    --button-main-color: #{get-color(blue, 100)};
-    --button-color: #{get-color(blue, 700)};
-
-    &:hover {
-      --button-main-color: #{get-color(blue, 50)};
-    }
+    background-color: var(--primary-surface);
   }
 }
 
-.secondary {
-  --button-main-color: #{get-color(purple, 700)};
-
-  &:hover {
-    --button-main-color: #{get-color(purple, 800)};
-  }
-
-  &.light {
-    --button-main-color: #{get-color(purple, 100)};
-    --button-color: #{get-color(purple, 700)};
-
-    &:hover {
-      --button-main-color: #{get-color(purple, 200)};
-    }
-  }
-}
-
-.error {
-  --button-main-color: #{get-color(red, 700)};
-
-  &:hover {
-    --button-main-color: #{get-color(red, 800)};
-  }
-
-  &.light {
-    --button-main-color: #{get-color(red, 100)};
-    --button-color: #{get-color(red, 700)};
-
-    &:hover {
-      --button-main-color: #{get-color(red, 200)};
-    }
-  }
-}
-
-.warning {
-  --button-main-color: #{get-color(orange, 700)};
-
-  &:hover {
-    --button-main-color: #{get-color(orange, 800)};
-  }
-
-  &.light {
-    --button-main-color: #{get-color(orange, 100)};
-    --button-color: #{get-color(orange, 700)};
-
-    &:hover {
-      --button-main-color: #{get-color(orange, 50)};
-    }
-  }
-}
-
-.success {
-  --button-main-color: #{get-color(green, 700)};
-
-  &:hover {
-    --button-main-color: #{get-color(green, 800)};
-  }
-
-  &.light {
-    --button-main-color: #{get-color(green, 100)};
-    --button-color: #{get-color(green, 700)};
-
-    &:hover {
-      --button-main-color: #{get-color(green, 200)};
-    }
-  }
-}
-
+// Disabled
 .disabled {
-  --button-color: #{get-color(grey, 600)};
-  --button-main-color: #{get-color(grey, 400)};
+  color: var(--neutral-text-disabled);
   cursor: not-allowed;
+  pointer-events: none;
 
-  &:hover {
-    --button-main-color: #{get-color(grey, 400)};
+  &.filled {
+    background-color: var(--neutral-bg-inset);
   }
 
   &.outlined {
-    --button-main-color: #{get-color(grey, 600)};
-    color: var(--button-color);
+    border-color: var(--neutral-border);
+    color: var(--neutral-text-disabled);
   }
 
-  &.light {
-    --button-color: #{get-color(grey, 600)};
-    --button-main-color: #{get-color(grey, 400)};
+  &.text {
+    background: none;
   }
-}
-
-.small {
-  font-size: 14px;
-  padding: 8px 12px;
-  border-radius: 6px;
-}
-
-.medium {
-  font-size: 16px;
-  padding: 10px 16px;
-  border-radius: 8px;
-}
-
-.large {
-  font-size: 18px;
-  padding: 12px 20px;
-  border-radius: 10px;
 }
