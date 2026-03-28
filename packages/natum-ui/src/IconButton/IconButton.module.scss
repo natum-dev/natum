@@ -29,11 +29,14 @@
   background-color: var(--icon-button-main-color);
 }
 
-.outlined {
-  border-width: 1px;
-  border-style: solid;
-  border-color: var(--icon-button-main-color);
+.soft {
+  background-color: var(--icon-button-soft-color, var(--primary-soft));
   color: var(--icon-button-main-color);
+
+  &:hover {
+    filter: none;
+    background-color: var(--icon-button-soft-hover-color, var(--primary-soft-hover));
+  }
 }
 
 .text {
@@ -62,6 +65,12 @@
     --icon-button-main-color: var(--primary-bg);
     --icon-button-color: var(--primary-contrast);
   }
+
+  &.soft {
+    --icon-button-soft-color: var(--primary-soft);
+    --icon-button-soft-hover-color: var(--primary-soft-hover);
+    --icon-button-main-color: var(--primary-text);
+  }
 }
 
 .secondary {
@@ -83,6 +92,12 @@
   &.filled {
     --icon-button-main-color: var(--secondary-bg);
     --icon-button-color: var(--secondary-contrast);
+  }
+
+  &.soft {
+    --icon-button-soft-color: var(--secondary-soft);
+    --icon-button-soft-hover-color: var(--secondary-soft-hover);
+    --icon-button-main-color: var(--secondary-text);
   }
 }
 
@@ -106,6 +121,12 @@
     --icon-button-main-color: var(--error-bg);
     --icon-button-color: var(--error-contrast);
   }
+
+  &.soft {
+    --icon-button-soft-color: var(--error-soft);
+    --icon-button-soft-hover-color: var(--error-soft-hover);
+    --icon-button-main-color: var(--error-text);
+  }
 }
 
 .warning {
@@ -128,6 +149,12 @@
     --icon-button-main-color: var(--warning-bg);
     --icon-button-color: var(--warning-contrast);
   }
+
+  &.soft {
+    --icon-button-soft-color: var(--warning-soft);
+    --icon-button-soft-hover-color: var(--warning-soft-hover);
+    --icon-button-main-color: var(--warning-text);
+  }
 }
 
 .success {
@@ -149,6 +176,12 @@
   &.filled {
     --icon-button-main-color: var(--success-bg);
     --icon-button-color: var(--success-contrast);
+  }
+
+  &.soft {
+    --icon-button-soft-color: var(--success-soft);
+    --icon-button-soft-hover-color: var(--success-soft-hover);
+    --icon-button-main-color: var(--success-text);
   }
 }
 

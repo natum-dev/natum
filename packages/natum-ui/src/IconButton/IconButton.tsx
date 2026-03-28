@@ -10,7 +10,7 @@ export type IconButtonProps = Omit<
   icon: ComponentType<IconProps>;
   "aria-label": string;
   size?: "small" | "medium" | "large";
-  variant?: "filled" | "light" | "outlined" | "text";
+  variant?: "filled" | "light" | "soft" | "text";
   color?: "primary" | "secondary" | "error" | "success" | "warning";
   disabled?: boolean;
   loading?: boolean;
