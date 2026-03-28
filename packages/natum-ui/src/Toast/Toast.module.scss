@@ -2,43 +2,43 @@
 
 .toast_container {
   position: fixed;
-  z-index: 9999;
+  z-index: var(--z-toast);
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 16px;
+  gap: var(--space-2);
+  padding: var(--space-4);
   pointer-events: none;
 }
 
 .top_right {
-  top: 0;
-  right: 0;
+  inset-block-start: 0;
+  inset-inline-end: 0;
 }
 
 .top_left {
-  top: 0;
-  left: 0;
+  inset-block-start: 0;
+  inset-inline-start: 0;
 }
 
 .top_center {
-  top: 0;
-  left: 50%;
+  inset-block-start: 0;
+  inset-inline-start: 50%;
   transform: translateX(-50%);
 }
 
 .bottom_right {
-  bottom: 0;
-  right: 0;
+  inset-block-end: 0;
+  inset-inline-end: 0;
 }
 
 .bottom_left {
-  bottom: 0;
-  left: 0;
+  inset-block-end: 0;
+  inset-inline-start: 0;
 }
 
 .bottom_center {
-  bottom: 0;
-  left: 50%;
+  inset-block-end: 0;
+  inset-inline-start: 50%;
   transform: translateX(-50%);
 }
 
@@ -46,9 +46,9 @@
   pointer-events: auto;
   display: flex;
   align-items: flex-start;
-  gap: 12px;
-  padding: 12px 16px;
-  border-radius: 8px;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
   background: var(--toast-bg, var(--info-soft));
   box-shadow: var(--shadow-high);
   min-width: 300px;
@@ -65,11 +65,11 @@
 
 // Animation
 .entering {
-  animation: toast_slide_in 0.2s ease-out forwards;
+  animation: toast_slide_in var(--duration-normal) var(--easing-enter) forwards;
 }
 
 .exiting {
-  animation: toast_slide_out 0.15s ease-in forwards;
+  animation: toast_slide_out var(--duration-normal) var(--easing-exit) forwards;
 }
 
 @keyframes toast_slide_in {
@@ -92,6 +92,26 @@
     opacity: 0;
     transform: translateX(100%);
   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .entering {
+    animation-name: toast_fade_in;
+  }
+
+  .exiting {
+    animation-name: toast_fade_out;
+  }
+}
+
+@keyframes toast_fade_in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes toast_fade_out {
+  from { opacity: 1; }
+  to { opacity: 0; }
 }
 
 // Content
@@ -161,9 +181,10 @@
   justify-content: center;
   width: 24px;
   height: 24px;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   color: var(--neutral-text-disabled);
-  transition: all 0.15s ease;
+  transition: background-color var(--duration-fast) var(--easing-default),
+              color var(--duration-fast) var(--easing-default);
 
   &:hover {
     background-color: var(--neutral-bg-inset);
