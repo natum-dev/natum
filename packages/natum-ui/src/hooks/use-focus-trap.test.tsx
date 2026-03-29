@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { useFocusTrap } from "./use-focus-trap";
 
 // Test harness that renders a focus-trappable container
@@ -17,11 +17,9 @@ function TrapHarness({
   hideButtons?: boolean;
 }) {
   const [active, setActive] = useState(defaultActive);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { handleKeyDown } = useFocusTrap({
+  const { ref: trapRef } = useFocusTrap({
     isActive: active,
     onEscape,
-    containerRef,
   });
 
   return (
@@ -31,9 +29,8 @@ function TrapHarness({
       </button>
       {active && (
         <div
-          ref={containerRef}
+          ref={trapRef}
           tabIndex={-1}
-          onKeyDown={handleKeyDown}
           data-testid="container"
           data-modal-portal=""
         >
@@ -55,11 +52,9 @@ function TrapHarness({
 // Harness for testing deactivation (toggle on/off)
 function ToggleHarness({ onEscape }: { onEscape?: () => void }) {
   const [active, setActive] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { handleKeyDown } = useFocusTrap({
+  const { ref: trapRef } = useFocusTrap({
     isActive: active,
     onEscape,
-    containerRef,
   });
 
   return (
@@ -72,9 +67,8 @@ function ToggleHarness({ onEscape }: { onEscape?: () => void }) {
       </button>
       {active && (
         <div
-          ref={containerRef}
+          ref={trapRef}
           tabIndex={-1}
-          onKeyDown={handleKeyDown}
           data-testid="container"
           data-modal-portal=""
         >
