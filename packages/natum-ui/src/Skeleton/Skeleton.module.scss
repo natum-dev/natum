@@ -1,0 +1,52 @@
+@use "../design-tokens" as *;
+
+.skeleton {
+  display: block;
+  background-color: var(--disabled-bg);
+  animation: shimmer 1.5s ease-in-out infinite;
+  background-image: linear-gradient(
+    90deg,
+    var(--disabled-bg) 0%,
+    var(--neutral-bg-elevated) 50%,
+    var(--disabled-bg) 100%
+  );
+  background-size: 200% 100%;
+}
+
+.text {
+  height: 1em;
+  border-radius: var(--radius-sm, 4px);
+}
+
+.rectangular {
+  border-radius: var(--radius-md, 8px);
+}
+
+.circular {
+  border-radius: 50%;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    background-image: none;
+    animation: pulse var(--duration-normal) ease-in-out infinite alternate;
+  }
+
+  @keyframes pulse {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0.5;
+    }
+  }
+}
