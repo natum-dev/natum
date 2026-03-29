@@ -12,6 +12,7 @@ import {
 import { IconX } from "@natum/icons";
 import { useMergedRefs } from "../hooks/use-merge-refs";
 import { useControllable } from "../hooks/use-controllable";
+import { useEscapeKey } from "../hooks/use-escape-key";
 import styles from "./TextField.module.scss";
 import cx from "classnames";
 
@@ -113,6 +114,11 @@ const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
       input.focus();
     }, [isControlled, setValue, onClear]);
 
+    useEscapeKey({
+      onEscape: doClear,
+      enabled: showClear,
+    });
+
     const handleFocus = useCallback(
       (e: React.FocusEvent<HTMLInputElement>) => {
         setIsFocused(true);
@@ -127,17 +133,6 @@ const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
         onBlur?.(e);
       },
       [onBlur]
-    );
-
-    const handleKeyDown = useCallback(
-      (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === "Escape" && clearable && showClear) {
-          e.preventDefault();
-          doClear();
-        }
-        onKeyDown?.(e);
-      },
-      [clearable, showClear, doClear, onKeyDown]
     );
 
     const handleContainerClick = useCallback(() => {
@@ -197,7 +192,7 @@ const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
             onChange={handleChange}
             onFocus={handleFocus}
             onBlur={handleBlur}
-            onKeyDown={handleKeyDown}
+            onKeyDown={onKeyDown}
             disabled={disabled}
             readOnly={readOnly}
             required={required}
