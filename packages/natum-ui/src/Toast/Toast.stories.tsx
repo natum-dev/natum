@@ -5,9 +5,25 @@ import { toast } from "./toast";
 const meta: Meta<typeof ToastProvider> = {
   title: "Components/Toast",
   component: ToastProvider,
+  argTypes: {
+    position: {
+      control: "select",
+      options: [
+        "top-right",
+        "top-left",
+        "top-center",
+        "bottom-right",
+        "bottom-left",
+        "bottom-center",
+      ],
+    },
+  },
+  args: {
+    position: "bottom-right",
+  },
   decorators: [
-    (Story) => (
-      <ToastProvider>
+    (Story, context) => (
+      <ToastProvider position={context.args.position}>
         <Story />
       </ToastProvider>
     ),
