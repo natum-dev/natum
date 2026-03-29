@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, type ComponentType } from "react";
 import { IconCheckCircle, IconXCircle, IconAlertTriangle, IconInfo, IconX, type IconProps } from "@natum/icons";
+import { useAnimationState } from "../hooks/use-animation-state";
 import type { Toast } from "./toast-store";
 import styles from "./Toast.module.scss";
 import cx from "classnames";
@@ -18,22 +19,31 @@ const typeIconMap: Record<string, ComponentType<IconProps>> = {
   info: IconInfo,
 };
 
+const ANIMATION_DURATION = 250;
+
 const ToastItem = ({ toast: t, onDismiss }: ToastItemProps) => {
-  const [state, setState] = useState<"entering" | "visible" | "exiting">("entering");
+  const [dismissed, setDismissed] = useState(false);
   const [paused, setPaused] = useState(false);
 
   const handleDismiss = useCallback(() => {
-    setState("exiting");
+    setDismissed(true);
   }, []);
 
-  const handleAnimationEnd = useCallback(() => {
-    if (state === "entering") {
-      setState("visible");
-    } else if (state === "exiting") {
+  // Toast starts open, then closes when dismissed
+  const { state: animationState } = useAnimationState({
+    isOpen: !dismissed,
+    enterDuration: ANIMATION_DURATION,
+    exitDuration: ANIMATION_DURATION,
+  });
+
+  // Remove from store after exit animation
+  useEffect(() => {
+    if (animationState === "exited" && dismissed) {
       onDismiss(t.id);
     }
-  }, [state, onDismiss, t.id]);
+  }, [animationState, dismissed, onDismiss, t.id]);
 
+  // Auto-dismiss timer
   useEffect(() => {
     if (t.duration === 0 || paused) return;
 
@@ -49,14 +59,13 @@ const ToastItem = ({ toast: t, onDismiss }: ToastItemProps) => {
   return (
     <div
       className={cx(styles.toast, styles[t.type ?? "info"], {
-        [styles.entering]: state === "entering",
-        [styles.exiting]: state === "exiting",
+        [styles.entering]: animationState === "entering",
+        [styles.exiting]: animationState === "exiting",
       })}
       role={t.type === "error" ? "alert" : "status"}
       aria-live={t.type === "error" ? "assertive" : "polite"}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
-      onAnimationEnd={handleAnimationEnd}
     >
       <TypeIcon
         size="md"
