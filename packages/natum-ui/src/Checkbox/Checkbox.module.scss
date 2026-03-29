@@ -118,9 +118,3 @@
   font-size: 0.875rem;
   line-height: 1.5;
 }
-
-@media (prefers-reduced-motion: reduce) {
-  .control {
-    transition: none;
-  }
-}

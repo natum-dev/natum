@@ -113,7 +113,6 @@ const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
           styles[color],
           {
             [styles.disabled]: disabled,
-            [styles.checked]: isControlled ? checked : undefined,
             [styles.indeterminate]: indeterminate,
           },
           className
