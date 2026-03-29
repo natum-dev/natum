@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const FOCUSABLE_SELECTOR =
   'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -14,7 +14,7 @@ export type UseFocusTrapReturn = {
 
 export function useFocusTrap(options: UseFocusTrapOptions): UseFocusTrapReturn {
   const { isActive, onEscape } = options;
-  const elementRef = useRef<HTMLElement | null>(null);
+  const [element, setElement] = useState<HTMLElement | null>(null);
   const previousActiveElement = useRef<Element | null>(null);
   const inertedElements = useRef<Element[]>([]);
   const onEscapeRef = useRef(onEscape);
@@ -22,29 +22,28 @@ export function useFocusTrap(options: UseFocusTrapOptions): UseFocusTrapReturn {
 
   // Focus first focusable element (or container) on activate
   useEffect(() => {
-    if (!isActive || !elementRef.current) return;
+    if (!isActive || !element) return;
 
     previousActiveElement.current = document.activeElement;
 
-    const container = elementRef.current;
     // Use microtask to ensure DOM is ready after portal render
     Promise.resolve().then(() => {
-      if (!container) return;
+      if (!element) return;
       const firstFocusable =
-        container.querySelector<HTMLElement>(FOCUSABLE_SELECTOR);
+        element.querySelector<HTMLElement>(FOCUSABLE_SELECTOR);
       if (firstFocusable) {
         firstFocusable.focus();
       } else {
-        container.focus();
+        element.focus();
       }
     });
-  }, [isActive]);
+  }, [isActive, element]);
 
   // Inert management
   useEffect(() => {
-    if (!isActive || !elementRef.current) return;
+    if (!isActive || !element) return;
 
-    const portalEl = elementRef.current.closest("[data-modal-portal]");
+    const portalEl = element.closest("[data-modal-portal]");
     const siblings = Array.from(document.body.children).filter(
       (el) => el !== portalEl && !el.hasAttribute("data-modal-portal")
     );
@@ -55,7 +54,7 @@ export function useFocusTrap(options: UseFocusTrapOptions): UseFocusTrapReturn {
       inertedElements.current.forEach((el) => el.removeAttribute("inert"));
       inertedElements.current = [];
     };
-  }, [isActive]);
+  }, [isActive, element]);
 
   // Focus restore on deactivate
   useEffect(() => {
@@ -74,9 +73,7 @@ export function useFocusTrap(options: UseFocusTrapOptions): UseFocusTrapReturn {
 
   // Internal keydown handler for Tab cycling + ESC
   useEffect(() => {
-    if (!isActive || !elementRef.current) return;
-
-    const container = elementRef.current;
+    if (!isActive || !element) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -87,7 +84,7 @@ export function useFocusTrap(options: UseFocusTrapOptions): UseFocusTrapReturn {
 
       if (e.key === "Tab") {
         const focusableEls =
-          container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR);
+          element.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR);
         if (focusableEls.length === 0) return;
 
         const first = focusableEls[0];
@@ -96,7 +93,7 @@ export function useFocusTrap(options: UseFocusTrapOptions): UseFocusTrapReturn {
         if (e.shiftKey) {
           if (
             document.activeElement === first ||
-            document.activeElement === container
+            document.activeElement === element
           ) {
             e.preventDefault();
             last.focus();
@@ -110,13 +107,13 @@ export function useFocusTrap(options: UseFocusTrapOptions): UseFocusTrapReturn {
       }
     };
 
-    container.addEventListener("keydown", handleKeyDown);
-    return () => container.removeEventListener("keydown", handleKeyDown);
-  }, [isActive]);
+    element.addEventListener("keydown", handleKeyDown);
+    return () => element.removeEventListener("keydown", handleKeyDown);
+  }, [isActive, element]);
 
   const ref: React.RefCallback<HTMLElement> = useCallback(
     (node: HTMLElement | null) => {
-      elementRef.current = node;
+      setElement(node);
     },
     []
   );
