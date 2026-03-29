@@ -1,7 +1,7 @@
 "use client";
 
 import { useWordsQuery } from "@/lib/queries/useWordsQuery";
-import { Typography } from "@natum/natum-ui/Typography";
+import { Typography } from "@natum/ui/Typography";
 import { useSetAtom } from "jotai";
 import { useEffect } from "react";
 import { resetWordAtom } from "../../store/atoms/Words";

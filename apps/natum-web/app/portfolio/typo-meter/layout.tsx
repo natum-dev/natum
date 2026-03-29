@@ -1,5 +1,5 @@
 import AppProvider from "@/lib/providers/typo-meter/AppProvider";
-import "@natum/natum-ui/design-tokens/base.scss";
+import "@natum/ui/design-tokens/base.scss";
 import styles from "./layout.module.scss";
 
 const TypewriterLayout = ({

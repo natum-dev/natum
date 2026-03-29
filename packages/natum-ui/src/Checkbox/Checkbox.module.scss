@@ -74,7 +74,7 @@
   color: var(--primary-contrast);
 }
 
-@each $color in (secondary, error, success, warning, info, neutral) {
+@each $color in (primary, secondary, error, success, warning, info, neutral) {
   .#{$color} .input:checked + .control,
   .#{$color} .input:indeterminate + .control {
     background-color: var(--#{$color}-bg);
@@ -90,6 +90,12 @@
 .input:focus-visible + .control {
   outline: var(--focus-ring-width) solid var(--focus-ring-color);
   outline-offset: var(--focus-ring-offset);
+}
+
+.indeterminate .control {
+  background-color: var(--primary-bg);
+  border-color: var(--primary-bg);
+  color: var(--primary-contrast);
 }
 
 .disabled {
