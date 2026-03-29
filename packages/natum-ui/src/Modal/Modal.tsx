@@ -6,13 +6,14 @@ import {
   useCallback,
   useId,
   useLayoutEffect,
-  useRef,
   useState,
 } from "react";
 import { createPortal } from "react-dom";
 import { IconX } from "@natum/icons";
 import { useMergedRefs } from "../hooks/use-merge-refs";
 import { useFocusTrap } from "../hooks/use-focus-trap";
+import { useScrollLock } from "../hooks/use-scroll-lock";
+import { useAnimationState } from "../hooks/use-animation-state";
 import styles from "./Modal.module.scss";
 import cx from "classnames";
 
@@ -29,8 +30,6 @@ export type ModalProps = {
   className?: string;
   id?: string;
 };
-
-type AnimationState = "entering" | "entered" | "exiting" | "exited";
 
 const ENTER_DURATION = 200;
 const EXIT_DURATION = 150;
@@ -55,58 +54,29 @@ const Modal = forwardRef<HTMLDivElement, ModalProps>(
     const autoId = useId();
     const titleId = idProp ?? `${autoId}-title`;
 
-    const panelRef = useRef<HTMLDivElement>(null);
-    const mergedRef = useMergedRefs(ref, panelRef);
-
     const [mounted, setMounted] = useState(false);
-    const [animationState, setAnimationState] = useState<AnimationState>("exited");
 
-    // SSR safety — useLayoutEffect doesn't run during SSR, so mounted stays
-    // false on the server. On the client it fires synchronously before paint.
+    // SSR safety
     useLayoutEffect(() => {
       setMounted(true);
     }, []);
 
-    // Animation state machine — useLayoutEffect to prevent flash
-    useLayoutEffect(() => {
-      if (isOpen) {
-        setAnimationState("entering");
-        const timer = setTimeout(() => setAnimationState("entered"), ENTER_DURATION);
-        return () => clearTimeout(timer);
-      } else if (animationState !== "exited") {
-        setAnimationState("exiting");
-        const timer = setTimeout(() => setAnimationState("exited"), EXIT_DURATION);
-        return () => clearTimeout(timer);
-      }
-    }, [isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
+    const { state: animationState, shouldRender } = useAnimationState({
+      isOpen,
+      enterDuration: ENTER_DURATION,
+      exitDuration: EXIT_DURATION,
+    });
 
     const trapActive = isOpen && animationState !== "exited";
 
-    // Focus trap + inert + ESC
-    const { handleKeyDown } = useFocusTrap({
+    const { ref: trapRef } = useFocusTrap({
       isActive: trapActive,
       onEscape: closeOnEsc ? onClose : undefined,
-      containerRef: panelRef,
     });
 
-    // Scroll lock — useLayoutEffect to apply before paint
-    useLayoutEffect(() => {
-      if (!isOpen) return;
+    const mergedRef = useMergedRefs(ref, trapRef);
 
-      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-      const originalOverflow = document.body.style.overflow;
-      const originalPaddingRight = document.body.style.paddingRight;
-
-      document.body.style.overflow = "hidden";
-      if (scrollbarWidth > 0) {
-        document.body.style.paddingRight = `${scrollbarWidth}px`;
-      }
-
-      return () => {
-        document.body.style.overflow = originalOverflow;
-        document.body.style.paddingRight = originalPaddingRight;
-      };
-    }, [isOpen]);
+    useScrollLock({ enabled: isOpen });
 
     const handleOverlayClick = useCallback(
       (e: React.MouseEvent) => {
@@ -116,8 +86,6 @@ const Modal = forwardRef<HTMLDivElement, ModalProps>(
       },
       [closeOnOverlayClick, onClose]
     );
-
-    const shouldRender = isOpen || animationState !== "exited";
 
     if (!mounted || !shouldRender) return null;
 
@@ -150,7 +118,6 @@ const Modal = forwardRef<HTMLDivElement, ModalProps>(
             },
             className
           )}
-          onKeyDown={handleKeyDown}
         >
           {(title || !hideCloseButton) && (
             <div className={styles.header}>
