@@ -11,7 +11,7 @@ Import the design tokens module in your SCSS file:
 @use "../design-tokens" as *;
 
 // From a consumer app
-@use "@natum/natum-ui/design-tokens" as *;
+@use "@natum/ui/design-tokens" as *;
 ```
 
 ### Customizing tokens
@@ -27,7 +27,7 @@ All design tokens can be overridden at compile time via `@use ... with()`. Only 
 | `$breakpoints-overrides` | Responsive breakpoints (xs, sm, md, lg, xl) |
 
 ```scss
-@use "@natum/natum-ui/design-tokens" as * with (
+@use "@natum/ui/design-tokens" as * with (
   $palette-overrides: (
     primary: (main: #6200ea, dark: #3700b3),
   ),
@@ -45,7 +45,7 @@ If multiple files need design tokens, configure once in a central forwarding fil
 
 ```scss
 // app/_design-tokens.scss
-@forward "@natum/natum-ui/design-tokens" with (
+@forward "@natum/ui/design-tokens" with (
   $palette-overrides: (
     primary: (main: #6200ea),
   ),
@@ -58,7 +58,7 @@ If multiple files need design tokens, configure once in a central forwarding fil
 For global base styles (font, CSS reset, CSS variable registration), import `base.scss` once at the root of your app:
 
 ```scss
-@import "@natum/natum-ui/design-tokens/base.scss";
+@import "@natum/ui/design-tokens/base.scss";
 ```
 
 ---

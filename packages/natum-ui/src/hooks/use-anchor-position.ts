@@ -97,7 +97,7 @@ function calculate(
 export function useAnchorPosition(
   props: UseAnchorPositionProps
 ): UseAnchorPositionReturn {
-  const { floatingRef, placement = "top", offset = 8, isOpen } = props;
+  const { placement = "top", isOpen } = props;
 
   const propsRef = useRef(props);
   propsRef.current = props;

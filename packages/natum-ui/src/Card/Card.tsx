@@ -67,9 +67,9 @@ const CardInner = <T extends CardElementType = "div">(
   }
 
   return (
-    // @ts-expect-error — polymorphic element type
     <Tag
-      ref={ref}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ref={ref as any}
       className={cx(
         styles.card,
         styles[variant],

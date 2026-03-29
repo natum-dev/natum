@@ -182,5 +182,4 @@ Breadcrumb.displayName = "Breadcrumb";
 
 export { Breadcrumb };
 export { BreadcrumbItem } from "./BreadcrumbItem";
-export type { BreadcrumbProps };
 export type { BreadcrumbItemProps } from "./BreadcrumbItem";

@@ -1,4 +1,4 @@
-# @natum/natum-ui
+# @natum/ui
 
 React component library built with TypeScript, SCSS Modules, and Vite.
 
@@ -15,7 +15,7 @@ React component library built with TypeScript, SCSS Modules, and Vite.
 ## Installation
 
 ```bash
-pnpm add @natum/natum-ui
+pnpm add @natum/ui
 ```
 
 Peer dependencies: `react` and `react-dom` (v17 or v18).
@@ -25,16 +25,16 @@ Peer dependencies: `react` and `react-dom` (v17 or v18).
 Import individual components for optimal tree-shaking:
 
 ```tsx
-import Button from "@natum/natum-ui/Button";
-import Typography from "@natum/natum-ui/Typography";
-import Container from "@natum/natum-ui/Container";
-import { useCountdown } from "@natum/natum-ui/hooks";
+import Button from "@natum/ui/Button";
+import Typography from "@natum/ui/Typography";
+import Container from "@natum/ui/Container";
+import { useCountdown } from "@natum/ui/hooks";
 ```
 
 Or import from the root entry point:
 
 ```tsx
-import { Button, Container } from "@natum/natum-ui";
+import { Button, Container } from "@natum/ui";
 ```
 
 ### Design tokens
@@ -42,13 +42,13 @@ import { Button, Container } from "@natum/natum-ui";
 SCSS variables, mixins, breakpoints, and functions are available for use in consuming apps:
 
 ```scss
-@use "@natum/natum-ui/design-tokens" as tokens;
+@use "@natum/ui/design-tokens" as tokens;
 ```
 
 Or import individual token files:
 
 ```scss
-@use "@natum/natum-ui/design-tokens/base.scss";
+@use "@natum/ui/design-tokens/base.scss";
 ```
 
 ## Build output

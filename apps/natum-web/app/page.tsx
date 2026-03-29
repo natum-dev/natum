@@ -1,4 +1,4 @@
-import { Typography } from "@natum/natum-ui/Typography";
+import { Typography } from "@natum/ui/Typography";
 import classNames from "classnames";
 import Link from "next/link";
 import styles from "./page.module.scss";
