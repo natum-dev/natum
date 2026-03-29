@@ -14,6 +14,8 @@ import {
 import { createPortal } from "react-dom";
 import { useAnchorPosition } from "../hooks/use-anchor-position";
 import { useMergedRefs } from "../hooks/use-merge-refs";
+import { useEscapeKey } from "../hooks/use-escape-key";
+import { useAnimationState } from "../hooks/use-animation-state";
 import styles from "./Tooltip.module.scss";
 import cx from "classnames";
 
@@ -32,18 +34,20 @@ const EXIT_DURATION = 125;
 const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
   ({ content, placement = "top", delay = 200, children, className }, ref) => {
     const [isOpen, setIsOpen] = useState(false);
-    const [isExiting, setIsExiting] = useState(false);
     const [mounted, setMounted] = useState(false);
 
     const tooltipId = useId();
     const delayTimerRef = useRef<ReturnType<typeof setTimeout>>();
-    const exitTimerRef = useRef<ReturnType<typeof setTimeout>>();
 
     const anchorRef = useRef<HTMLElement>(null);
     const floatingRef = useRef<HTMLDivElement>(null);
     const mergedFloatingRef = useMergedRefs(ref, floatingRef);
 
-    const shouldRender = isOpen || isExiting;
+    const { state: animationState, shouldRender } = useAnimationState({
+      isOpen,
+      enterDuration: 0,
+      exitDuration: EXIT_DURATION,
+    });
 
     const { styles: positionStyles, actualPlacement } = useAnchorPosition({
       anchorRef,
@@ -58,8 +62,7 @@ const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
     }, []);
 
     const show = useCallback(() => {
-      clearTimeout(exitTimerRef.current);
-      setIsExiting(false);
+      clearTimeout(delayTimerRef.current);
       delayTimerRef.current = setTimeout(() => {
         setIsOpen(true);
       }, delay);
@@ -67,13 +70,16 @@ const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
 
     const hide = useCallback(() => {
       clearTimeout(delayTimerRef.current);
-      if (!isOpen) return;
-      setIsExiting(true);
-      exitTimerRef.current = setTimeout(() => {
-        setIsOpen(false);
-        setIsExiting(false);
-      }, EXIT_DURATION);
-    }, [isOpen]);
+      setIsOpen(false);
+    }, []);
+
+    useEscapeKey({ onEscape: hide, enabled: isOpen });
+
+    useEffect(() => {
+      return () => {
+        clearTimeout(delayTimerRef.current);
+      };
+    }, []);
 
     const handleKeyDown = useCallback(
       (e: React.KeyboardEvent) => {
@@ -83,26 +89,6 @@ const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
       },
       [isOpen, hide]
     );
-
-    useEffect(() => {
-      if (!isOpen) return;
-      const handleDocumentKeyDown = (e: KeyboardEvent) => {
-        if (e.key === "Escape") {
-          hide();
-        }
-      };
-      document.addEventListener("keydown", handleDocumentKeyDown);
-      return () => {
-        document.removeEventListener("keydown", handleDocumentKeyDown);
-      };
-    }, [isOpen, hide]);
-
-    useEffect(() => {
-      return () => {
-        clearTimeout(delayTimerRef.current);
-        clearTimeout(exitTimerRef.current);
-      };
-    }, []);
 
     const trigger = cloneElement(children, {
       ref: anchorRef,
@@ -128,6 +114,8 @@ const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
       },
       "aria-describedby": shouldRender ? tooltipId : undefined,
     });
+
+    const isExiting = animationState === "exiting";
 
     const tooltip =
       mounted && shouldRender
