@@ -14,6 +14,7 @@ export type UseFocusTrapReturn = {
 
 export function useFocusTrap(options: UseFocusTrapOptions): UseFocusTrapReturn {
   const { isActive, onEscape } = options;
+  // useState (not useRef) so that effects re-run when the element attaches/detaches
   const [element, setElement] = useState<HTMLElement | null>(null);
   const previousActiveElement = useRef<Element | null>(null);
   const inertedElements = useRef<Element[]>([]);
