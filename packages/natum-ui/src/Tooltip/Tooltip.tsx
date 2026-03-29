@@ -81,15 +81,6 @@ const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
       };
     }, []);
 
-    const handleKeyDown = useCallback(
-      (e: React.KeyboardEvent) => {
-        if (e.key === "Escape" && isOpen) {
-          hide();
-        }
-      },
-      [isOpen, hide]
-    );
-
     const trigger = cloneElement(children, {
       ref: anchorRef,
       onMouseEnter: (e: React.MouseEvent) => {
@@ -107,10 +98,6 @@ const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
       onBlur: (e: React.FocusEvent) => {
         children.props.onBlur?.(e);
         hide();
-      },
-      onKeyDown: (e: React.KeyboardEvent) => {
-        children.props.onKeyDown?.(e);
-        handleKeyDown(e);
       },
       "aria-describedby": shouldRender ? tooltipId : undefined,
     });

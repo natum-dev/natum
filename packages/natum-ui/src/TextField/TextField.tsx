@@ -116,7 +116,7 @@ const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
 
     useEscapeKey({
       onEscape: doClear,
-      enabled: showClear,
+      enabled: showClear && isFocused,
     });
 
     const handleFocus = useCallback(
