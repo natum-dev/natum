@@ -7,11 +7,13 @@ import {
   Children,
   forwardRef,
   useCallback,
-  useEffect,
   useRef,
   useState,
 } from "react";
 import type { BreadcrumbItemProps } from "./BreadcrumbItem";
+import { useClickOutside } from "../hooks/use-click-outside";
+import { useEscapeKey } from "../hooks/use-escape-key";
+import { useMergedRefs } from "../hooks/use-merge-refs";
 import styles from "./Breadcrumb.module.scss";
 import cx from "classnames";
 
@@ -33,7 +35,6 @@ const Breadcrumb = forwardRef<HTMLElement, BreadcrumbProps>(
   ({ separator, maxVisible = 4, children, className, ...rest }, ref) => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const ellipsisRef = useRef<HTMLButtonElement>(null);
-    const dropdownRef = useRef<HTMLUListElement>(null);
 
     const items = Children.toArray(children) as ReactElement<BreadcrumbItemProps>[];
     const shouldCollapse = items.length > maxVisible;
@@ -51,30 +52,19 @@ const Breadcrumb = forwardRef<HTMLElement, BreadcrumbProps>(
       ellipsisRef.current?.focus();
     }, []);
 
-    useEffect(() => {
-      if (!dropdownOpen) return;
-      const handleClick = (e: MouseEvent) => {
-        if (
-          !dropdownRef.current?.contains(e.target as Node) &&
-          !ellipsisRef.current?.contains(e.target as Node)
-        ) {
-          setDropdownOpen(false);
-        }
-      };
-      document.addEventListener("mousedown", handleClick);
-      return () => document.removeEventListener("mousedown", handleClick);
-    }, [dropdownOpen]);
+    const { ref: outsideRef } = useClickOutside({
+      onClickOutside: () => setDropdownOpen(false),
+      enabled: dropdownOpen,
+    });
+
+    useEscapeKey({ onEscape: closeDropdown, enabled: dropdownOpen });
 
     const handleDropdownKeyDown = useCallback(
       (e: React.KeyboardEvent) => {
-        if (e.key === "Escape") {
-          e.preventDefault();
-          closeDropdown();
-          return;
-        }
         if (e.key === "ArrowDown" || e.key === "ArrowUp") {
           e.preventDefault();
-          const focusable = dropdownRef.current?.querySelectorAll<HTMLElement>("a, button");
+          const container = (e.currentTarget as HTMLElement).querySelector("ul");
+          const focusable = container?.querySelectorAll<HTMLElement>("a, button");
           if (!focusable?.length) return;
           const current = document.activeElement;
           const idx = Array.from(focusable).indexOf(current as HTMLElement);
@@ -85,7 +75,7 @@ const Breadcrumb = forwardRef<HTMLElement, BreadcrumbProps>(
           next?.focus();
         }
       },
-      [closeDropdown]
+      []
     );
 
     const renderSeparator = (key: string) =>
@@ -127,7 +117,7 @@ const Breadcrumb = forwardRef<HTMLElement, BreadcrumbProps>(
           {shouldCollapse ? (
             <>
               {renderSegment(visibleItems[0], 0, false)}
-              <li className={styles.item} onKeyDown={handleDropdownKeyDown}>
+              <li ref={outsideRef} className={styles.item} onKeyDown={handleDropdownKeyDown}>
                 <button
                   ref={ellipsisRef}
                   type="button"
@@ -140,7 +130,6 @@ const Breadcrumb = forwardRef<HTMLElement, BreadcrumbProps>(
                 </button>
                 {dropdownOpen && (
                   <ul
-                    ref={dropdownRef}
                     className={styles.dropdown}
                     role="menu"
                   >
