@@ -1,0 +1,126 @@
+@use "../design-tokens" as *;
+
+.container {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2, 8px);
+  cursor: pointer;
+  user-select: none;
+}
+
+.box {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  flex-shrink: 0;
+}
+
+.input {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  cursor: inherit;
+  z-index: 1;
+}
+
+.control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid get-color(grey, 400);
+  border-radius: var(--radius-sm, 4px);
+  background-color: transparent;
+  color: transparent;
+  transition:
+    background-color var(--duration-fast) var(--easing-default),
+    border-color var(--duration-fast) var(--easing-default),
+    color var(--duration-fast) var(--easing-default);
+}
+
+.sm .control {
+  width: 16px;
+  height: 16px;
+}
+
+.md .control {
+  width: 20px;
+  height: 20px;
+}
+
+.lg .control {
+  width: 24px;
+  height: 24px;
+}
+
+.icon {
+  width: 70%;
+  height: 70%;
+}
+
+.container:hover .control {
+  border-color: var(--primary-bg);
+}
+
+.input:checked + .control,
+.input:indeterminate + .control {
+  background-color: var(--primary-bg);
+  border-color: var(--primary-bg);
+  color: var(--primary-contrast);
+}
+
+@each $color in (secondary, error, success, warning, info, neutral) {
+  .#{$color} .input:checked + .control,
+  .#{$color} .input:indeterminate + .control {
+    background-color: var(--#{$color}-bg);
+    border-color: var(--#{$color}-bg);
+    color: var(--#{$color}-contrast);
+  }
+
+  .#{$color}:hover .control {
+    border-color: var(--#{$color}-bg);
+  }
+}
+
+.input:focus-visible + .control {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+
+  .control {
+    border-color: var(--disabled-border);
+    background-color: var(--disabled-bg);
+  }
+
+  .input:checked + .control,
+  .input:indeterminate + .control {
+    background-color: var(--disabled-bg);
+    border-color: var(--disabled-border);
+    color: var(--disabled-text);
+  }
+
+  .label {
+    color: var(--disabled-text);
+  }
+}
+
+.label {
+  color: var(--neutral-text);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .control {
+    transition: none;
+  }
+}
