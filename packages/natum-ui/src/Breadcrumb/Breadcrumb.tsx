@@ -13,7 +13,6 @@ import {
 import type { BreadcrumbItemProps } from "./BreadcrumbItem";
 import { useClickOutside } from "../hooks/use-click-outside";
 import { useEscapeKey } from "../hooks/use-escape-key";
-import { useMergedRefs } from "../hooks/use-merge-refs";
 import styles from "./Breadcrumb.module.scss";
 import cx from "classnames";
 
