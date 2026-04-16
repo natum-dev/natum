@@ -2,6 +2,19 @@
   {
     "relation": [
       "delegate_permission/common.handle_all_urls",
+      "delegate_permission/common.use_as_origin"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.playground.android",
+      "sha256_cert_fingerprints": [
+        "A9:84:A9:12:BB:76:90:01:B0:E2:5F:B7:56:CA:67:3D:5F:67:F8:CD:2C:4C:52:FF:F4:66:13:EC:1C:33:80:58"
+      ]
+    }
+  },
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls",
       "delegate_permission/common.use_as_origin",
       "delegate_permission/common.get_login_creds"
     ],
