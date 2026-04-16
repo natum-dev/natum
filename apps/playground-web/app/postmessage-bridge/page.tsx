@@ -3,18 +3,23 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 /**
- * PostMessage bridge page for Chrome Custom Tabs ↔ App communication.
+ * PostMessage bridge page opened by Android app in a Chrome Custom Tab.
+ *
+ * Communication flows through a local HTTP relay on the Android device:
+ *   App → Web:  GET  http://localhost:8234/api/toWeb  (polled every 500ms)
+ *   Web → App:  POST http://localhost:8234/api/toApp
+ *
+ * Chrome allows localhost connections from HTTPS pages (secure context exception).
  *
  * Security:
- *  - Origin verification on every incoming message
- *  - Each message must carry a unique `id` — duplicates are silently dropped
- *
- * Opened by the Android app via CustomTabsIntent.
- * Communication uses the Custom Tabs postMessage API:
- *  - App → Web: messages arrive via `window.addEventListener("message", ...)`
- *  - Web → App: messages sent via `window.postMessage(...)` which Chrome
- *    relays back to the CustomTabsSession callback
+ *  - CORS on the relay restricts to this origin
+ *  - Each message requires a unique `id`; the relay rejects duplicates
+ *  - Origin header sent with every request
  */
+
+const RELAY_BASE = "http://localhost:8234";
+const POLL_INTERVAL = 500;
+const MAX_TRACKED_IDS = 500;
 
 interface BridgeMessage {
   id: string;
@@ -31,13 +36,6 @@ interface LogEntry {
   text: string;
 }
 
-const ALLOWED_ORIGINS = [
-  "android-app://com.playground.android",
-  "https://playground.natum.dev",
-];
-
-const MAX_TRACKED_IDS = 500;
-
 export default function PostMessageBridge() {
   const [connected, setConnected] = useState(false);
   const [logs, setLogs] = useState<LogEntry[]>([]);
@@ -45,131 +43,98 @@ export default function PostMessageBridge() {
   const [receivedCount, setReceivedCount] = useState(0);
 
   const processedIds = useRef(new Set<string>());
-  const messagePort = useRef<MessagePort | null>(null);
+  const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const log = useCallback(
-    (direction: LogEntry["direction"], text: string) => {
-      const time = new Date().toLocaleTimeString();
-      setLogs((prev) => [{ time, direction, text }, ...prev].slice(0, 100));
-    },
+  const log = useCallback((direction: LogEntry["direction"], text: string) => {
+    const time = new Date().toLocaleTimeString();
+    setLogs((prev) => [{ time, direction, text }, ...prev].slice(0, 100));
+  }, []);
+
+  const generateId = useCallback(
+    () => `web_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
     []
   );
 
-  const generateId = useCallback(() => {
-    return `web_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
-  }, []);
-
-  const isOriginAllowed = useCallback((origin: string) => {
-    if (!origin || origin === "" || origin === "null") return true;
-    return ALLOWED_ORIGINS.some(
-      (o) => origin === o || origin.startsWith(o)
-    );
-  }, []);
-
-  const isDuplicate = useCallback((id: string) => {
-    if (!id) return true;
-    if (processedIds.current.has(id)) return true;
-    processedIds.current.add(id);
-    if (processedIds.current.size > MAX_TRACKED_IDS) {
-      const first = processedIds.current.values().next().value;
-      if (first) processedIds.current.delete(first);
-    }
-    return false;
-  }, []);
-
+  // --- Send message to app via relay ---
   const sendToApp = useCallback(
-    (msg: BridgeMessage) => {
-      const json = JSON.stringify(msg);
-      if (messagePort.current) {
-        messagePort.current.postMessage(json);
-      } else {
-        // Chrome Custom Tabs relays window.postMessage back to the app session
-        window.postMessage(json, "*");
-      }
-    },
-    []
-  );
-
-  const processIncoming = useCallback(
-    (rawData: unknown, source: string) => {
+    async (msg: BridgeMessage) => {
       try {
-        const data: BridgeMessage =
-          typeof rawData === "string" ? JSON.parse(rawData) : (rawData as BridgeMessage);
-
-        if (!data.id) {
-          log("err", "Rejected: no message ID");
-          return;
-        }
-
-        if (isDuplicate(data.id)) {
-          log("err", `Duplicate ignored: ${data.id.slice(-12)}`);
-          return;
-        }
-
-        if (
-          data.origin &&
-          !data.origin.includes("com.playground.android") &&
-          !isOriginAllowed(data.origin)
-        ) {
-          log("err", `Rejected origin: ${data.origin}`);
-          return;
-        }
-
-        setReceivedCount((c) => c + 1);
-        setConnected(true);
-        log("in", `[${data.type}] ${data.payload ?? JSON.stringify(data)}`);
-
-        sendToApp({
-          id: generateId(),
-          type: "ack",
-          replyTo: data.id,
-          payload: "Acknowledged by web",
-          timestamp: Date.now(),
+        const res = await fetch(`${RELAY_BASE}/api/toApp`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(msg),
         });
+        if (!res.ok) {
+          const err = await res.text();
+          log("err", `Send failed (${res.status}): ${err}`);
+        }
       } catch (e) {
-        log("err", `Parse error: ${(e as Error).message}`);
+        log("err", `Relay unreachable: ${(e as Error).message}`);
       }
     },
-    [isDuplicate, isOriginAllowed, log, sendToApp, generateId]
+    [log]
   );
 
-  // Listen for postMessage events from the Custom Tab session
+  // --- Poll relay for messages from app ---
   useEffect(() => {
-    const handler = (event: MessageEvent) => {
-      if (!isOriginAllowed(event.origin)) {
-        log("err", `Blocked origin: ${event.origin}`);
-        return;
-      }
+    let active = true;
 
-      // If Chrome sends a MessagePort, store it for bidirectional comms
-      if (event.ports?.length) {
-        messagePort.current = event.ports[0];
-        messagePort.current.onmessage = (e) =>
-          processIncoming(e.data, "port");
-        setConnected(true);
-        log("sys", "MessagePort channel established");
-        return;
-      }
+    const poll = async () => {
+      try {
+        const res = await fetch(`${RELAY_BASE}/api/toWeb`);
+        if (!res.ok) return;
 
-      if (event.data) {
-        // Ignore our own messages (self-posted fallback)
-        try {
-          const d =
-            typeof event.data === "string"
-              ? JSON.parse(event.data)
-              : event.data;
-          if (d.id?.startsWith("web_")) return;
-        } catch {
-          /* not JSON, process normally */
+        const messages: BridgeMessage[] = await res.json();
+        if (!active) return;
+
+        if (messages.length > 0 && !connected) {
+          setConnected(true);
         }
-        processIncoming(event.data, event.origin);
+
+        for (const msg of messages) {
+          // Idempotency check
+          if (!msg.id || processedIds.current.has(msg.id)) continue;
+          processedIds.current.add(msg.id);
+          if (processedIds.current.size > MAX_TRACKED_IDS) {
+            const first = processedIds.current.values().next().value;
+            if (first) processedIds.current.delete(first);
+          }
+
+          setReceivedCount((c) => c + 1);
+          log("in", `[${msg.type}] ${msg.payload ?? JSON.stringify(msg)}`);
+
+          // Send ACK
+          sendToApp({
+            id: generateId(),
+            type: "ack",
+            replyTo: msg.id,
+            payload: "Acknowledged by web",
+            timestamp: Date.now(),
+          });
+        }
+      } catch {
+        // Relay not available — will retry next poll
       }
     };
 
-    window.addEventListener("message", handler);
-    log("sys", "Bridge loaded, listening for messages");
-    return () => window.removeEventListener("message", handler);
-  }, [isOriginAllowed, log, processIncoming]);
+    // Health check first
+    fetch(`${RELAY_BASE}/api/health`)
+      .then((r) => {
+        if (r.ok) {
+          setConnected(true);
+          log("sys", "Connected to app relay");
+        }
+      })
+      .catch(() => log("sys", "Waiting for app relay..."));
+
+    pollingRef.current = setInterval(poll, POLL_INTERVAL);
+    log("sys", `Bridge loaded, polling ${RELAY_BASE} every ${POLL_INTERVAL}ms`);
+
+    return () => {
+      active = false;
+      if (pollingRef.current) clearInterval(pollingRef.current);
+    };
+  }, [connected, generateId, log, sendToApp]);
 
   const handleSendGreeting = () => {
     const msg: BridgeMessage = {
@@ -196,12 +161,18 @@ export default function PostMessageBridge() {
   };
 
   return (
-    <main style={{ fontFamily: "-apple-system, sans-serif", padding: 16, background: "#fafafa", minHeight: "100vh" }}>
-      {/* Status */}
+    <main
+      style={{
+        fontFamily: "-apple-system, sans-serif",
+        padding: 16,
+        background: "#fafafa",
+        minHeight: "100vh",
+      }}
+    >
       <div style={cardStyle}>
         <h2 style={{ fontSize: 20, margin: 0 }}>PostMessage Bridge</h2>
         <p style={{ color: "#888", fontSize: 13, margin: "4px 0 12px" }}>
-          Custom Tab ↔ App communication
+          Custom Tab &harr; App via local relay
         </p>
         <div
           style={{
@@ -213,16 +184,18 @@ export default function PostMessageBridge() {
             color: connected ? "#2E7D32" : "#E65100",
           }}
         >
-          {connected ? "Connected to app" : "Waiting for connection..."}
+          {connected ? "Connected to app relay" : "Waiting for app relay..."}
         </div>
       </div>
 
-      {/* Actions */}
       <div style={cardStyle}>
         <button style={btnStyle} onClick={handleSendGreeting}>
           Send Greeting to App
         </button>
-        <button style={{ ...btnStyle, background: "#78909C", marginTop: 8 }} onClick={handleSendPing}>
+        <button
+          style={{ ...btnStyle, background: "#78909C", marginTop: 8 }}
+          onClick={handleSendPing}
+        >
           Ping App
         </button>
         <p style={{ fontSize: 12, color: "#999", marginTop: 10 }}>
@@ -230,7 +203,6 @@ export default function PostMessageBridge() {
         </p>
       </div>
 
-      {/* Logs */}
       <div style={cardStyle}>
         <h3 style={{ fontSize: 15, margin: "0 0 8px" }}>Messages</h3>
         <div style={{ maxHeight: "40vh", overflowY: "auto" }}>
@@ -246,18 +218,26 @@ export default function PostMessageBridge() {
                 fontFamily: "monospace",
                 wordBreak: "break-all",
                 borderColor:
-                  entry.direction === "in" ? "#4CAF50"
-                  : entry.direction === "out" ? "#1976D2"
-                  : entry.direction === "sys" ? "#9E9E9E"
-                  : "#F44336",
+                  entry.direction === "in"
+                    ? "#4CAF50"
+                    : entry.direction === "out"
+                      ? "#1976D2"
+                      : entry.direction === "sys"
+                        ? "#9E9E9E"
+                        : "#F44336",
                 background:
-                  entry.direction === "in" ? "#E8F5E9"
-                  : entry.direction === "out" ? "#E3F2FD"
-                  : entry.direction === "sys" ? "#F5F5F5"
-                  : "#FFEBEE",
+                  entry.direction === "in"
+                    ? "#E8F5E9"
+                    : entry.direction === "out"
+                      ? "#E3F2FD"
+                      : entry.direction === "sys"
+                        ? "#F5F5F5"
+                        : "#FFEBEE",
               }}
             >
-              <span style={{ color: "#999", marginRight: 6 }}>{entry.time}</span>
+              <span style={{ color: "#999", marginRight: 6 }}>
+                {entry.time}
+              </span>
               {entry.text}
             </div>
           ))}
