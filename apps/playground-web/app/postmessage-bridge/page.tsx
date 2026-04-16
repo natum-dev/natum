@@ -3,33 +3,16 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 /**
- * PostMessage bridge page for Chrome Custom Tabs ↔ App communication.
+ * PostMessage bridge page for Chrome Custom Tabs.
  *
- * Messages from the app arrive via:
- *   - window "message" event (Custom Tabs postMessage API)
- *   - MessagePort (if Chrome provides one via event.ports)
- *
- * Messages to the app are sent via:
- *   - messagePort.postMessage() (if MessagePort was provided)
- *   - window.postMessage() (fallback, Chrome relays to session)
- *
- * Security: origin verified, message ID required, duplicates dropped.
+ * Per https://developer.chrome.com/docs/android/post-message-twa:
+ *   1. App sends first message — arrives as MessageEvent with ports[0]
+ *   2. Web stores ports[0] as the communication channel
+ *   3. Subsequent messages arrive via port.onmessage
+ *   4. Web sends back via port.postMessage()
  */
 
-const ALLOWED_ORIGINS = [
-  "android-app://com.playground.android",
-  "https://playground.natum.dev",
-];
 const MAX_TRACKED_IDS = 500;
-
-interface BridgeMessage {
-  id: string;
-  type: string;
-  payload?: string;
-  replyTo?: string;
-  origin?: string;
-  timestamp: number;
-}
 
 interface LogEntry {
   time: string;
@@ -44,7 +27,7 @@ export default function PostMessageBridge() {
   const [receivedCount, setReceivedCount] = useState(0);
 
   const processedIds = useRef(new Set<string>());
-  const messagePort = useRef<MessagePort | null>(null);
+  const portRef = useRef<MessagePort | null>(null);
 
   const log = useCallback((direction: LogEntry["direction"], text: string) => {
     const time = new Date().toLocaleTimeString();
@@ -56,13 +39,8 @@ export default function PostMessageBridge() {
     []
   );
 
-  const isOriginAllowed = useCallback((origin: string) => {
-    if (!origin || origin === "" || origin === "null") return true;
-    return ALLOWED_ORIGINS.some((o) => origin === o || origin.startsWith(o));
-  }, []);
-
   const isDuplicate = useCallback((id: string) => {
-    if (!id) return true;
+    if (!id) return false; // allow messages without id (e.g. initial handshake)
     if (processedIds.current.has(id)) return true;
     processedIds.current.add(id);
     if (processedIds.current.size > MAX_TRACKED_IDS) {
@@ -73,77 +51,89 @@ export default function PostMessageBridge() {
   }, []);
 
   const sendToApp = useCallback(
-    (msg: BridgeMessage) => {
-      const json = JSON.stringify(msg);
-      if (messagePort.current) {
-        messagePort.current.postMessage(json);
-      } else {
-        window.postMessage(json, "*");
+    (data: string) => {
+      if (portRef.current) {
+        portRef.current.postMessage(data);
       }
     },
     []
   );
 
-  const processIncoming = useCallback(
-    (rawData: unknown, source: string) => {
+  // Handle messages arriving through the MessagePort
+  const handlePortMessage = useCallback(
+    (event: MessageEvent) => {
+      const raw = event.data;
+      log("in", `[port] ${typeof raw === "string" ? raw.slice(0, 120) : JSON.stringify(raw).slice(0, 120)}`);
+
       try {
-        const data: BridgeMessage =
-          typeof rawData === "string"
-            ? JSON.parse(rawData)
-            : (rawData as BridgeMessage);
-
-        if (!data.id) {
-          log("err", "Rejected: no message ID");
+        const data = typeof raw === "string" ? JSON.parse(raw) : raw;
+        if (data.id && isDuplicate(data.id)) {
           return;
         }
-        if (isDuplicate(data.id)) {
-          return; // silently skip duplicates
-        }
-        if (
-          data.origin &&
-          !data.origin.includes("com.playground.android") &&
-          !isOriginAllowed(data.origin)
-        ) {
-          log("err", `Rejected origin: ${data.origin}`);
-          return;
-        }
-
         setReceivedCount((c) => c + 1);
-        setConnected(true);
-        log("in", `[${data.type}] ${data.payload ?? JSON.stringify(data)}`);
 
-        // ACK back
-        sendToApp({
-          id: generateId(),
-          type: "ack",
-          replyTo: data.id,
-          payload: "Acknowledged by web",
-          timestamp: Date.now(),
-        });
-      } catch (e) {
-        log("err", `Parse error: ${(e as Error).message}`);
+        // Send ACK back through port
+        sendToApp(
+          JSON.stringify({
+            id: generateId(),
+            type: "ack",
+            replyTo: data.id,
+            payload: "Acknowledged by web",
+            timestamp: Date.now(),
+          })
+        );
+      } catch {
+        // Not JSON, just display it
+        setReceivedCount((c) => c + 1);
       }
     },
-    [isDuplicate, isOriginAllowed, log, sendToApp, generateId]
+    [isDuplicate, log, sendToApp, generateId]
   );
 
+  // Listen for the initial postMessage from the app (carries MessagePort)
   useEffect(() => {
     const handler = (event: MessageEvent) => {
-      if (!isOriginAllowed(event.origin)) {
-        log("err", `Blocked origin: ${event.origin}`);
-        return;
-      }
+      // Log everything for debugging
+      log(
+        "sys",
+        `message event: origin="${event.origin}" ports=${event.ports?.length ?? 0} data=${
+          typeof event.data === "string"
+            ? event.data.slice(0, 80)
+            : JSON.stringify(event.data)?.slice(0, 80) ?? "null"
+        }`
+      );
 
-      // MessagePort handshake
-      if (event.ports?.length) {
-        messagePort.current = event.ports[0];
-        messagePort.current.onmessage = (e) =>
-          processIncoming(e.data, "port");
+      // Extract the MessagePort (per Chrome docs, it's in event.ports[0])
+      const port = event.ports?.[0];
+      if (port) {
+        portRef.current = port;
+        port.onmessage = handlePortMessage;
         setConnected(true);
-        log("sys", "MessagePort channel established");
+        log("sys", "MessagePort established — bidirectional channel ready");
+
+        // Process the initial message data too (if any)
+        if (event.data) {
+          try {
+            const data =
+              typeof event.data === "string"
+                ? JSON.parse(event.data)
+                : event.data;
+            if (data.id && !isDuplicate(data.id)) {
+              setReceivedCount((c) => c + 1);
+              log(
+                "in",
+                `[initial] ${data.type ?? "?"}: ${data.payload ?? JSON.stringify(data)}`
+              );
+            }
+          } catch {
+            log("in", `[initial] ${event.data}`);
+            setReceivedCount((c) => c + 1);
+          }
+        }
         return;
       }
 
+      // No port — might be a direct message (non-port channel)
       if (event.data) {
         // Skip self-posted messages
         try {
@@ -152,41 +142,44 @@ export default function PostMessageBridge() {
               ? JSON.parse(event.data)
               : event.data;
           if (d.id?.startsWith("web_")) return;
+          if (d.id && isDuplicate(d.id)) return;
+          setReceivedCount((c) => c + 1);
+          log("in", `[window] ${d.type ?? "?"}: ${d.payload ?? JSON.stringify(d)}`);
         } catch {
-          /* not JSON */
+          setReceivedCount((c) => c + 1);
+          log("in", `[window] ${event.data}`);
         }
-        processIncoming(event.data, event.origin);
       }
     };
 
     window.addEventListener("message", handler);
-    log("sys", "Bridge loaded, listening for postMessage events");
+    log("sys", "Bridge loaded, listening for postMessage from app");
 
     return () => window.removeEventListener("message", handler);
-  }, [isOriginAllowed, log, processIncoming]);
+  }, [handlePortMessage, isDuplicate, log]);
 
   const handleSendGreeting = () => {
-    const msg: BridgeMessage = {
+    const msg = JSON.stringify({
       id: generateId(),
       type: "greeting",
       payload: "Hello from the web page!",
       timestamp: Date.now(),
-    };
+    });
     sendToApp(msg);
     setSentCount((c) => c + 1);
-    log("out", `[greeting] ${msg.payload}`);
+    log("out", `[greeting] Hello from the web page!`);
   };
 
   const handleSendPing = () => {
-    const msg: BridgeMessage = {
+    const msg = JSON.stringify({
       id: generateId(),
       type: "ping",
       payload: `ping @ ${new Date().toLocaleTimeString()}`,
       timestamp: Date.now(),
-    };
+    });
     sendToApp(msg);
     setSentCount((c) => c + 1);
-    log("out", `[ping] ${msg.payload}`);
+    log("out", `[ping] ${new Date().toLocaleTimeString()}`);
   };
 
   return (
@@ -201,7 +194,7 @@ export default function PostMessageBridge() {
       <div style={cardStyle}>
         <h2 style={{ fontSize: 20, margin: 0 }}>PostMessage Bridge</h2>
         <p style={{ color: "#888", fontSize: 13, margin: "4px 0 12px" }}>
-          Custom Tab &harr; App via postMessage
+          Custom Tab &harr; App via Chrome postMessage API
         </p>
         <div
           style={{
@@ -213,7 +206,9 @@ export default function PostMessageBridge() {
             color: connected ? "#2E7D32" : "#E65100",
           }}
         >
-          {connected ? "Connected to app" : "Waiting for connection..."}
+          {connected
+            ? "Connected — MessagePort active"
+            : "Waiting for app to send first message..."}
         </div>
       </div>
 
