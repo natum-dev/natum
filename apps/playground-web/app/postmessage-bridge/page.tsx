@@ -3,22 +3,23 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 /**
- * PostMessage bridge page opened by Android app in a Chrome Custom Tab.
+ * PostMessage bridge page for Chrome Custom Tabs ↔ App communication.
  *
- * Communication flows through a local HTTP relay on the Android device:
- *   App → Web:  GET  http://localhost:8234/api/toWeb  (polled every 500ms)
- *   Web → App:  POST http://localhost:8234/api/toApp
+ * Messages from the app arrive via:
+ *   - window "message" event (Custom Tabs postMessage API)
+ *   - MessagePort (if Chrome provides one via event.ports)
  *
- * Chrome allows localhost connections from HTTPS pages (secure context exception).
+ * Messages to the app are sent via:
+ *   - messagePort.postMessage() (if MessagePort was provided)
+ *   - window.postMessage() (fallback, Chrome relays to session)
  *
- * Security:
- *  - CORS on the relay restricts to this origin
- *  - Each message requires a unique `id`; the relay rejects duplicates
- *  - Origin header sent with every request
+ * Security: origin verified, message ID required, duplicates dropped.
  */
 
-const RELAY_BASE = "http://localhost:8234";
-const POLL_INTERVAL = 500;
+const ALLOWED_ORIGINS = [
+  "android-app://com.playground.android",
+  "https://playground.natum.dev",
+];
 const MAX_TRACKED_IDS = 500;
 
 interface BridgeMessage {
@@ -43,7 +44,7 @@ export default function PostMessageBridge() {
   const [receivedCount, setReceivedCount] = useState(0);
 
   const processedIds = useRef(new Set<string>());
-  const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const messagePort = useRef<MessagePort | null>(null);
 
   const log = useCallback((direction: LogEntry["direction"], text: string) => {
     const time = new Date().toLocaleTimeString();
@@ -55,86 +56,114 @@ export default function PostMessageBridge() {
     []
   );
 
-  // --- Send message to app via relay ---
+  const isOriginAllowed = useCallback((origin: string) => {
+    if (!origin || origin === "" || origin === "null") return true;
+    return ALLOWED_ORIGINS.some((o) => origin === o || origin.startsWith(o));
+  }, []);
+
+  const isDuplicate = useCallback((id: string) => {
+    if (!id) return true;
+    if (processedIds.current.has(id)) return true;
+    processedIds.current.add(id);
+    if (processedIds.current.size > MAX_TRACKED_IDS) {
+      const first = processedIds.current.values().next().value;
+      if (first) processedIds.current.delete(first);
+    }
+    return false;
+  }, []);
+
   const sendToApp = useCallback(
-    async (msg: BridgeMessage) => {
-      try {
-        const res = await fetch(`${RELAY_BASE}/api/toApp`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(msg),
-        });
-        if (!res.ok) {
-          const err = await res.text();
-          log("err", `Send failed (${res.status}): ${err}`);
-        }
-      } catch (e) {
-        log("err", `Relay unreachable: ${(e as Error).message}`);
+    (msg: BridgeMessage) => {
+      const json = JSON.stringify(msg);
+      if (messagePort.current) {
+        messagePort.current.postMessage(json);
+      } else {
+        window.postMessage(json, "*");
       }
     },
-    [log]
+    []
   );
 
-  // --- Poll relay for messages from app ---
-  useEffect(() => {
-    let active = true;
-
-    const poll = async () => {
+  const processIncoming = useCallback(
+    (rawData: unknown, source: string) => {
       try {
-        const res = await fetch(`${RELAY_BASE}/api/toWeb`);
-        if (!res.ok) return;
+        const data: BridgeMessage =
+          typeof rawData === "string"
+            ? JSON.parse(rawData)
+            : (rawData as BridgeMessage);
 
-        const messages: BridgeMessage[] = await res.json();
-        if (!active) return;
-
-        if (messages.length > 0 && !connected) {
-          setConnected(true);
+        if (!data.id) {
+          log("err", "Rejected: no message ID");
+          return;
+        }
+        if (isDuplicate(data.id)) {
+          return; // silently skip duplicates
+        }
+        if (
+          data.origin &&
+          !data.origin.includes("com.playground.android") &&
+          !isOriginAllowed(data.origin)
+        ) {
+          log("err", `Rejected origin: ${data.origin}`);
+          return;
         }
 
-        for (const msg of messages) {
-          // Idempotency check
-          if (!msg.id || processedIds.current.has(msg.id)) continue;
-          processedIds.current.add(msg.id);
-          if (processedIds.current.size > MAX_TRACKED_IDS) {
-            const first = processedIds.current.values().next().value;
-            if (first) processedIds.current.delete(first);
-          }
+        setReceivedCount((c) => c + 1);
+        setConnected(true);
+        log("in", `[${data.type}] ${data.payload ?? JSON.stringify(data)}`);
 
-          setReceivedCount((c) => c + 1);
-          log("in", `[${msg.type}] ${msg.payload ?? JSON.stringify(msg)}`);
+        // ACK back
+        sendToApp({
+          id: generateId(),
+          type: "ack",
+          replyTo: data.id,
+          payload: "Acknowledged by web",
+          timestamp: Date.now(),
+        });
+      } catch (e) {
+        log("err", `Parse error: ${(e as Error).message}`);
+      }
+    },
+    [isDuplicate, isOriginAllowed, log, sendToApp, generateId]
+  );
 
-          // Send ACK
-          sendToApp({
-            id: generateId(),
-            type: "ack",
-            replyTo: msg.id,
-            payload: "Acknowledged by web",
-            timestamp: Date.now(),
-          });
+  useEffect(() => {
+    const handler = (event: MessageEvent) => {
+      if (!isOriginAllowed(event.origin)) {
+        log("err", `Blocked origin: ${event.origin}`);
+        return;
+      }
+
+      // MessagePort handshake
+      if (event.ports?.length) {
+        messagePort.current = event.ports[0];
+        messagePort.current.onmessage = (e) =>
+          processIncoming(e.data, "port");
+        setConnected(true);
+        log("sys", "MessagePort channel established");
+        return;
+      }
+
+      if (event.data) {
+        // Skip self-posted messages
+        try {
+          const d =
+            typeof event.data === "string"
+              ? JSON.parse(event.data)
+              : event.data;
+          if (d.id?.startsWith("web_")) return;
+        } catch {
+          /* not JSON */
         }
-      } catch {
-        // Relay not available — will retry next poll
+        processIncoming(event.data, event.origin);
       }
     };
 
-    // Health check first
-    fetch(`${RELAY_BASE}/api/health`)
-      .then((r) => {
-        if (r.ok) {
-          setConnected(true);
-          log("sys", "Connected to app relay");
-        }
-      })
-      .catch(() => log("sys", "Waiting for app relay..."));
+    window.addEventListener("message", handler);
+    log("sys", "Bridge loaded, listening for postMessage events");
 
-    pollingRef.current = setInterval(poll, POLL_INTERVAL);
-    log("sys", `Bridge loaded, polling ${RELAY_BASE} every ${POLL_INTERVAL}ms`);
-
-    return () => {
-      active = false;
-      if (pollingRef.current) clearInterval(pollingRef.current);
-    };
-  }, [connected, generateId, log, sendToApp]);
+    return () => window.removeEventListener("message", handler);
+  }, [isOriginAllowed, log, processIncoming]);
 
   const handleSendGreeting = () => {
     const msg: BridgeMessage = {
@@ -172,7 +201,7 @@ export default function PostMessageBridge() {
       <div style={cardStyle}>
         <h2 style={{ fontSize: 20, margin: 0 }}>PostMessage Bridge</h2>
         <p style={{ color: "#888", fontSize: 13, margin: "4px 0 12px" }}>
-          Custom Tab &harr; App via local relay
+          Custom Tab &harr; App via postMessage
         </p>
         <div
           style={{
@@ -184,7 +213,7 @@ export default function PostMessageBridge() {
             color: connected ? "#2E7D32" : "#E65100",
           }}
         >
-          {connected ? "Connected to app relay" : "Waiting for app relay..."}
+          {connected ? "Connected to app" : "Waiting for connection..."}
         </div>
       </div>
 
