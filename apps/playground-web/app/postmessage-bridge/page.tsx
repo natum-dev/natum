@@ -27,6 +27,7 @@ export default function PostMessageBridge() {
   const [receivedCount, setReceivedCount] = useState(0);
 
   const processedIds = useRef(new Set<string>());
+  const pendingPings = useRef(new Map<string, number>()); // id → timestamp
   const portRef = useRef<MessagePort | null>(null);
 
   const log = useCallback((direction: LogEntry["direction"], text: string) => {
@@ -71,6 +72,20 @@ export default function PostMessageBridge() {
           return;
         }
         setReceivedCount((c) => c + 1);
+
+        // Handle pong: verify requestId matches a pending ping
+        if (data.type === "pong") {
+          const requestId = data.requestId;
+          if (!requestId || !pendingPings.current.has(requestId)) {
+            log("err", `[pong] unknown requestId: ${requestId ?? "missing"}`);
+            return;
+          }
+          const sentAt = pendingPings.current.get(requestId)!;
+          const rtt = Date.now() - sentAt;
+          pendingPings.current.delete(requestId);
+          log("in", `[pong] requestId=${requestId.slice(-12)} rtt=${rtt}ms`);
+          return;
+        }
 
         // Send ACK back through port
         sendToApp(
@@ -171,15 +186,17 @@ export default function PostMessageBridge() {
   };
 
   const handleSendPing = () => {
+    const id = generateId();
     const msg = JSON.stringify({
-      id: generateId(),
+      id,
       type: "ping",
       payload: `ping @ ${new Date().toLocaleTimeString()}`,
       timestamp: Date.now(),
     });
+    pendingPings.current.set(id, Date.now());
     sendToApp(msg);
     setSentCount((c) => c + 1);
-    log("out", `[ping] ${new Date().toLocaleTimeString()}`);
+    log("out", `[ping] id=${id.slice(-12)} — waiting for pong...`);
   };
 
   return (
