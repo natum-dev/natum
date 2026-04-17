@@ -48,6 +48,7 @@ export default function PostMessageBridge() {
   const processedIds = useRef(new Set<string>());
   const pendingPings = useRef(new Map<string, number>());
   const portRef = useRef<MessagePort | null>(null);
+  const pingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const log = useCallback((direction: LogEntry["direction"], text: string) => {
     const time = new Date().toLocaleTimeString();
@@ -120,6 +121,20 @@ export default function PostMessageBridge() {
     [isDuplicate, log, sendToApp, generateId]
   );
 
+  const doPing = useCallback(() => {
+    const id = generateId();
+    const msg = JSON.stringify({
+      id,
+      type: "ping",
+      payload: `connection check @ ${new Date().toLocaleTimeString()}`,
+      timestamp: Date.now(),
+    });
+    pendingPings.current.set(id, Date.now());
+    sendToApp(msg);
+    setSentCount((c) => c + 1);
+    log("out", `[ping] id=${id.slice(-12)} — connection check`);
+  }, [generateId, sendToApp, log]);
+
   // Handle messages arriving through the MessagePort (after React takes over)
   const handlePortMessage = useCallback(
     (event: MessageEvent) => {
@@ -146,6 +161,10 @@ export default function PostMessageBridge() {
         processMessage(msg.data);
       }
       bridge.queue.length = 0;
+
+      // Connection check interval
+      pingIntervalRef.current = setInterval(doPing, 5000);
+      doPing();
 
       return;
     }
@@ -179,7 +198,10 @@ export default function PostMessageBridge() {
         if (event.data) {
           processMessage(event.data);
         }
-        return;
+
+        // Connection check interval
+        pingIntervalRef.current = setInterval(doPing, 5000);
+        doPing();
       }
 
       if (event.data) {
@@ -197,8 +219,14 @@ export default function PostMessageBridge() {
     };
 
     window.addEventListener("message", handler);
-    return () => window.removeEventListener("message", handler);
-  }, [handlePortMessage, processMessage, isDuplicate, log]);
+    return () => {
+      window.removeEventListener("message", handler);
+      if (pingIntervalRef.current) {
+        clearInterval(pingIntervalRef.current);
+        pingIntervalRef.current = null;
+      }
+    };
+  }, [handlePortMessage, processMessage, isDuplicate, log, doPing]);
 
   const handleSendGreeting = () => {
     const msg = JSON.stringify({
@@ -212,19 +240,7 @@ export default function PostMessageBridge() {
     log("out", `[greeting] Hello from the web page!`);
   };
 
-  const handleSendPing = () => {
-    const id = generateId();
-    const msg = JSON.stringify({
-      id,
-      type: "ping",
-      payload: `ping @ ${new Date().toLocaleTimeString()}`,
-      timestamp: Date.now(),
-    });
-    pendingPings.current.set(id, Date.now());
-    sendToApp(msg);
-    setSentCount((c) => c + 1);
-    log("out", `[ping] id=${id.slice(-12)} — waiting for pong...`);
-  };
+  const handleSendPing = () => doPing();
 
   return (
     <main
