@@ -1,4 +1,5 @@
 import { cookies, headers } from "next/headers";
+import NavigateButton from "./navigate-button";
 
 export default async function DumpDataPage({
   searchParams,
@@ -89,6 +90,8 @@ export default async function DumpDataPage({
             ))}
           </tbody>
         </table>
+
+        <NavigateButton />
       </main>
     );
   }
@@ -135,6 +138,8 @@ export default async function DumpDataPage({
           ))}
         </tbody>
       </table>
+
+      <NavigateButton />
     </main>
   );
 }
