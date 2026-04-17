@@ -1,4 +1,4 @@
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 
 export default async function DumpDataPage({
   searchParams,
@@ -9,6 +9,9 @@ export default async function DumpDataPage({
   const data = typeof params.data === "string" ? params.data : "";
   const cookieStore = await cookies();
   const redirectTimestamp = cookieStore.get("Redirect-Timestamp")?.value ?? null;
+  const headerStore = await headers();
+  const requestedWith = headerStore.get("x-requested-with");
+  const allHeaders = Object.fromEntries(headerStore.entries());
 
   let parsed: unknown;
   try {
@@ -22,6 +25,11 @@ export default async function DumpDataPage({
     return (
       <main className="p-8">
         <h1 className="text-xl font-bold mb-4">Dump Data</h1>
+        {requestedWith && (
+          <p className="mb-4 font-mono text-sm bg-green-50 border border-green-200 p-2 rounded">
+            X-Requested-With: {requestedWith}
+          </p>
+        )}
         {redirectTimestamp && (
           <p className="mb-4 font-mono text-sm">
             Redirect-Timestamp: {redirectTimestamp}
@@ -53,6 +61,32 @@ export default async function DumpDataPage({
             ))}
           </tbody>
         </table>
+
+        <h2 className="text-lg font-bold mt-8 mb-2">Request Headers</h2>
+        <table className="border-collapse border border-gray-300 w-full">
+          <thead>
+            <tr>
+              <th className="border border-gray-300 px-4 py-2 text-left bg-gray-100">
+                Header
+              </th>
+              <th className="border border-gray-300 px-4 py-2 text-left bg-gray-100">
+                Value
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {Object.entries(allHeaders).map(([key, value]) => (
+              <tr key={key} className={key === "x-requested-with" ? "bg-green-50" : ""}>
+                <td className="border border-gray-300 px-4 py-2 font-mono text-sm">
+                  {key}
+                </td>
+                <td className="border border-gray-300 px-4 py-2 font-mono text-sm break-all">
+                  {value}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </main>
     );
   }
@@ -60,6 +94,11 @@ export default async function DumpDataPage({
   return (
     <main className="p-8">
       <h1 className="text-xl font-bold mb-4">Dump Data</h1>
+      {requestedWith && (
+        <p className="mb-4 font-mono text-sm bg-green-50 border border-green-200 p-2 rounded">
+          X-Requested-With: {requestedWith}
+        </p>
+      )}
       {redirectTimestamp && (
         <p className="mb-4 font-mono text-sm">
           Redirect-Timestamp: {redirectTimestamp}
@@ -68,6 +107,32 @@ export default async function DumpDataPage({
       <pre className="whitespace-pre-wrap break-all bg-gray-50 p-4 rounded border">
         {data || "(empty)"}
       </pre>
+
+      <h2 className="text-lg font-bold mt-8 mb-2">Request Headers</h2>
+      <table className="border-collapse border border-gray-300 w-full">
+        <thead>
+          <tr>
+            <th className="border border-gray-300 px-4 py-2 text-left bg-gray-100">
+              Header
+            </th>
+            <th className="border border-gray-300 px-4 py-2 text-left bg-gray-100">
+              Value
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {Object.entries(allHeaders).map(([key, value]) => (
+            <tr key={key} className={key === "x-requested-with" ? "bg-green-50" : ""}>
+              <td className="border border-gray-300 px-4 py-2 font-mono text-sm">
+                {key}
+              </td>
+              <td className="border border-gray-300 px-4 py-2 font-mono text-sm break-all">
+                {value}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </main>
   );
 }
