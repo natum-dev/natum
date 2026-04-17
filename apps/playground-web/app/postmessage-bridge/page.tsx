@@ -5,11 +5,11 @@ import { useCallback, useEffect, useRef, useState } from "react";
 /**
  * PostMessage bridge page for Chrome Custom Tabs.
  *
- * Per https://developer.chrome.com/docs/android/post-message-twa:
- *   1. App sends first message — arrives as MessageEvent with ports[0]
- *   2. Web stores ports[0] as the communication channel
- *   3. Subsequent messages arrive via port.onmessage
- *   4. Web sends back via port.postMessage()
+ * The inline script in layout.tsx registers a message listener immediately
+ * (before React hydrates) and captures the MessagePort + queued messages
+ * in window.__postMessageBridge. On mount, this component checks if the
+ * port was already captured and drains queued messages. If not, it falls
+ * back to registering its own listener.
  */
 
 const MAX_TRACKED_IDS = 500;
@@ -20,6 +20,25 @@ interface LogEntry {
   text: string;
 }
 
+interface QueuedMessage {
+  type: "initial" | "port" | "window";
+  data: unknown;
+  origin: string;
+  timestamp: number;
+}
+
+interface PostMessageBridge {
+  port: MessagePort | null;
+  queue: QueuedMessage[];
+  ready: boolean;
+}
+
+declare global {
+  interface Window {
+    __postMessageBridge?: PostMessageBridge;
+  }
+}
+
 export default function PostMessageBridge() {
   const [connected, setConnected] = useState(false);
   const [logs, setLogs] = useState<LogEntry[]>([]);
@@ -27,7 +46,7 @@ export default function PostMessageBridge() {
   const [receivedCount, setReceivedCount] = useState(0);
 
   const processedIds = useRef(new Set<string>());
-  const pendingPings = useRef(new Map<string, number>()); // id → timestamp
+  const pendingPings = useRef(new Map<string, number>());
   const portRef = useRef<MessagePort | null>(null);
 
   const log = useCallback((direction: LogEntry["direction"], text: string) => {
@@ -41,7 +60,7 @@ export default function PostMessageBridge() {
   );
 
   const isDuplicate = useCallback((id: string) => {
-    if (!id) return false; // allow messages without id (e.g. initial handshake)
+    if (!id) return false;
     if (processedIds.current.has(id)) return true;
     processedIds.current.add(id);
     if (processedIds.current.size > MAX_TRACKED_IDS) {
@@ -51,29 +70,20 @@ export default function PostMessageBridge() {
     return false;
   }, []);
 
-  const sendToApp = useCallback(
-    (data: string) => {
-      if (portRef.current) {
-        portRef.current.postMessage(data);
-      }
-    },
-    []
-  );
+  const sendToApp = useCallback((data: string) => {
+    if (portRef.current) {
+      portRef.current.postMessage(data);
+    }
+  }, []);
 
-  // Handle messages arriving through the MessagePort
-  const handlePortMessage = useCallback(
-    (event: MessageEvent) => {
-      const raw = event.data;
-      log("in", `[port] ${typeof raw === "string" ? raw.slice(0, 120) : JSON.stringify(raw).slice(0, 120)}`);
-
+  // Process a single incoming message (from port or queued)
+  const processMessage = useCallback(
+    (raw: unknown) => {
       try {
         const data = typeof raw === "string" ? JSON.parse(raw) : raw;
-        if (data.id && isDuplicate(data.id)) {
-          return;
-        }
+        if (data.id && isDuplicate(data.id)) return;
         setReceivedCount((c) => c + 1);
 
-        // Handle pong: verify requestId matches a pending ping
         if (data.type === "pong") {
           const requestId = data.requestId;
           if (!requestId || !pendingPings.current.has(requestId)) {
@@ -87,7 +97,12 @@ export default function PostMessageBridge() {
           return;
         }
 
-        // Send ACK back through port
+        log(
+          "in",
+          `[${data.type ?? "?"}] ${data.payload ?? JSON.stringify(data).slice(0, 120)}`
+        );
+
+        // Send ACK
         sendToApp(
           JSON.stringify({
             id: generateId(),
@@ -98,17 +113,47 @@ export default function PostMessageBridge() {
           })
         );
       } catch {
-        // Not JSON, just display it
         setReceivedCount((c) => c + 1);
+        log("in", `${typeof raw === "string" ? raw.slice(0, 120) : JSON.stringify(raw)?.slice(0, 120)}`);
       }
     },
     [isDuplicate, log, sendToApp, generateId]
   );
 
-  // Listen for the initial postMessage from the app (carries MessagePort)
+  // Handle messages arriving through the MessagePort (after React takes over)
+  const handlePortMessage = useCallback(
+    (event: MessageEvent) => {
+      log("in", `[port] ${typeof event.data === "string" ? event.data.slice(0, 120) : JSON.stringify(event.data).slice(0, 120)}`);
+      processMessage(event.data);
+    },
+    [log, processMessage]
+  );
+
   useEffect(() => {
+    const bridge = window.__postMessageBridge;
+
+    if (bridge?.ready && bridge.port) {
+      // Inline script already captured the port before React hydrated
+      log("sys", "Port captured by inline script (pre-hydration)");
+      portRef.current = bridge.port;
+      bridge.port.onmessage = handlePortMessage;
+      setConnected(true);
+      log("sys", `MessagePort established — draining ${bridge.queue.length} queued message(s)`);
+
+      // Drain queued messages
+      for (const msg of bridge.queue) {
+        log("sys", `[queued:${msg.type}] processing buffered message`);
+        processMessage(msg.data);
+      }
+      bridge.queue.length = 0;
+
+      return;
+    }
+
+    // Inline script hasn't captured a port yet — register our own listener
+    log("sys", "Bridge loaded, listening for postMessage from app");
+
     const handler = (event: MessageEvent) => {
-      // Log everything for debugging
       log(
         "sys",
         `message event: origin="${event.origin}" ports=${event.ports?.length ?? 0} data=${
@@ -118,7 +163,6 @@ export default function PostMessageBridge() {
         }`
       );
 
-      // Extract the MessagePort (per Chrome docs, it's in event.ports[0])
       const port = event.ports?.[0];
       if (port) {
         portRef.current = port;
@@ -126,36 +170,21 @@ export default function PostMessageBridge() {
         setConnected(true);
         log("sys", "MessagePort established — bidirectional channel ready");
 
-        // Process the initial message data too (if any)
+        // Also update the bridge object so it's consistent
+        if (bridge) {
+          bridge.port = port;
+          bridge.ready = true;
+        }
+
         if (event.data) {
-          try {
-            const data =
-              typeof event.data === "string"
-                ? JSON.parse(event.data)
-                : event.data;
-            if (data.id && !isDuplicate(data.id)) {
-              setReceivedCount((c) => c + 1);
-              log(
-                "in",
-                `[initial] ${data.type ?? "?"}: ${data.payload ?? JSON.stringify(data)}`
-              );
-            }
-          } catch {
-            log("in", `[initial] ${event.data}`);
-            setReceivedCount((c) => c + 1);
-          }
+          processMessage(event.data);
         }
         return;
       }
 
-      // No port — might be a direct message (non-port channel)
       if (event.data) {
-        // Skip self-posted messages
         try {
-          const d =
-            typeof event.data === "string"
-              ? JSON.parse(event.data)
-              : event.data;
+          const d = typeof event.data === "string" ? JSON.parse(event.data) : event.data;
           if (d.id?.startsWith("web_")) return;
           if (d.id && isDuplicate(d.id)) return;
           setReceivedCount((c) => c + 1);
@@ -168,10 +197,8 @@ export default function PostMessageBridge() {
     };
 
     window.addEventListener("message", handler);
-    log("sys", "Bridge loaded, listening for postMessage from app");
-
     return () => window.removeEventListener("message", handler);
-  }, [handlePortMessage, isDuplicate, log]);
+  }, [handlePortMessage, processMessage, isDuplicate, log]);
 
   const handleSendGreeting = () => {
     const msg = JSON.stringify({
