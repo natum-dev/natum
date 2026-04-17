@@ -11,7 +11,9 @@ export default async function DumpDataPage({
   const redirectTimestamp = cookieStore.get("Redirect-Timestamp")?.value ?? null;
   const headerStore = await headers();
   const requestedWith = headerStore.get("x-requested-with");
-  const allHeaders = Object.fromEntries(headerStore.entries());
+  const allHeaders = Object.fromEntries(
+    [...headerStore.entries()].sort(([a], [b]) => a.localeCompare(b))
+  );
 
   let parsed: unknown;
   try {
