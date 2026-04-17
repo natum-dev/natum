@@ -117,6 +117,12 @@ export default function MemoryTestPage() {
         <p style={{ fontSize: 11, color: "#999", marginTop: 8 }}>
           Render count: {renderCount}
         </p>
+        <button
+          style={{ ...rerenderBtnStyle, marginTop: 8 }}
+          onClick={() => setRenderCount((c) => c + 1)}
+        >
+          Force Re-render
+        </button>
       </div>
 
       <div style={cardStyle}>
@@ -200,6 +206,18 @@ const cardStyle: React.CSSProperties = {
   padding: 16,
   marginBottom: 12,
   boxShadow: "0 1px 4px rgba(0,0,0,0.08)",
+};
+
+const rerenderBtnStyle: React.CSSProperties = {
+  display: "block",
+  width: "100%",
+  background: "#F5F5F5",
+  color: "#333",
+  border: "1px solid #DDD",
+  padding: "8px 16px",
+  borderRadius: 8,
+  fontSize: 13,
+  cursor: "pointer",
 };
 
 const btnStyle: React.CSSProperties = {
