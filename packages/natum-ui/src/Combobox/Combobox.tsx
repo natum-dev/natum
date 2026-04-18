@@ -101,6 +101,8 @@ const Combobox = forwardRef<HTMLInputElement, ComboboxProps>((props, ref) => {
     error,
     emptyContent,
     noMatchContent,
+    clearable = false,
+    onClear,
     label,
     helperText,
     errorMessage,
@@ -112,6 +114,7 @@ const Combobox = forwardRef<HTMLInputElement, ComboboxProps>((props, ref) => {
     open: openProp,
     defaultOpen,
     onOpenChange,
+    name,
     children,
     className,
     inputClassName,
@@ -222,6 +225,14 @@ const Combobox = forwardRef<HTMLInputElement, ComboboxProps>((props, ref) => {
     [disabled, readOnly, selection]
   );
 
+  const handleClear = useCallback(() => {
+    if (disabled || readOnly) return;
+    selection.clear();
+    setSearchValue("");
+    onClear?.();
+    inputRef.current?.focus();
+  }, [disabled, readOnly, selection, setSearchValue, onClear]);
+
   const handleIndexSelect = useCallback(
     (i: number) => {
       const item = visibleItems[i];
@@ -265,6 +276,7 @@ const Combobox = forwardRef<HTMLInputElement, ComboboxProps>((props, ref) => {
   // --- Derived ---
   const hasError = errorMessage != null;
   const message = errorMessage ?? helperText;
+  const hasValue = selection.selected.length > 0;
 
   const labelFor = useCallback(
     (value: string): ReactNode => {
@@ -313,10 +325,34 @@ const Combobox = forwardRef<HTMLInputElement, ComboboxProps>((props, ref) => {
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       if (readOnly || disabled) return;
-      setSearchValue(e.target.value);
+      let next = e.target.value;
+      // Single-select: input displays the selected label when searchValue is
+      // empty. If the user types before the focus-time select()-all has had a
+      // chance to apply (e.g. in jsdom rAF timing), the incoming value is
+      // "<label><typedChars>". Strip the label prefix so we capture only the
+      // typed query — matching the intent of select-on-focus.
+      if (
+        !selection.isMulti &&
+        searchValue === "" &&
+        selectedSingleLabel &&
+        next.startsWith(selectedSingleLabel) &&
+        next.length > selectedSingleLabel.length
+      ) {
+        next = next.slice(selectedSingleLabel.length);
+      }
+      setSearchValue(next);
       if (!isOpen) setOpen(true);
     },
-    [readOnly, disabled, isOpen, setOpen, setSearchValue]
+    [
+      readOnly,
+      disabled,
+      isOpen,
+      setOpen,
+      setSearchValue,
+      selection.isMulti,
+      searchValue,
+      selectedSingleLabel,
+    ]
   );
 
   const handleInputClick = useCallback(() => {
@@ -489,6 +525,18 @@ const Combobox = forwardRef<HTMLInputElement, ComboboxProps>((props, ref) => {
         />
 
         <span className={styles.right_section}>
+          {clearable && hasValue && !readOnly && !disabled && (
+            <button
+              type="button"
+              tabIndex={-1}
+              aria-label="Clear selection"
+              className={styles.clear_button}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={handleClear}
+            >
+              <IconX size="sm" color="currentColor" />
+            </button>
+          )}
           <IconChevronDown
             size="sm"
             color="currentColor"
@@ -525,6 +573,11 @@ const Combobox = forwardRef<HTMLInputElement, ComboboxProps>((props, ref) => {
         query={searchValue}
         className={listboxClassName}
       />
+
+      {name &&
+        selection.selected.map((v) => (
+          <input key={v} type="hidden" name={name} value={v} />
+        ))}
 
       {message != null && (
         <div

@@ -512,3 +512,174 @@ describe("Combobox — UI states", () => {
     expect(screen.getByText("nope")).toBeInTheDocument();
   });
 });
+
+describe("Combobox — clearable", () => {
+  it("clearable single: X button fires onChange(undefined) + onClear", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    const onClear = vi.fn();
+    render(
+      <Combobox
+        label="F"
+        clearable
+        defaultValue="a"
+        onChange={onChange}
+        onClear={onClear}
+      >
+        <ComboboxItem value="a">Apple</ComboboxItem>
+      </Combobox>
+    );
+    const clearBtn = screen.getByLabelText("Clear selection");
+    await user.click(clearBtn);
+    expect(onChange).toHaveBeenCalledWith(undefined);
+    expect(onClear).toHaveBeenCalled();
+  });
+
+  it("clearable multi: X clears all chips and fires onChange([])", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    render(
+      <Combobox label="F" multiple clearable defaultValue={["a", "b"]} onChange={onChange}>
+        <ComboboxItem value="a">Apple</ComboboxItem>
+        <ComboboxItem value="b">Banana</ComboboxItem>
+      </Combobox>
+    );
+    await user.click(screen.getByLabelText("Clear selection"));
+    expect(onChange).toHaveBeenCalledWith([]);
+  });
+
+  it("clear does NOT close the listbox if open", async () => {
+    const user = userEvent.setup();
+    render(
+      <Combobox label="F" clearable defaultValue="a">
+        <ComboboxItem value="a">Apple</ComboboxItem>
+      </Combobox>
+    );
+    const input = screen.getByRole("combobox");
+    await user.click(input);
+    expect(input).toHaveAttribute("aria-expanded", "true");
+    await user.click(screen.getByLabelText("Clear selection"));
+    expect(input).toHaveAttribute("aria-expanded", "true");
+  });
+});
+
+describe("Combobox — form integration", () => {
+  it("name + single value → one hidden input", () => {
+    render(
+      <Combobox label="F" name="fruit" defaultValue="a">
+        <ComboboxItem value="a">Apple</ComboboxItem>
+      </Combobox>
+    );
+    const hidden = document.querySelectorAll<HTMLInputElement>(
+      'input[type="hidden"][name="fruit"]'
+    );
+    expect(hidden).toHaveLength(1);
+    expect(hidden[0].value).toBe("a");
+  });
+
+  it("name + multi values → one hidden input per value", () => {
+    render(
+      <Combobox label="F" multiple name="tags" defaultValue={["a", "b"]}>
+        <ComboboxItem value="a">A</ComboboxItem>
+        <ComboboxItem value="b">B</ComboboxItem>
+      </Combobox>
+    );
+    const hidden = document.querySelectorAll<HTMLInputElement>(
+      'input[type="hidden"][name="tags"]'
+    );
+    expect(hidden).toHaveLength(2);
+    expect(Array.from(hidden).map((h) => h.value)).toEqual(["a", "b"]);
+  });
+
+  it("no name → no hidden inputs", () => {
+    render(
+      <Combobox label="F" defaultValue="a">
+        <ComboboxItem value="a">Apple</ComboboxItem>
+      </Combobox>
+    );
+    expect(document.querySelectorAll('input[type="hidden"]').length).toBe(0);
+  });
+});
+
+describe("Combobox — controlled open + search", () => {
+  it("open prop controls visibility", async () => {
+    const user = userEvent.setup();
+    const onOpenChange = vi.fn();
+    const { rerender } = render(
+      <Combobox label="F" open={false} onOpenChange={onOpenChange}>
+        <ComboboxItem value="a">A</ComboboxItem>
+      </Combobox>
+    );
+    const input = screen.getByRole("combobox");
+    expect(input).toHaveAttribute("aria-expanded", "false");
+    await user.click(input);
+    expect(onOpenChange).toHaveBeenCalledWith(true);
+    expect(input).toHaveAttribute("aria-expanded", "false");
+    rerender(
+      <Combobox label="F" open={true} onOpenChange={onOpenChange}>
+        <ComboboxItem value="a">A</ComboboxItem>
+      </Combobox>
+    );
+    expect(input).toHaveAttribute("aria-expanded", "true");
+  });
+
+  it("defaultOpen={true} opens on mount", async () => {
+    render(
+      <Combobox label="F" defaultOpen>
+        <ComboboxItem value="a">A</ComboboxItem>
+      </Combobox>
+    );
+    expect(await screen.findByRole("listbox")).toBeInTheDocument();
+  });
+
+  it("searchValue controlled: typing fires onSearchChange; input reads controlled prop", async () => {
+    const user = userEvent.setup();
+    const onSearchChange = vi.fn();
+    const Wrapper = () => {
+      const [q, setQ] = React.useState("");
+      return (
+        <Combobox
+          label="F"
+          searchValue={q}
+          onSearchChange={(next) => {
+            onSearchChange(next);
+            setQ(next);
+          }}
+        >
+          <ComboboxItem value="a">Apple</ComboboxItem>
+          <ComboboxItem value="b">Banana</ComboboxItem>
+        </Combobox>
+      );
+    };
+    render(<Wrapper />);
+    const input = screen.getByRole("combobox") as HTMLInputElement;
+    await user.click(input);
+    await user.type(input, "a");
+    expect(onSearchChange).toHaveBeenLastCalledWith("a");
+    expect(input.value).toBe("a");
+  });
+});
+
+describe("Combobox — single-select input revert", () => {
+  it("Escape clears searchValue → input reverts to selected label", async () => {
+    const user = userEvent.setup();
+    renderBasic({ defaultValue: "banana" });
+    const input = screen.getByRole("combobox") as HTMLInputElement;
+    await user.click(input);
+    await user.type(input, "xx");
+    expect(input.value).toBe("xx");
+    await user.keyboard("{Escape}");
+    expect(input.value).toBe("Banana");
+  });
+
+  it("Blur (without picking) reverts input to selected label", async () => {
+    const user = userEvent.setup();
+    renderBasic({ defaultValue: "banana" });
+    const input = screen.getByRole("combobox") as HTMLInputElement;
+    await user.click(input);
+    await user.type(input, "xx");
+    expect(input.value).toBe("xx");
+    await user.tab();
+    expect(input.value).toBe("Banana");
+  });
+});
