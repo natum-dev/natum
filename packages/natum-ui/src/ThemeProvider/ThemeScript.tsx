@@ -1,5 +1,5 @@
 const SCRIPT =
-  '(function(){try{var m=document.cookie.match(/(?:^|; )natum-theme=(light|dark|system)/);var t=m?m[1]:"system";if(t==="system")t=matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light";document.documentElement.dataset.theme=t;}catch(e){}}());';
+  '(function(){try{var m=document.cookie.match(/(?:^|;\\s*)natum-theme=(light|dark|system)(?:;|$)/);var t=m?m[1]:"system";if(t==="system")t=matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light";document.documentElement.dataset.theme=t;}catch(e){}}());';
 
 /**
  * Blocking inline script that sets `<html data-theme>` before first paint.
