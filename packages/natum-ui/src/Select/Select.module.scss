@@ -1,0 +1,197 @@
+@use "../design-tokens" as *;
+
+// --- Wrapper ---
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+}
+
+// --- Label ---
+.label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--neutral-text-secondary);
+  margin-block-end: 4px;
+
+  .error & {
+    color: var(--error-text);
+  }
+}
+.focused .label,
+.wrapper:has(.focused) .label {
+  color: var(--primary-text);
+}
+.error .label,
+.error:has(.focused) .label {
+  color: var(--error-text);
+}
+
+.required_asterisk {
+  color: var(--error-text);
+  margin-inline-start: 2px;
+}
+
+// --- Trigger container (the <button>) ---
+.trigger {
+  all: unset;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  width: 100%;
+  cursor: pointer;
+  user-select: none;
+  min-inline-size: 0;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      border-color var(--duration-fast) var(--easing-default),
+      box-shadow var(--duration-fast) var(--easing-default),
+      background-color var(--duration-fast) var(--easing-default);
+  }
+}
+
+// --- Variants ---
+.outlined {
+  border: 1px solid var(--border-color-subtle);
+  background-color: var(--neutral-bg-elevated);
+
+  &:hover:not(.open):not(.disabled_state) {
+    border-color: var(--border-color);
+  }
+  &.open {
+    border-color: var(--primary-border);
+    box-shadow: 0 0 0 1px var(--primary-border);
+  }
+  &.error {
+    border-color: var(--error-border);
+  }
+  &.error.open {
+    box-shadow: 0 0 0 1px var(--error-border);
+  }
+}
+
+.filled {
+  border: 1px solid transparent;
+  border-block-end: 1px solid var(--border-color-subtle);
+  background-color: var(--neutral-bg-inset);
+
+  &:hover:not(.open):not(.disabled_state) {
+    border-block-end-color: var(--border-color);
+  }
+  &.open {
+    border-block-end-color: var(--primary-border);
+    background-color: var(--neutral-bg-elevated);
+  }
+  &.error {
+    border-block-end-color: var(--error-border);
+  }
+}
+
+// --- Sizes ---
+.sm {
+  min-height: 36px;
+  padding: 4px 8px;
+  font-size: 14px;
+  border-radius: var(--radius-sm, 4px);
+}
+
+.md {
+  @include hit-target-min;
+  padding: 8px 12px;
+  font-size: 16px;
+  border-radius: var(--radius-md, 8px);
+}
+
+.lg {
+  min-height: 52px;
+  padding: 12px 16px;
+  font-size: 18px;
+  border-radius: var(--radius-md, 8px);
+}
+
+// --- States ---
+.readonly_state {
+  background-color: var(--neutral-bg-inset);
+  cursor: default;
+}
+.disabled_state {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+// --- Sections ---
+.left_section,
+.right_section {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--neutral-text-secondary);
+  flex-shrink: 0;
+}
+.left_section {
+  margin-inline-end: var(--space-2);
+}
+.right_section {
+  margin-inline-start: var(--space-2);
+  gap: var(--space-1);
+}
+
+// --- Value display ---
+.value_display {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  text-align: start;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--neutral-text);
+}
+.value_placeholder {
+  color: var(--neutral-text-disabled);
+}
+
+// --- Chevron ---
+.chevron {
+  transition: transform var(--duration-fast) var(--easing-default);
+}
+.open .chevron {
+  transform: rotate(180deg);
+}
+
+// --- Clear button ---
+.clear_button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--neutral-text-secondary);
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--neutral-bg-inset);
+    color: var(--neutral-text);
+  }
+}
+
+// --- Focus ring on the button ---
+.trigger:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+// --- Message ---
+.message {
+  margin-block-start: var(--space-1);
+  font-size: 13px;
+  color: var(--neutral-text-secondary);
+  line-height: 1.4;
+}
+.message_error {
+  color: var(--error-text);
+}
