@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, forwardRef, type ComponentType } from "react";
+import { useState, useEffect, useCallback, useMemo, forwardRef, type ComponentType } from "react";
 import {
   IconCheckCircle,
   IconXCircle,
@@ -26,12 +26,19 @@ const typeIconMap: Record<string, ComponentType<IconProps>> = {
   info: IconInfo,
 };
 
-const ANIMATION_DURATION = 250;
-
 const ToastItem = forwardRef<HTMLDivElement, ToastItemProps>(
   ({ toast: t, onDismiss }, ref) => {
     const [dismissed, setDismissed] = useState(false);
     const [paused, setPaused] = useState(false);
+
+    const animationDuration = useMemo(() => {
+      if (typeof document === "undefined") return 250;
+      const raw = getComputedStyle(document.documentElement)
+        .getPropertyValue("--duration-normal")
+        .trim();
+      const parsed = parseInt(raw, 10);
+      return Number.isFinite(parsed) && parsed > 0 ? parsed : 250;
+    }, []);
 
     const handleDismiss = useCallback(() => {
       setDismissed(true);
@@ -39,8 +46,8 @@ const ToastItem = forwardRef<HTMLDivElement, ToastItemProps>(
 
     const { state: animationState } = useAnimationState({
       isOpen: !dismissed,
-      enterDuration: ANIMATION_DURATION,
-      exitDuration: ANIMATION_DURATION,
+      enterDuration: animationDuration,
+      exitDuration: animationDuration,
     });
 
     useEffect(() => {
