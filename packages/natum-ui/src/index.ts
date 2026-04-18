@@ -17,3 +17,6 @@ export * from "./AspectRatio";
 export * from "./Container";
 export * from "./Grid";
 export * from "./Stack";
+export * from "./Alert";
+export * from "./Spinner";
+export * from "./Textarea";
