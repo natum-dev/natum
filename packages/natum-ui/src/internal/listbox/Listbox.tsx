@@ -6,9 +6,11 @@ import {
   useLayoutEffect,
   useRef,
   useState,
+  type ReactNode,
 } from "react";
 import { createPortal } from "react-dom";
 import { IconCheck } from "@natum/icons";
+import { Spinner } from "../../Spinner";
 import { useAnchorPosition } from "../../hooks/use-anchor-position";
 import { useAnimationState } from "../../hooks/use-animation-state";
 import { useMergedRefs } from "../../hooks/use-merge-refs";
@@ -30,11 +32,22 @@ export type ListboxProps = {
   onItemSelect: (value: string) => void;
   placement: "top" | "bottom";
   maxHeight: number;
-  /** The id of the trigger (used as aria-labelledby for the listbox). */
   labelId: string;
   listboxId: string;
   itemId: (index: number) => string;
   className?: string;
+
+  // --- New in Batch E. Optional; Select passes none. ---
+  /** When true, listbox renders a spinner + "Loading…" row and hides items. */
+  loading?: boolean;
+  /** When non-nullish, listbox renders an error row with this content. */
+  error?: ReactNode;
+  /** Custom content when items.length === 0 AND no query. Defaults to "No options". */
+  emptyContent?: ReactNode;
+  /** Custom content when items.length === 0 AND query is set. Defaults to `No results for "${query}"`. */
+  noMatchContent?: ReactNode;
+  /** Used to pick between emptyContent and noMatchContent and to interpolate the default. */
+  query?: string;
 };
 
 export const Listbox = forwardRef<HTMLUListElement, ListboxProps>(
@@ -55,6 +68,11 @@ export const Listbox = forwardRef<HTMLUListElement, ListboxProps>(
       listboxId,
       itemId,
       className,
+      loading,
+      error,
+      emptyContent,
+      noMatchContent,
+      query,
     },
     ref
   ) => {
@@ -81,7 +99,6 @@ export const Listbox = forwardRef<HTMLUListElement, ListboxProps>(
       setMounted(true);
     }, []);
 
-    // Measure trigger width on open and on resize.
     useLayoutEffect(() => {
       if (!shouldRender) return;
       const measure = () => {
@@ -96,7 +113,6 @@ export const Listbox = forwardRef<HTMLUListElement, ListboxProps>(
     if (!mounted || !shouldRender) return null;
 
     const isExiting = state === "exiting";
-    const isEmpty = items.length === 0;
 
     const renderItem = (item: FlatItem) => {
       const active = activeIndex === item.index;
@@ -149,11 +165,7 @@ export const Listbox = forwardRef<HTMLUListElement, ListboxProps>(
           aria-labelledby={headerId}
           className={styles.group}
         >
-          <div
-            id={headerId}
-            role="presentation"
-            className={styles.group_label}
-          >
+          <div id={headerId} role="presentation" className={styles.group_label}>
             {node.label}
           </div>
           <ul role="presentation" className={styles.group_items}>
@@ -162,6 +174,40 @@ export const Listbox = forwardRef<HTMLUListElement, ListboxProps>(
         </li>
       );
     };
+
+    // --- Decide what to render inside the <ul>. State precedence (highest wins):
+    //   1. loading
+    //   2. error
+    //   3. items.length === 0 AND query → no-match
+    //   4. items.length === 0 AND !query → empty
+    //   5. default → tree
+    let body: ReactNode;
+    if (loading) {
+      body = (
+        <li className={styles.state_loading}>
+          <Spinner size="sm" color="currentColor" />
+          <span>Loading…</span>
+        </li>
+      );
+    } else if (error != null) {
+      body = (
+        <li className={styles.state_error} role="alert">
+          {error}
+        </li>
+      );
+    } else if (items.length === 0 && query) {
+      body = (
+        <li className={styles.empty}>
+          {noMatchContent ?? `No results for "${query}"`}
+        </li>
+      );
+    } else if (items.length === 0) {
+      body = <li className={styles.empty}>{emptyContent ?? "No options"}</li>;
+    } else {
+      body = tree.map((node, i) =>
+        node.kind === "item" ? renderItem(node.item) : renderGroup(node, i)
+      );
+    }
 
     return createPortal(
       <ul
@@ -186,15 +232,7 @@ export const Listbox = forwardRef<HTMLUListElement, ListboxProps>(
         }}
         onMouseDown={(e) => e.preventDefault()}
       >
-        {isEmpty ? (
-          <li className={styles.empty}>No options</li>
-        ) : (
-          tree.map((node, i) =>
-            node.kind === "item"
-              ? renderItem(node.item)
-              : renderGroup(node, i)
-          )
-        )}
+        {body}
       </ul>,
       document.body
     );

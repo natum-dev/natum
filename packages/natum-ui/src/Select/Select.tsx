@@ -8,7 +8,6 @@ import {
   useMemo,
   useRef,
   type ReactNode,
-  type RefObject,
 } from "react";
 import { IconChevronDown, IconX } from "@natum/icons";
 import { useActiveDescendant } from "../hooks/use-active-descendant";
@@ -359,7 +358,7 @@ const Select = forwardRef<HTMLButtonElement, SelectProps>((props, ref) => {
       <Listbox
         ref={listboxRef}
         isOpen={isOpen}
-        triggerRef={triggerRef as RefObject<HTMLButtonElement>}
+        triggerRef={triggerRef}
         tree={tree}
         items={items}
         activeIndex={activeIndex}
