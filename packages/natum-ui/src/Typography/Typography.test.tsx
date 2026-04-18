@@ -66,4 +66,14 @@ describe("Typography", () => {
     expect(ref.current).toBeInstanceOf(HTMLHeadingElement);
     expect(ref.current?.tagName).toBe("H1");
   });
+
+  it("renders correctly with dir='rtl'", () => {
+    const { container } = render(
+      <div dir="rtl">
+        <Typography tag="p">Text</Typography>
+      </div>
+    );
+    expect(container.firstChild).toBeInTheDocument();
+    expect(screen.getByText("Text")).toBeInTheDocument();
+  });
 });
