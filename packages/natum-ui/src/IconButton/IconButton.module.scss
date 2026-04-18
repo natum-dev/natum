@@ -201,9 +201,9 @@
 }
 
 .large {
+  // No hit-target mixin — 48x48 already exceeds the 44 minimum.
   width: 48px;
   height: 48px;
-  @include hit-target-extend;
 }
 
 // Disabled
