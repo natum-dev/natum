@@ -191,16 +191,19 @@
 .small {
   width: 32px;
   height: 32px;
+  @include hit-target-extend;
 }
 
 .medium {
   width: 40px;
   height: 40px;
+  @include hit-target-extend;
 }
 
 .large {
   width: 48px;
   height: 48px;
+  @include hit-target-extend;
 }
 
 // Disabled
