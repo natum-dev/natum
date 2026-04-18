@@ -96,6 +96,7 @@ const Combobox = forwardRef<HTMLInputElement, ComboboxProps>((props, ref) => {
     searchValue: searchValueProp,
     defaultSearchValue,
     onSearchChange,
+    filter,
     loading,
     error,
     emptyContent,
@@ -158,7 +159,7 @@ const Combobox = forwardRef<HTMLInputElement, ComboboxProps>((props, ref) => {
     (query: string, item: FlatItem) => item.textValue.includes(query),
     []
   );
-  const effectiveFilter = props.filter ?? defaultFilter;
+  const effectiveFilter = filter ?? defaultFilter;
 
   const { visibleItems, visibleTree } = useMemo(() => {
     if (loading || !searchValue) {
@@ -233,8 +234,7 @@ const Combobox = forwardRef<HTMLInputElement, ComboboxProps>((props, ref) => {
     if (isOpen && visibleItems.length > 0) {
       setActiveIndex(0);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchValue, visibleItems.length, isOpen]);
+  }, [searchValue, visibleItems.length, isOpen, setActiveIndex]);
 
   // --- Ids ---
   const comboboxId = useId();
