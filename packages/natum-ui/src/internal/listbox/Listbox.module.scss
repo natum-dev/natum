@@ -1,4 +1,4 @@
-@use "../design-tokens" as *;
+@use "../../design-tokens" as *;
 
 // --- Listbox (portaled, fixed-positioned) ---
 .listbox {
@@ -125,7 +125,7 @@
   list-style: none;
 }
 
-// --- Empty state ---
+// --- Empty state (used for both "no options" and "no results for X") ---
 .empty {
   padding: var(--space-3);
   text-align: center;

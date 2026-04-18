@@ -9,9 +9,9 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 import { IconCheck } from "@natum/icons";
-import { useAnchorPosition } from "../hooks/use-anchor-position";
-import { useAnimationState } from "../hooks/use-animation-state";
-import { useMergedRefs } from "../hooks/use-merge-refs";
+import { useAnchorPosition } from "../../hooks/use-anchor-position";
+import { useAnimationState } from "../../hooks/use-animation-state";
+import { useMergedRefs } from "../../hooks/use-merge-refs";
 import type { FlatItem, TreeNode } from "./types";
 import styles from "./Listbox.module.scss";
 import cx from "classnames";
@@ -20,7 +20,7 @@ const EXIT_DURATION = 125;
 
 export type ListboxProps = {
   isOpen: boolean;
-  triggerRef: React.RefObject<HTMLButtonElement>;
+  triggerRef: React.RefObject<HTMLElement | null>;
   tree: TreeNode[];
   items: FlatItem[];
   activeIndex: number;

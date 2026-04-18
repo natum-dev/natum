@@ -19,7 +19,7 @@ import { useMergedRefs } from "../hooks/use-merge-refs";
 import { useTypeahead } from "../hooks/use-typeahead";
 import { SelectContext } from "./context";
 import { flatten } from "./flatten";
-import { Listbox } from "./Listbox";
+import { Listbox } from "../internal/listbox/Listbox";
 import type { SelectContextValue } from "./types";
 import styles from "./Select.module.scss";
 import cx from "classnames";
