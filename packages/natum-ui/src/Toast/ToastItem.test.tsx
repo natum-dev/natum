@@ -20,4 +20,13 @@ describe("ToastItem", () => {
     render(<ToastItem ref={ref} toast={minimalToast} onDismiss={noop} />);
     expect(ref.current).toBeInstanceOf(HTMLDivElement);
   });
+
+  it("renders correctly with dir='rtl'", () => {
+    const { container } = render(
+      <div dir="rtl">
+        <ToastItem toast={minimalToast} onDismiss={noop} />
+      </div>
+    );
+    expect(container.firstChild).toBeInTheDocument();
+  });
 });
