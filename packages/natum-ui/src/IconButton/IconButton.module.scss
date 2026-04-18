@@ -217,11 +217,20 @@
 
 // Loading spinner
 .spinner {
-  animation: spin 0.8s linear infinite;
+  animation: spin var(--duration-spin) var(--easing-linear) infinite;
 }
 
 @keyframes spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+// Keep the "something is happening" signal under reduced-motion, but slow
+// dramatically to remove the vestibular trigger. Not using the global
+// --duration-spin override because spinners need to stay visible, not collapse.
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation-duration: 4s;
   }
 }
