@@ -71,4 +71,14 @@ describe("Button", () => {
     expect(btn).toHaveClass("disabled", "soft");
     expect(btn).toBeDisabled();
   });
+
+  it("renders correctly with dir='rtl'", () => {
+    const { container } = render(
+      <div dir="rtl">
+        <Button>Click</Button>
+      </div>
+    );
+    expect(container.firstChild).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Click" })).toBeInTheDocument();
+  });
 });
