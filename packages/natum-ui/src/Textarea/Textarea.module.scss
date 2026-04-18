@@ -1,0 +1,220 @@
+@use "../design-tokens" as *;
+
+// --- Wrapper ---
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+
+// --- Label ---
+.label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--neutral-text-secondary);
+  margin-block-end: 4px;
+
+  .error & {
+    color: var(--error-text);
+  }
+}
+
+.focused .label,
+.wrapper:has(.focused) .label {
+  color: var(--primary-text);
+}
+
+.error .label,
+.error:has(.focused) .label {
+  color: var(--error-text);
+}
+
+.required_asterisk {
+  color: var(--error-text);
+  margin-inline-start: 2px;
+}
+
+// --- Input container ---
+.input_container {
+  display: flex;
+  box-sizing: border-box;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      border-color var(--duration-fast, 100ms) var(--easing-default, ease),
+      box-shadow var(--duration-fast, 100ms) var(--easing-default, ease),
+      background-color var(--duration-fast, 100ms) var(--easing-default, ease);
+  }
+}
+
+// --- Variants ---
+.outlined {
+  border: 1px solid var(--border-color-subtle);
+  background-color: var(--neutral-bg-elevated);
+
+  &:hover:not(.focused) {
+    border-color: var(--border-color);
+  }
+
+  &.focused {
+    border-color: var(--primary-border);
+    box-shadow: 0 0 0 1px var(--primary-border);
+  }
+
+  .error & {
+    border-color: var(--error-border);
+
+    &:hover {
+      border-color: var(--error-border);
+    }
+
+    &.focused {
+      border-color: var(--error-border);
+      box-shadow: 0 0 0 1px var(--error-border);
+    }
+  }
+}
+
+.filled {
+  border: 1px solid transparent;
+  border-block-end: 1px solid var(--border-color-subtle);
+  background-color: var(--neutral-bg-inset);
+
+  &:hover:not(.focused) {
+    border-block-end-color: var(--border-color);
+  }
+
+  &.focused {
+    border-block-end-color: var(--primary-border);
+    background-color: var(--neutral-bg-elevated);
+  }
+
+  .error & {
+    border-block-end-color: var(--error-border);
+
+    &:hover {
+      border-block-end-color: var(--error-border);
+    }
+
+    &.focused {
+      border-block-end-color: var(--error-border);
+    }
+  }
+}
+
+// --- Sizes ---
+.sm {
+  padding: 4px 8px;
+  font-size: 14px;
+  border-radius: var(--radius-sm, 4px);
+}
+
+.md {
+  padding: 8px 12px;
+  font-size: 16px;
+  border-radius: var(--radius-md, 8px);
+}
+
+.lg {
+  padding: 12px 16px;
+  font-size: 18px;
+  border-radius: var(--radius-md, 8px);
+}
+
+// --- Textarea ---
+.textarea {
+  flex: 1;
+  min-inline-size: 0;
+  inline-size: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--neutral-text);
+  font: inherit;
+  font-size: inherit;
+  line-height: 1.5;
+  padding: 0;
+  margin: 0;
+  resize: vertical;
+
+  &::placeholder {
+    color: var(--neutral-text-disabled);
+  }
+}
+
+.resize_none     { resize: none; }
+.resize_vertical { resize: vertical; }
+.resize_both     { resize: both; }
+
+// --- Message ---
+.message {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  margin-block-start: 4px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.message_helper { color: var(--neutral-text-secondary); }
+.message_error  { color: var(--error-text); }
+
+// --- Disabled ---
+.disabled_state {
+  .label {
+    color: var(--neutral-text-disabled);
+  }
+
+  .input_container {
+    background-color: var(--neutral-bg-inset);
+    border-color: var(--neutral-border);
+  }
+
+  .textarea {
+    cursor: not-allowed;
+    color: var(--neutral-text-disabled);
+
+    &::placeholder {
+      color: var(--neutral-text-disabled);
+    }
+  }
+}
+
+// --- ReadOnly ---
+.readonly_state {
+  .label {
+    color: var(--neutral-text-secondary);
+  }
+
+  &:has(.focused) .label {
+    color: var(--neutral-text-secondary);
+  }
+
+  .input_container {
+    background-color: var(--neutral-bg-inset);
+    border-color: var(--border-color-subtle);
+
+    &:hover {
+      border-color: var(--border-color-subtle);
+    }
+
+    &.filled {
+      border-block-end-color: var(--border-color-subtle);
+
+      &:hover {
+        border-block-end-color: var(--border-color-subtle);
+      }
+    }
+
+    &.focused {
+      box-shadow: none;
+      border-color: var(--border-color-subtle);
+    }
+  }
+
+  .textarea {
+    color: var(--neutral-text);
+  }
+}
