@@ -227,8 +227,10 @@
 }
 
 // Keep the "something is happening" signal under reduced-motion, but slow
-// dramatically to remove the vestibular trigger. Not using the global
-// --duration-spin override because spinners need to stay visible, not collapse.
+// dramatically to remove the vestibular trigger. --duration-spin is
+// deliberately excluded from the global reduced-motion override (which
+// shrinks --duration-fast/normal/slow to 100ms) because a spinner that
+// "collapses" to 100ms becomes a frantic blur, not a reduced signal.
 @media (prefers-reduced-motion: reduce) {
   .spinner {
     animation-duration: 4s;
