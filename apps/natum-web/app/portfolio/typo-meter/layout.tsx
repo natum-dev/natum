@@ -8,8 +8,8 @@ const TypewriterLayout = ({
   children: React.ReactNode;
 }>) => {
   return (
-    <html lang="en">
-      <body data-theme="dark">
+    <html lang="en" data-theme="dark">
+      <body>
         <AppProvider>
           <main className={styles.main}>
             {children}
