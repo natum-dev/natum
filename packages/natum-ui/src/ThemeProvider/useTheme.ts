@@ -6,7 +6,9 @@ import { ThemeContext, type ThemeContextValue } from "./ThemeContext";
 const useTheme = (): ThemeContextValue => {
   const context = useContext(ThemeContext);
   if (!context) {
-    throw new Error("useTheme must be used within a ThemeProvider");
+    throw new Error(
+      "useTheme must be used within a <ThemeProvider> component. Wrap your app at the root level."
+    );
   }
   return context;
 };
