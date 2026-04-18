@@ -8,7 +8,6 @@ import {
   useMemo,
   useRef,
   type ReactNode,
-  type RefObject,
 } from "react";
 import { IconChevronDown } from "@natum/icons";
 import { useActiveDescendant } from "../hooks/use-active-descendant";
@@ -301,11 +300,14 @@ const Combobox = forwardRef<HTMLInputElement, ComboboxProps>((props, ref) => {
       if (readOnly || disabled) return;
       // Space must pass through to the native input.
       if (e.key === " ") return;
-      if (e.key.length === 1 && !isOpen) setOpen(true);
-      onListboxKeyDown(e);
+      // Tab closes and lets native focus advance — handle before delegation so a
+      // future useActiveDescendant change that starts handling Tab can't steal it.
       if (e.key === "Tab") {
         setOpen(false);
+        return;
       }
+      if (e.key.length === 1 && !isOpen) setOpen(true);
+      onListboxKeyDown(e);
     },
     [readOnly, disabled, isOpen, setOpen, onListboxKeyDown]
   );
@@ -416,7 +418,7 @@ const Combobox = forwardRef<HTMLInputElement, ComboboxProps>((props, ref) => {
       <Listbox
         ref={listboxRef}
         isOpen={isOpen}
-        triggerRef={containerRef as RefObject<HTMLElement>}
+        triggerRef={containerRef}
         tree={visibleTree}
         items={visibleItems}
         activeIndex={activeIndex}
