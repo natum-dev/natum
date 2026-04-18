@@ -41,6 +41,11 @@
 // Use when the visual element must stay smaller than the hit target.
 // Adds a centered ::after pseudo that enlarges the interactive area
 // without affecting layout. Sets position: relative on the host.
+//
+// Adjacency caveat: the ::after is pointer-event-active to catch clicks,
+// so it overlaps into the space around the host. Keep >=12px clear on
+// each side to prevent neighboring interactive elements (or passive text
+// you care about click-routing for) from having their clicks stolen.
 @mixin hit-target-extend($size: 44px) {
   position: relative;
 
