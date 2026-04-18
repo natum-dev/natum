@@ -123,7 +123,7 @@
 }
 
 .md {
-  min-height: 44px;
+  @include hit-target-min;
   padding: 8px 12px;
   font-size: 16px;
   border-radius: var(--radius-md, 8px);
