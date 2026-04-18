@@ -16,7 +16,7 @@ import { useEscapeKey } from "../hooks/use-escape-key";
 import { useListboxSelection } from "../hooks/use-listbox-selection";
 import { useMergedRefs } from "../hooks/use-merge-refs";
 import { Listbox } from "../internal/listbox/Listbox";
-import type { FlatItem } from "../internal/listbox/types";
+import type { FlatItem, TreeNode } from "../internal/listbox/types";
 import { ComboboxContext, type ComboboxContextValue } from "./context";
 import { flatten } from "./flatten";
 import styles from "./Combobox.module.scss";
@@ -140,10 +140,6 @@ const Combobox = forwardRef<HTMLInputElement, ComboboxProps>((props, ref) => {
     [children]
   );
 
-  // Scaffolding: visible = all. Filtering added in Task 6.
-  const visibleItems = allItems;
-  const visibleTree = allTree;
-
   // --- Search state (controlled or uncontrolled) ---
   const { value: searchBoxed, setValue: setSearchRaw } = useControllable<string>(
     {
@@ -157,6 +153,37 @@ const Combobox = forwardRef<HTMLInputElement, ComboboxProps>((props, ref) => {
     (v: string) => setSearchRaw(v),
     [setSearchRaw]
   );
+
+  const defaultFilter = useCallback(
+    (query: string, item: FlatItem) => item.textValue.includes(query),
+    []
+  );
+  const effectiveFilter = props.filter ?? defaultFilter;
+
+  const { visibleItems, visibleTree } = useMemo(() => {
+    if (loading || !searchValue) {
+      return { visibleItems: allItems, visibleTree: allTree };
+    }
+    const q = searchValue.toLowerCase();
+    const keep = (item: FlatItem) => effectiveFilter(q, item);
+    const filteredItems = allItems.filter(keep);
+    const filteredTree: TreeNode[] = [];
+    for (const node of allTree) {
+      if (node.kind === "item") {
+        if (keep(node.item)) filteredTree.push(node);
+      } else {
+        const keptGroupItems = node.items.filter(keep);
+        if (keptGroupItems.length > 0) {
+          filteredTree.push({
+            kind: "group",
+            label: node.label,
+            items: keptGroupItems,
+          });
+        }
+      }
+    }
+    return { visibleItems: filteredItems, visibleTree: filteredTree };
+  }, [allItems, allTree, searchValue, loading, effectiveFilter]);
 
   // --- Open/closed state ---
   const { value: isOpenBoxed, setValue: setIsOpenRaw } = useControllable<boolean>(
@@ -200,6 +227,14 @@ const Combobox = forwardRef<HTMLInputElement, ComboboxProps>((props, ref) => {
       onSelect: handleIndexSelect,
       isDisabled: (i) => visibleItems[i]?.disabled ?? false,
     });
+
+  // Auto-reset activeIndex to first visible on search / count change (Q10 in the spec).
+  useEffect(() => {
+    if (isOpen && visibleItems.length > 0) {
+      setActiveIndex(0);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchValue, visibleItems.length, isOpen]);
 
   // --- Ids ---
   const comboboxId = useId();
