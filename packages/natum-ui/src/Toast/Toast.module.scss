@@ -156,6 +156,7 @@
   color: var(--toast-accent-color);
   margin-top: 6px;
   display: inline-block;
+  @include hit-target-extend;
 
   &:hover {
     text-decoration: underline;
@@ -183,6 +184,7 @@
   justify-content: center;
   width: 24px;
   height: 24px;
+  @include hit-target-extend;
   border-radius: var(--radius-sm);
   color: var(--neutral-text-disabled);
   transition: background-color var(--duration-fast) var(--easing-default),
