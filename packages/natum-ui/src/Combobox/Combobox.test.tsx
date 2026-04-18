@@ -1,9 +1,10 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { createRef } from "react";
 import { Combobox } from "./Combobox";
 import { ComboboxItem } from "./ComboboxItem";
+import { ComboboxGroup } from "./ComboboxGroup";
 
 // jsdom polyfill: offsetWidth returns 0 in jsdom. Force 200 so width-matching
 // doesn't collapse the listbox. Same pattern as Select.test.tsx.
@@ -152,5 +153,113 @@ describe("Combobox — basic interactions", () => {
     renderBasic({ ref });
     expect(ref.current?.tagName).toBe("INPUT");
     expect(ref.current).toHaveAttribute("role", "combobox");
+  });
+});
+
+describe("Combobox — filtering", () => {
+  it("typing filters items via default substring match", async () => {
+    const user = userEvent.setup();
+    renderBasic();
+    const input = screen.getByRole("combobox");
+    await user.click(input);
+    await user.type(input, "an");
+    const listbox = screen.getByRole("listbox");
+    expect(listbox).toHaveTextContent("Banana");
+    expect(listbox).not.toHaveTextContent("Apple");
+    expect(listbox).not.toHaveTextContent("Cherry");
+  });
+
+  it("filter is case-insensitive", async () => {
+    const user = userEvent.setup();
+    renderBasic();
+    const input = screen.getByRole("combobox");
+    await user.click(input);
+    await user.type(input, "AP");
+    const listbox = screen.getByRole("listbox");
+    expect(listbox).toHaveTextContent("Apple");
+  });
+
+  it("empty groups hide when all items are filtered out", async () => {
+    const user = userEvent.setup();
+    render(
+      <Combobox label="Pick">
+        <ComboboxGroup label="Fruit">
+          <ComboboxItem value="apple">Apple</ComboboxItem>
+          <ComboboxItem value="banana">Banana</ComboboxItem>
+        </ComboboxGroup>
+        <ComboboxGroup label="Vegetable">
+          <ComboboxItem value="carrot">Carrot</ComboboxItem>
+        </ComboboxGroup>
+      </Combobox>
+    );
+    const input = screen.getByRole("combobox");
+    await user.click(input);
+    await user.type(input, "car");
+    expect(screen.queryByText("Fruit")).not.toBeInTheDocument();
+    expect(screen.getByText("Vegetable")).toBeInTheDocument();
+  });
+
+  it("activeIndex resets to first visible on keystroke", async () => {
+    const user = userEvent.setup();
+    renderBasic();
+    const input = screen.getByRole("combobox") as HTMLInputElement;
+    await user.click(input);
+    // Move past default first item.
+    await user.keyboard("{ArrowDown}");
+    await user.keyboard("{ArrowDown}");
+    // Now filter — list narrows. activeIndex should reset to 0.
+    await user.type(input, "a");
+    const listbox = screen.getByRole("listbox");
+    const appleOpt = within(listbox).getByText("Apple").closest("[role=option]")!;
+    expect(input.getAttribute("aria-activedescendant")).toBe(appleOpt.id);
+  });
+
+  it("clearing search restores all items", async () => {
+    const user = userEvent.setup();
+    renderBasic();
+    const input = screen.getByRole("combobox") as HTMLInputElement;
+    await user.click(input);
+    await user.type(input, "an");
+    expect(screen.getByRole("listbox")).not.toHaveTextContent("Cherry");
+    await user.clear(input);
+    const listbox = screen.getByRole("listbox");
+    expect(listbox).toHaveTextContent("Apple");
+    expect(listbox).toHaveTextContent("Banana");
+    expect(listbox).toHaveTextContent("Cherry");
+  });
+
+  it("custom filter prop receives (query, item) and is respected", async () => {
+    const user = userEvent.setup();
+    const customFilter = vi.fn(
+      (q: string, item: { textValue: string }) => item.textValue.startsWith(q)
+    );
+    render(
+      <Combobox label="F" filter={customFilter}>
+        <ComboboxItem value="apple">Apple</ComboboxItem>
+        <ComboboxItem value="banana">Banana</ComboboxItem>
+        <ComboboxItem value="apricot">Apricot</ComboboxItem>
+      </Combobox>
+    );
+    const input = screen.getByRole("combobox");
+    await user.click(input);
+    await user.type(input, "ap");
+    expect(customFilter).toHaveBeenCalled();
+    const listbox = screen.getByRole("listbox");
+    expect(listbox).toHaveTextContent("Apple");
+    expect(listbox).toHaveTextContent("Apricot");
+    expect(listbox).not.toHaveTextContent("Banana");
+  });
+
+  it("loading=true bypasses the filter (all items shown — but listbox renders Loading row)", async () => {
+    const user = userEvent.setup();
+    render(
+      <Combobox label="F" loading searchValue="zzzzz" onSearchChange={() => {}}>
+        <ComboboxItem value="a">Apple</ComboboxItem>
+      </Combobox>
+    );
+    const input = screen.getByRole("combobox");
+    await user.click(input);
+    // Loading row wins per Listbox state precedence (Task 2).
+    expect(screen.getByText("Loading…")).toBeInTheDocument();
   });
 });
