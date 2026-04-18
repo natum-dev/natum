@@ -374,15 +374,14 @@ Responsive breakpoint mixin using a mobile-first (`min-width`) approach.
 
 ## Dark Mode
 
-Dark mode is supported through two mechanisms — both are handled automatically by `base.scss`:
-
-1. **System preference** — activates when the OS is set to dark mode via `prefers-color-scheme: dark`
-2. **Manual toggle** — activates when `data-theme="dark"` is set on `<body>`
+Dark mode is driven by the `data-theme` attribute on `<html>`, which is set by `ThemeProvider` (and by the blocking `<ThemeScript />` at first paint for FOUC-free SSR):
 
 ```html
 <!-- Manual dark mode -->
-<body data-theme="dark">...</body>
+<html data-theme="dark">...</html>
 ```
+
+System preference (`prefers-color-scheme: dark`) is honored by default when the user has not chosen a theme — see `<ThemeProvider>` for the three-state `light | dark | system` model.
 
 All semantic color tokens (`--{semantic}-*`, `--neutral-*`) switch automatically between themes. Raw palette variables (`--palette-*`) remain constant across themes.
 
