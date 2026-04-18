@@ -13,3 +13,7 @@ export * from "./Figure";
 export * from "./Tooltip";
 export * from "./Breadcrumb";
 export * from "./illustrations";
+export * from "./AspectRatio";
+export * from "./Container";
+export * from "./Grid";
+export * from "./Stack";
