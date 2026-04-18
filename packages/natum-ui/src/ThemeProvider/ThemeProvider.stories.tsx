@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { ThemeProvider } from "./ThemeProvider";
+import { ThemeScript } from "./ThemeScript";
 import { useTheme } from "./useTheme";
 import { Card } from "../Card";
 import { IconCheckCircle, IconInfo, IconStar } from "@natum/icons";
@@ -16,31 +17,49 @@ export default meta;
 type Story = StoryObj<typeof ThemeProvider>;
 
 const ThemeDemo = () => {
-  const { theme, toggleTheme } = useTheme();
+  const { theme, resolvedTheme, setTheme, toggleTheme } = useTheme();
+
+  const buttonStyle: React.CSSProperties = {
+    padding: "6px 12px",
+    borderRadius: 6,
+    border: "1px solid var(--border-color)",
+    background: "var(--neutral-bg-elevated)",
+    color: "var(--neutral-text)",
+    cursor: "pointer",
+  };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
       <Card variant="elevated">
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginBottom: 12,
+            gap: 12,
+          }}
+        >
           <span style={{ fontWeight: 600, color: "var(--neutral-text)" }}>
-            Current theme: {theme}
+            theme: {theme} / resolved: {resolvedTheme ?? "null"}
           </span>
-          <button
-            onClick={toggleTheme}
-            style={{
-              padding: "6px 12px",
-              borderRadius: 6,
-              border: "1px solid var(--border-color)",
-              background: "var(--neutral-bg-elevated)",
-              color: "var(--neutral-text)",
-              cursor: "pointer",
-            }}
-          >
-            Toggle Theme
-          </button>
+          <div style={{ display: "flex", gap: 8 }}>
+            <button style={buttonStyle} onClick={() => setTheme("light")}>
+              Light
+            </button>
+            <button style={buttonStyle} onClick={() => setTheme("dark")}>
+              Dark
+            </button>
+            <button style={buttonStyle} onClick={() => setTheme("system")}>
+              System
+            </button>
+            <button style={buttonStyle} onClick={toggleTheme}>
+              Toggle
+            </button>
+          </div>
         </div>
         <p style={{ margin: 0, color: "var(--neutral-text-secondary)" }}>
-          This card uses theme tokens and automatically adapts to the current theme.
+          This card uses theme tokens and adapts to the current resolved theme.
         </p>
       </Card>
 
@@ -70,4 +89,21 @@ const ThemeDemo = () => {
 
 export const Default: Story = {
   render: () => <ThemeDemo />,
+};
+
+export const WithThemeScript: Story = {
+  render: () => (
+    <>
+      <ThemeScript />
+      <ThemeDemo />
+    </>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "In a real app, `<ThemeScript />` renders inside `<head>` to prevent FOUC on first paint. Here it's rendered in the story body to demonstrate the component exists; visually it's inert.",
+      },
+    },
+  },
 };
