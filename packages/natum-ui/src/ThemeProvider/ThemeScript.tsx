@@ -17,7 +17,5 @@ const SCRIPT =
  * provider's effect runs.
  */
 export const ThemeScript = () => (
-  // eslint-disable-next-line react/no-danger -- inline script is a static
-  // constant; no user input involved.
   <script dangerouslySetInnerHTML={{ __html: SCRIPT }} />
 );
