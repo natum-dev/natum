@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
+import * as React from "react";
 import { Typography } from "./Typography";
 
 describe("Typography", () => {
@@ -57,5 +58,12 @@ describe("Typography", () => {
   it("applies custom className", () => {
     render(<Typography className="custom">text</Typography>);
     expect(screen.getByText("text")).toHaveClass("custom");
+  });
+
+  it("forwards ref to the rendered element", () => {
+    const ref = { current: null } as React.MutableRefObject<HTMLElement | null>;
+    render(<Typography ref={ref} tag="h1">heading</Typography>);
+    expect(ref.current).toBeInstanceOf(HTMLHeadingElement);
+    expect(ref.current?.tagName).toBe("H1");
   });
 });
