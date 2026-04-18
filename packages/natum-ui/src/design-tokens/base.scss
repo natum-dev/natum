@@ -230,9 +230,11 @@
   --duration-fast: 125ms;
   --duration-normal: 250ms;
   --duration-slow: 450ms;
+  --duration-spin: 800ms;
   --easing-default: cubic-bezier(0.2, 0, 0, 1);
   --easing-enter: cubic-bezier(0, 0, 0, 1);
   --easing-exit: cubic-bezier(0.3, 0, 1, 1);
+  --easing-linear: linear;
 
   // --- Z-index tokens ---
   --z-base: 0;
