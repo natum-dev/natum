@@ -22,3 +22,4 @@ export * from "./Spinner";
 export * from "./Textarea";
 export * from "./Radio";
 export * from "./RadioGroup";
+export * from "./Select";
