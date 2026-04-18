@@ -87,20 +87,22 @@ export const ReadOnly: Story = {
   render: (args) => <Textarea {...args} style={{ maxWidth: 480 }} />,
 };
 
+const AutoResizeDemo = () => {
+  const [value, setValue] = useState("Type here — the box grows.\n");
+  return (
+    <Textarea
+      label="AutoResize (maxRows=6)"
+      autoResize
+      maxRows={6}
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+      style={{ maxWidth: 480 }}
+    />
+  );
+};
+
 export const AutoResize: Story = {
-  render: () => {
-    const [value, setValue] = useState("Type here — the box grows.\n");
-    return (
-      <Textarea
-        label="AutoResize (maxRows=6)"
-        autoResize
-        maxRows={6}
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        style={{ maxWidth: 480 }}
-      />
-    );
-  },
+  render: () => <AutoResizeDemo />,
 };
 
 export const CommentForm: Story = {
