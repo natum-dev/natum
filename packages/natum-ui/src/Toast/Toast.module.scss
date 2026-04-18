@@ -155,8 +155,9 @@
   font-weight: 600;
   color: var(--toast-accent-color);
   margin-top: 6px;
-  display: inline-block;
-  @include hit-target-extend;
+  display: inline-flex;
+  align-items: center;
+  @include hit-target-min;
 
   &:hover {
     text-decoration: underline;
