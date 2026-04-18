@@ -1,0 +1,15 @@
+@use "../design-tokens" as *;
+
+.container {
+  margin-inline: auto;
+  padding-inline: var(--space-4);
+  inline-size: 100%;
+  box-sizing: border-box;
+}
+
+// Sizes map to the $breakpoints scale in design-tokens/_breakpoints.scss.
+.size_sm    { max-inline-size: 600px; }
+.size_md    { max-inline-size: 960px; }
+.size_lg    { max-inline-size: 1280px; }
+.size_xl    { max-inline-size: 1920px; }
+.size_fluid { max-inline-size: 100%; }
