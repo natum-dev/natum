@@ -33,11 +33,6 @@ const installMatchMedia = (initialMatches: boolean) => {
     "matchMedia",
     vi.fn(() => mql)
   );
-  Object.defineProperty(window, "matchMedia", {
-    configurable: true,
-    writable: true,
-    value: vi.fn(() => mql),
-  });
   return mql;
 };
 

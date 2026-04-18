@@ -1,4 +1,4 @@
-type Theme = "light" | "dark" | "system";
+import type { Theme } from "./ThemeContext";
 
 export const THEME_COOKIE_NAME = "natum-theme";
 
