@@ -1,4 +1,9 @@
-import { ComponentPropsWithRef, createElement, PropsWithChildren } from "react";
+import {
+  type ComponentPropsWithoutRef,
+  type PropsWithChildren,
+  createElement,
+  forwardRef,
+} from "react";
 import styles from "./Typography.module.scss";
 import classNames from "classnames";
 
@@ -29,11 +34,11 @@ export type TypographyColorBase =
 export type TypographyVariant = TypographyVariantBase;
 export type TypographyColor = TypographyColorBase;
 
-export type TypographyProps<TTag extends keyof JSX.IntrinsicElements> = {
-  tag?: TTag;
+export type TypographyProps = Omit<ComponentPropsWithoutRef<"p">, "color"> & {
+  tag?: keyof JSX.IntrinsicElements;
   variant?: TypographyVariant;
   color?: TypographyColor;
-} & ComponentPropsWithRef<TTag>;
+};
 
 const allowedHtml5Element = new Set([
   "h1",
@@ -45,33 +50,31 @@ const allowedHtml5Element = new Set([
   "code",
 ]);
 
-const sanitizeHtmlTag = (tag: string): keyof JSX.IntrinsicElements => {
-  return allowedHtml5Element.has(tag)
-    ? (tag as keyof JSX.IntrinsicElements)
+const sanitizeHtmlTag = (variant: string): keyof JSX.IntrinsicElements => {
+  return allowedHtml5Element.has(variant)
+    ? (variant as keyof JSX.IntrinsicElements)
     : "p";
 };
 
-const Typography = <TTag extends keyof JSX.IntrinsicElements = "p">({
-  tag,
-  variant = "body1",
-  children,
-  color,
-  className,
-  ...restProps
-}: PropsWithChildren<TypographyProps<TTag>>) => {
-  return createElement(
-    tag ?? sanitizeHtmlTag(variant),
-    {
-      className: classNames(
-        className,
-        styles.typography,
-        styles[variant],
-        color && styles[color]
-      ),
-      ...restProps,
-    },
-    children
-  );
-};
+const Typography = forwardRef<HTMLElement, PropsWithChildren<TypographyProps>>(
+  ({ tag, variant = "body1", children, color, className, ...restProps }, ref) => {
+    return createElement(
+      tag ?? sanitizeHtmlTag(variant),
+      {
+        ref,
+        className: classNames(
+          className,
+          styles.typography,
+          styles[variant],
+          color && styles[color]
+        ),
+        ...restProps,
+      },
+      children
+    );
+  }
+);
+
+Typography.displayName = "Typography";
 
 export { Typography };
