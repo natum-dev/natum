@@ -1,0 +1,134 @@
+@use "../design-tokens" as *;
+
+// --- Listbox (portaled, fixed-positioned) ---
+.listbox {
+  position: fixed;
+  z-index: var(--z-popover, 1300);
+  margin: 0;
+  padding: var(--space-1) 0;
+  list-style: none;
+  box-sizing: border-box;
+
+  background-color: var(--neutral-bg-elevated);
+  border: 1px solid var(--border-color-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-medium);
+
+  overflow-y: auto;
+  overscroll-behavior: contain;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      opacity var(--duration-fast) var(--easing-default),
+      transform var(--duration-fast) var(--easing-default);
+  }
+}
+
+// --- Enter/exit animation ---
+.listbox_entering {
+  opacity: 1;
+  transform: translateY(0);
+}
+.listbox_exiting {
+  opacity: 0;
+  transform: translateY(-4px);
+  pointer-events: none;
+}
+.listbox[data-placement="top"].listbox_exiting {
+  transform: translateY(4px);
+}
+
+// --- Items ---
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  cursor: pointer;
+  user-select: none;
+  color: var(--neutral-text);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.item_active {
+  background-color: var(--neutral-bg-inset);
+}
+.item_selected {
+  color: var(--primary-text);
+  font-weight: 500;
+}
+.item_disabled {
+  color: var(--neutral-text-disabled);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.item_label {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.item_check {
+  flex-shrink: 0;
+  color: var(--primary-bg);
+}
+
+// --- Multi-select checkbox indicator (CSS-only box, not the Checkbox component) ---
+.item_checkbox {
+  inline-size: 16px;
+  block-size: 16px;
+  border: 2px solid var(--border-color-subtle);
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+  position: relative;
+  box-sizing: border-box;
+  transition:
+    background-color var(--duration-fast) var(--easing-default),
+    border-color var(--duration-fast) var(--easing-default);
+}
+.item_selected .item_checkbox {
+  background-color: var(--primary-bg);
+  border-color: var(--primary-bg);
+}
+.item_selected .item_checkbox::after {
+  content: "";
+  position: absolute;
+  inset-block-start: 1px;
+  inset-inline-start: 4px;
+  inline-size: 5px;
+  block-size: 9px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+// --- Groups ---
+.group {
+  display: block;
+  padding: 0;
+}
+.group_label {
+  padding: var(--space-2) var(--space-3) var(--space-1);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--neutral-text-secondary);
+}
+.group_items {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+// --- Empty state ---
+.empty {
+  padding: var(--space-3);
+  text-align: center;
+  color: var(--neutral-text-secondary);
+  font-size: 13px;
+}
