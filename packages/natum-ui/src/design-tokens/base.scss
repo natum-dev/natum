@@ -260,15 +260,15 @@
   }
 }
 
+// All theme tokens are driven by data-theme set by ThemeProvider on <html>
+:root[data-theme="light"] {
+  @include light-scheme;
+}
+
+:root[data-theme="dark"] {
+  @include dark-scheme;
+}
+
 body {
   background-color: var(--neutral-bg);
-
-  // All theme tokens are driven by data-theme set by ThemeProvider
-  &[data-theme="light"] {
-    @include light-scheme;
-  }
-
-  &[data-theme="dark"] {
-    @include dark-scheme;
-  }
 }
