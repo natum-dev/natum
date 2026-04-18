@@ -1,0 +1,101 @@
+@use "../design-tokens" as *;
+
+.container {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2, 8px);
+  cursor: pointer;
+  user-select: none;
+}
+
+.box {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  @include hit-target-min;
+  flex-shrink: 0;
+}
+
+.input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  cursor: inherit;
+  z-index: 1;
+}
+
+.control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid get-color(grey, 400);
+  border-radius: 50%;
+  background-color: transparent;
+  transition:
+    border-color var(--duration-fast) var(--easing-default);
+}
+
+.sm .control { width: 16px; height: 16px; }
+.md .control { width: 20px; height: 20px; }
+.lg .control { width: 24px; height: 24px; }
+
+.dot {
+  inline-size: 50%;
+  block-size: 50%;
+  border-radius: 50%;
+  background-color: var(--primary-bg);
+  transform: scale(0);
+  transition: transform var(--duration-fast) var(--easing-default);
+}
+
+.input:checked + .control .dot { transform: scale(1); }
+.container:hover .control { border-color: var(--primary-bg); }
+.input:checked + .control { border-color: var(--primary-bg); }
+
+.input:focus-visible + .control {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+@each $color in (primary, secondary, error, success, warning, info, neutral) {
+  .#{$color} .dot {
+    background-color: var(--#{$color}-bg);
+  }
+  .#{$color} .input:checked + .control {
+    border-color: var(--#{$color}-bg);
+  }
+  .#{$color}:hover .control {
+    border-color: var(--#{$color}-bg);
+  }
+}
+
+.disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+
+  .control {
+    border-color: var(--disabled-border);
+    background-color: var(--disabled-bg);
+  }
+
+  .input:checked + .control {
+    border-color: var(--disabled-border);
+  }
+
+  .dot {
+    background-color: var(--disabled-text);
+  }
+
+  .label {
+    color: var(--disabled-text);
+  }
+}
+
+.label {
+  color: var(--neutral-text);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
