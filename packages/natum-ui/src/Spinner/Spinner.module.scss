@@ -26,7 +26,7 @@
 
 // --- Color (class toggles set the color CSS property; the IconLoader uses color="currentColor") ---
 .currentColor {
-  // no-op — inherits from parent text color
+  color: inherit; // inherits from parent text color
 }
 
 .primary   { color: var(--primary-text); }

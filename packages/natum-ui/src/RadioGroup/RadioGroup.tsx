@@ -111,7 +111,6 @@ const RadioGroup = forwardRef<HTMLFieldSetElement, RadioGroupProps>(
           styles[`gap_${gap}`],
           {
             [styles.error]: hasError,
-            [styles.disabled]: disabled,
           },
           className
         )}
