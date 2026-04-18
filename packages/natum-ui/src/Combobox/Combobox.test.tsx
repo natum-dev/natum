@@ -442,3 +442,73 @@ describe("Combobox — selection", () => {
     expect(onChange).not.toHaveBeenCalled();
   });
 });
+
+describe("Combobox — UI states", () => {
+  it("loading=true shows a Spinner + 'Loading…' row", async () => {
+    const user = userEvent.setup();
+    render(
+      <Combobox label="F" loading>
+        <ComboboxItem value="a">A</ComboboxItem>
+      </Combobox>
+    );
+    const input = screen.getByRole("combobox");
+    await user.click(input);
+    expect(screen.getByText("Loading…")).toBeInTheDocument();
+    // Spinner renders an IconLoader; an svg should be present inside the listbox.
+    const listbox = screen.getByRole("listbox");
+    expect(listbox.querySelector("svg")).toBeInTheDocument();
+  });
+
+  it("error renders with role=alert and the provided content", async () => {
+    const user = userEvent.setup();
+    render(
+      <Combobox label="F" error="Couldn't load">
+        <ComboboxItem value="a">A</ComboboxItem>
+      </Combobox>
+    );
+    const input = screen.getByRole("combobox");
+    await user.click(input);
+    const row = screen.getByText("Couldn't load");
+    expect(row).toHaveAttribute("role", "alert");
+  });
+
+  it("empty children + no query → default 'No options'", async () => {
+    const user = userEvent.setup();
+    render(<Combobox label="F">{null}</Combobox>);
+    await user.click(screen.getByRole("combobox"));
+    expect(await screen.findByText("No options")).toBeInTheDocument();
+  });
+
+  it("empty filtered + query → default no-match message", async () => {
+    const user = userEvent.setup();
+    renderBasic();
+    const input = screen.getByRole("combobox");
+    await user.click(input);
+    await user.type(input, "zzz");
+    expect(await screen.findByText(/No results for "zzz"/)).toBeInTheDocument();
+  });
+
+  it("custom emptyContent renders when children is empty", async () => {
+    const user = userEvent.setup();
+    render(
+      <Combobox label="F" emptyContent={<span>nothing here</span>}>
+        {null}
+      </Combobox>
+    );
+    await user.click(screen.getByRole("combobox"));
+    expect(screen.getByText("nothing here")).toBeInTheDocument();
+  });
+
+  it("custom noMatchContent renders when query has no matches", async () => {
+    const user = userEvent.setup();
+    render(
+      <Combobox label="F" noMatchContent={<span>nope</span>}>
+        <ComboboxItem value="a">A</ComboboxItem>
+      </Combobox>
+    );
+    const input = screen.getByRole("combobox");
+    await user.click(input);
+    await user.type(input, "zzz");
+    expect(screen.getByText("nope")).toBeInTheDocument();
+  });
+});
