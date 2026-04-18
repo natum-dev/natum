@@ -9,7 +9,7 @@ import {
   useRef,
   type ReactNode,
 } from "react";
-import { IconChevronDown } from "@natum/icons";
+import { IconChevronDown, IconX } from "@natum/icons";
 import { useActiveDescendant } from "../hooks/use-active-descendant";
 import { useControllable } from "../hooks/use-controllable";
 import { useEscapeKey } from "../hooks/use-escape-key";
@@ -212,6 +212,16 @@ const Combobox = forwardRef<HTMLInputElement, ComboboxProps>((props, ref) => {
     [disabled, readOnly, selection, setOpen, setSearchValue]
   );
 
+  const handleChipRemove = useCallback(
+    (value: string) => {
+      if (disabled || readOnly) return;
+      if (!selection.isMulti) return;
+      selection.toggle(value);
+      inputRef.current?.focus();
+    },
+    [disabled, readOnly, selection]
+  );
+
   const handleIndexSelect = useCallback(
     (i: number) => {
       const item = visibleItems[i];
@@ -333,6 +343,17 @@ const Combobox = forwardRef<HTMLInputElement, ComboboxProps>((props, ref) => {
   const handleInputKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (readOnly || disabled) return;
+      // Backspace on empty input in multi mode removes the last chip.
+      if (
+        e.key === "Backspace" &&
+        selection.isMulti &&
+        searchValue === "" &&
+        selection.selected.length > 0
+      ) {
+        e.preventDefault();
+        handleChipRemove(selection.selected[selection.selected.length - 1]);
+        return;
+      }
       // Space must pass through to the native input.
       if (e.key === " ") return;
       // Tab closes and lets native focus advance — handle before delegation so a
@@ -344,7 +365,17 @@ const Combobox = forwardRef<HTMLInputElement, ComboboxProps>((props, ref) => {
       if (e.key.length === 1 && !isOpen) setOpen(true);
       onListboxKeyDown(e);
     },
-    [readOnly, disabled, isOpen, setOpen, onListboxKeyDown]
+    [
+      readOnly,
+      disabled,
+      selection.isMulti,
+      selection.selected,
+      searchValue,
+      isOpen,
+      setOpen,
+      onListboxKeyDown,
+      handleChipRemove,
+    ]
   );
 
   // --- Click outside (inline, since useClickOutside is single-ref) ---
@@ -408,6 +439,27 @@ const Combobox = forwardRef<HTMLInputElement, ComboboxProps>((props, ref) => {
         {leftSection && (
           <span className={styles.left_section}>{leftSection}</span>
         )}
+
+        {selection.isMulti &&
+          selection.selected.map((v) => {
+            const lbl = labelFor(v);
+            const lblStr = typeof lbl === "string" ? lbl : v;
+            return (
+              <span key={v} className={styles.chip}>
+                <span className={styles.chip_label}>{lbl}</span>
+                <button
+                  type="button"
+                  tabIndex={-1}
+                  aria-label={`Remove ${lblStr}`}
+                  className={styles.chip_remove}
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => handleChipRemove(v)}
+                >
+                  <IconX size="xs" color="currentColor" />
+                </button>
+              </span>
+            );
+          })}
 
         <input
           ref={mergedInputRef}

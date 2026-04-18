@@ -1,7 +1,7 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { createRef } from "react";
+import React, { createRef } from "react";
 import { Combobox } from "./Combobox";
 import { ComboboxItem } from "./ComboboxItem";
 import { ComboboxGroup } from "./ComboboxGroup";
@@ -261,5 +261,184 @@ describe("Combobox — filtering", () => {
     await user.click(input);
     // Loading row wins per Listbox state precedence (Task 2).
     expect(screen.getByText("Loading…")).toBeInTheDocument();
+  });
+});
+
+describe("Combobox — selection", () => {
+  it("single controlled: selecting emits onChange(value), input updates to label", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    const Wrapper = () => {
+      const [v, setV] = React.useState<string | undefined>(undefined);
+      return (
+        <Combobox label="F" value={v} onChange={(next) => { onChange(next); setV(next); }}>
+          <ComboboxItem value="a">Apple</ComboboxItem>
+          <ComboboxItem value="b">Banana</ComboboxItem>
+        </Combobox>
+      );
+    };
+    render(<Wrapper />);
+    const input = screen.getByRole("combobox") as HTMLInputElement;
+    await user.click(input);
+    await user.click(screen.getByText("Banana"));
+    expect(onChange).toHaveBeenCalledWith("b");
+    input.blur();
+    expect(input.value).toBe("Banana");
+  });
+
+  it("single pick clears searchValue", async () => {
+    const user = userEvent.setup();
+    renderBasic();
+    const input = screen.getByRole("combobox") as HTMLInputElement;
+    await user.click(input);
+    await user.type(input, "ba");
+    expect(input.value).toBe("ba");
+    await user.click(screen.getByText("Banana"));
+    expect(input.value).toBe("Banana");
+  });
+
+  it("multi controlled: toggling adds to onChange payload", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    const Wrapper = () => {
+      const [v, setV] = React.useState<string[]>([]);
+      return (
+        <Combobox label="F" multiple value={v} onChange={(next) => { onChange(next); setV(next); }}>
+          <ComboboxItem value="a">Apple</ComboboxItem>
+          <ComboboxItem value="b">Banana</ComboboxItem>
+        </Combobox>
+      );
+    };
+    render(<Wrapper />);
+    const input = screen.getByRole("combobox");
+    await user.click(input);
+    await user.click(screen.getByText("Apple"));
+    expect(onChange).toHaveBeenLastCalledWith(["a"]);
+    await user.click(screen.getByText("Banana"));
+    expect(onChange).toHaveBeenLastCalledWith(["a", "b"]);
+  });
+
+  it("multi pick keeps listbox open", async () => {
+    const user = userEvent.setup();
+    render(
+      <Combobox label="F" multiple>
+        <ComboboxItem value="a">Apple</ComboboxItem>
+        <ComboboxItem value="b">Banana</ComboboxItem>
+      </Combobox>
+    );
+    const input = screen.getByRole("combobox");
+    await user.click(input);
+    await user.click(screen.getByText("Apple"));
+    expect(input).toHaveAttribute("aria-expanded", "true");
+  });
+
+  it("multi: chips render for each selected value", () => {
+    render(
+      <Combobox label="F" multiple defaultValue={["a", "b"]}>
+        <ComboboxItem value="a">Apple</ComboboxItem>
+        <ComboboxItem value="b">Banana</ComboboxItem>
+      </Combobox>
+    );
+    expect(screen.getByText("Apple")).toBeInTheDocument();
+    expect(screen.getByText("Banana")).toBeInTheDocument();
+    expect(screen.getByLabelText("Remove Apple")).toBeInTheDocument();
+    expect(screen.getByLabelText("Remove Banana")).toBeInTheDocument();
+  });
+
+  it("multi chip × click removes that value", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    const Wrapper = () => {
+      const [v, setV] = React.useState<string[]>(["a", "b"]);
+      return (
+        <Combobox label="F" multiple value={v} onChange={(next) => { onChange(next); setV(next); }}>
+          <ComboboxItem value="a">Apple</ComboboxItem>
+          <ComboboxItem value="b">Banana</ComboboxItem>
+        </Combobox>
+      );
+    };
+    render(<Wrapper />);
+    await user.click(screen.getByLabelText("Remove Apple"));
+    expect(onChange).toHaveBeenCalledWith(["b"]);
+  });
+
+  it("multi Backspace on empty input removes last chip", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    const Wrapper = () => {
+      const [v, setV] = React.useState<string[]>(["a", "b"]);
+      return (
+        <Combobox label="F" multiple value={v} onChange={(next) => { onChange(next); setV(next); }}>
+          <ComboboxItem value="a">Apple</ComboboxItem>
+          <ComboboxItem value="b">Banana</ComboboxItem>
+        </Combobox>
+      );
+    };
+    render(<Wrapper />);
+    const input = screen.getByRole("combobox") as HTMLInputElement;
+    input.focus();
+    await user.keyboard("{Backspace}");
+    expect(onChange).toHaveBeenCalledWith(["a"]);
+  });
+
+  it("multi Backspace with text in input does NOT remove chips", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    render(
+      <Combobox label="F" multiple defaultValue={["a"]} onChange={onChange}>
+        <ComboboxItem value="a">Apple</ComboboxItem>
+      </Combobox>
+    );
+    const input = screen.getByRole("combobox") as HTMLInputElement;
+    await user.click(input);
+    await user.type(input, "x");
+    await user.keyboard("{Backspace}");
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it("Enter on active item selects (single) + closes", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    render(
+      <Combobox label="F" onChange={onChange}>
+        <ComboboxItem value="a">A</ComboboxItem>
+        <ComboboxItem value="b">B</ComboboxItem>
+      </Combobox>
+    );
+    const input = screen.getByRole("combobox");
+    await user.click(input);
+    await user.keyboard("{ArrowDown}{Enter}");
+    expect(onChange).toHaveBeenCalledWith("b");
+    expect(input).toHaveAttribute("aria-expanded", "false");
+  });
+
+  it("Space does NOT select (Space is a legal input character)", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    render(
+      <Combobox label="F" onChange={onChange}>
+        <ComboboxItem value="a">A</ComboboxItem>
+      </Combobox>
+    );
+    const input = screen.getByRole("combobox") as HTMLInputElement;
+    await user.click(input);
+    await user.keyboard(" ");
+    expect(onChange).not.toHaveBeenCalled();
+    expect(input.value).toContain(" ");
+  });
+
+  it("disabled item is not selectable by click or keyboard", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    render(
+      <Combobox label="F" onChange={onChange}>
+        <ComboboxItem value="a" disabled>A</ComboboxItem>
+        <ComboboxItem value="b">B</ComboboxItem>
+      </Combobox>
+    );
+    const input = screen.getByRole("combobox");
+    await user.click(input);
+    await user.click(screen.getByText("A"));
+    expect(onChange).not.toHaveBeenCalled();
   });
 });
