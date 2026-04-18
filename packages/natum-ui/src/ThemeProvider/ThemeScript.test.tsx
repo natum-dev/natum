@@ -32,7 +32,7 @@ describe("ThemeScript", () => {
     const { container } = render(<ThemeScript />);
     const script = container.querySelector("script");
     expect(script?.innerHTML).toBe(
-      '(function(){try{var m=document.cookie.match(/(?:^|; )natum-theme=(light|dark|system)/);var t=m?m[1]:"system";if(t==="system")t=matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light";document.documentElement.dataset.theme=t;}catch(e){}}());'
+      '(function(){try{var m=document.cookie.match(/(?:^|;\\s*)natum-theme=(light|dark|system)(?:;|$)/);var t=m?m[1]:"system";if(t==="system")t=matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light";document.documentElement.dataset.theme=t;}catch(e){}}());'
     );
   });
 });
