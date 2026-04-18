@@ -8,6 +8,7 @@
   border: none;
   margin: 0;
   padding: var(--space-3) var(--space-4);
+  @include hit-target-min;
   font: inherit;
   font-size: 16px;
   font-weight: 500;
