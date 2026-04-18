@@ -62,4 +62,14 @@ describe("IconButton", () => {
     render(<IconButton icon={MockIcon} aria-label="Close" className="custom" />);
     expect(screen.getByRole("button")).toHaveClass("custom");
   });
+
+  it("renders correctly with dir='rtl'", () => {
+    const { container } = render(
+      <div dir="rtl">
+        <IconButton icon={MockIcon} aria-label="Close" />
+      </div>
+    );
+    expect(container.firstChild).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Close" })).toBeInTheDocument();
+  });
 });
