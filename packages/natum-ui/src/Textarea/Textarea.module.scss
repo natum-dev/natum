@@ -21,13 +21,11 @@
   }
 }
 
-.focused .label,
 .wrapper:has(.focused) .label {
   color: var(--primary-text);
 }
 
-.error .label,
-.error:has(.focused) .label {
+.error .label {
   color: var(--error-text);
 }
 
@@ -137,8 +135,6 @@
   line-height: 1.5;
   padding: 0;
   margin: 0;
-  resize: vertical;
-
   &::placeholder {
     color: var(--neutral-text-disabled);
   }
