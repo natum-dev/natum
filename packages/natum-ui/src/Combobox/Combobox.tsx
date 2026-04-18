@@ -325,34 +325,10 @@ const Combobox = forwardRef<HTMLInputElement, ComboboxProps>((props, ref) => {
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       if (readOnly || disabled) return;
-      let next = e.target.value;
-      // Single-select: input displays the selected label when searchValue is
-      // empty. If the user types before the focus-time select()-all has had a
-      // chance to apply (e.g. in jsdom rAF timing), the incoming value is
-      // "<label><typedChars>". Strip the label prefix so we capture only the
-      // typed query — matching the intent of select-on-focus.
-      if (
-        !selection.isMulti &&
-        searchValue === "" &&
-        selectedSingleLabel &&
-        next.startsWith(selectedSingleLabel) &&
-        next.length > selectedSingleLabel.length
-      ) {
-        next = next.slice(selectedSingleLabel.length);
-      }
-      setSearchValue(next);
+      setSearchValue(e.target.value);
       if (!isOpen) setOpen(true);
     },
-    [
-      readOnly,
-      disabled,
-      isOpen,
-      setOpen,
-      setSearchValue,
-      selection.isMulti,
-      searchValue,
-      selectedSingleLabel,
-    ]
+    [readOnly, disabled, isOpen, setOpen, setSearchValue]
   );
 
   const handleInputClick = useCallback(() => {

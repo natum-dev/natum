@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, within, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import React, { createRef } from "react";
@@ -665,8 +665,11 @@ describe("Combobox — single-select input revert", () => {
     const user = userEvent.setup();
     renderBasic({ defaultValue: "banana" });
     const input = screen.getByRole("combobox") as HTMLInputElement;
-    await user.click(input);
-    await user.type(input, "xx");
+    // Focus + simulate typing over the selected label via fireEvent.change to bypass
+    // the jsdom rAF-select-all race (a real browser user types after select-all replaces
+    // the label; fireEvent.change directly sets the value as if the replace happened).
+    input.focus();
+    fireEvent.change(input, { target: { value: "xx" } });
     expect(input.value).toBe("xx");
     await user.keyboard("{Escape}");
     expect(input.value).toBe("Banana");
@@ -676,8 +679,8 @@ describe("Combobox — single-select input revert", () => {
     const user = userEvent.setup();
     renderBasic({ defaultValue: "banana" });
     const input = screen.getByRole("combobox") as HTMLInputElement;
-    await user.click(input);
-    await user.type(input, "xx");
+    input.focus();
+    fireEvent.change(input, { target: { value: "xx" } });
     expect(input.value).toBe("xx");
     await user.tab();
     expect(input.value).toBe("Banana");
