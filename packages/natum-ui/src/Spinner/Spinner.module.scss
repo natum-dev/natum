@@ -1,0 +1,70 @@
+@use "../design-tokens" as *;
+
+.spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+  color: currentColor;
+}
+
+// --- Size (inline box; the inner IconLoader svg carries the matching size="sm|md|lg" prop) ---
+.sm {
+  inline-size: 16px;
+  block-size: 16px;
+}
+
+.md {
+  inline-size: 24px;
+  block-size: 24px;
+}
+
+.lg {
+  inline-size: 32px;
+  block-size: 32px;
+}
+
+// --- Color (class toggles set the color CSS property; the IconLoader uses color="currentColor") ---
+.currentColor {
+  // no-op — inherits from parent text color
+}
+
+.primary   { color: var(--primary-text); }
+.secondary { color: var(--secondary-text); }
+.error     { color: var(--error-text); }
+.success   { color: var(--success-text); }
+.warning   { color: var(--warning-text); }
+.info      { color: var(--info-text); }
+
+// --- Animated icon ---
+.icon {
+  animation: spinner_spin var(--duration-spin) var(--easing-linear) infinite;
+}
+
+@keyframes spinner_spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Under reduced motion, slow dramatically rather than stop entirely —
+// the spinner still communicates "something is happening" without
+// triggering vestibular motion sensitivity. Mirrors IconButton.
+@media (prefers-reduced-motion: reduce) {
+  .icon {
+    animation-duration: 4s;
+  }
+}
+
+// --- SR-only helper ---
+.sr_only {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
