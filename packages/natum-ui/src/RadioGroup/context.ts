@@ -1,5 +1,4 @@
-import { createContext } from "react";
-import { type ChangeEvent } from "react";
+import { createContext, type ChangeEvent } from "react";
 
 export type RadioGroupSemanticColor =
   | "primary"
