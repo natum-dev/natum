@@ -1,0 +1,55 @@
+@use "../design-tokens" as *;
+
+.group {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-inline-size: 0;
+}
+
+.legend {
+  padding: 0;
+  margin-block-end: var(--space-2);
+  font-size: 0.875rem;
+  color: var(--neutral-text);
+  font-weight: 500;
+}
+
+.required_asterisk {
+  color: var(--error-text);
+  margin-inline-start: 2px;
+}
+
+.options {
+  display: flex;
+}
+
+.vertical .options {
+  flex-direction: column;
+}
+
+.horizontal .options {
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+@each $n in (0, 1, 2, 3, 4, 6, 8, 12, 16) {
+  .gap_#{$n} .options {
+    gap: if($n == 0, 0, var(--space-#{$n}));
+  }
+}
+
+.message {
+  margin-block-start: var(--space-1);
+  font-size: 0.75rem;
+  color: var(--neutral-text-secondary);
+  line-height: 1.4;
+}
+
+.message_error {
+  color: var(--error-text);
+}
+
+.error > .legend {
+  color: var(--error-text);
+}
