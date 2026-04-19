@@ -154,3 +154,44 @@ describe("Toggle — label + description", () => {
     expect(label.firstElementChild?.className).toContain("rail");
   });
 });
+
+describe("Toggle — disabled + a11y", () => {
+  it("sets native disabled and data-disabled when disabled", () => {
+    const { container } = render(<Toggle disabled aria-label="N" />);
+    expect(screen.getByRole("switch")).toBeDisabled();
+    expect(container.querySelector("label")?.getAttribute("data-disabled")).toBe("true");
+  });
+
+  it("click on disabled toggle does not fire onChange", async () => {
+    const user = userEvent.setup();
+    const handleChange = vi.fn();
+    render(<Toggle disabled onChange={handleChange} aria-label="N" />);
+    await user.click(screen.getByRole("switch"));
+    expect(handleChange).not.toHaveBeenCalled();
+  });
+
+  it("does not emit data-disabled when disabled is false", () => {
+    const { container } = render(<Toggle aria-label="N" />);
+    expect(container.querySelector("label")?.getAttribute("data-disabled")).toBeNull();
+  });
+
+  it("aria-label passes through", () => {
+    render(<Toggle aria-label="Dark mode" />);
+    expect(screen.getByRole("switch", { name: "Dark mode" })).toBeInTheDocument();
+  });
+
+  it("custom className merges onto root label", () => {
+    const { container } = render(<Toggle className="x-custom" aria-label="N" />);
+    expect(container.querySelector("label")?.className).toContain("x-custom");
+  });
+
+  it("id prop overrides auto-generated input id", () => {
+    render(<Toggle id="my-toggle" aria-label="N" />);
+    expect(screen.getByRole("switch").id).toBe("my-toggle");
+  });
+
+  it("rest props land on the input", () => {
+    render(<Toggle aria-label="N" data-testid="t1" />);
+    expect(screen.getByTestId("t1")).toBeInTheDocument();
+  });
+});
