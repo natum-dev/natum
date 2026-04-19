@@ -52,4 +52,20 @@ describe("Badge", () => {
     render(<Badge data-testid="badge" size={size}>x</Badge>);
     expect(screen.getByTestId("badge")).toHaveClass(size);
   });
+
+  // --- Dot mode ---
+  it("applies dot class when dot={true}", () => {
+    render(<Badge data-testid="badge" dot aria-label="Unread" />);
+    expect(screen.getByTestId("badge")).toHaveClass("dot");
+  });
+
+  it("does not render children when dot={true}", () => {
+    render(<Badge dot aria-label="Unread">HIDDEN</Badge>);
+    expect(screen.queryByText("HIDDEN")).not.toBeInTheDocument();
+  });
+
+  it("passes aria-label through on dot mode", () => {
+    render(<Badge data-testid="badge" dot aria-label="Unread" />);
+    expect(screen.getByTestId("badge")).toHaveAttribute("aria-label", "Unread");
+  });
 });
