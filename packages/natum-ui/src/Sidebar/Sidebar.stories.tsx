@@ -25,7 +25,12 @@ import { Modal } from "../Modal";
 const meta = {
   title: "Navigation/Sidebar",
   component: Sidebar,
+  tags: ["autodocs"],
   parameters: { layout: "fullscreen" },
+  argTypes: {
+    collapsed: { control: "boolean" },
+    defaultCollapsed: { control: "boolean" },
+  },
   decorators: [
     (Story) => (
       <div style={{ display: "flex", minHeight: "100vh" }}>
@@ -193,7 +198,5 @@ const InModalDemo = () => {
 };
 
 export const InModal: Story = {
-  parameters: { layout: "centered" },
-  decorators: [(Story) => <Story />],
   render: () => <InModalDemo />,
 };
