@@ -240,3 +240,56 @@ describe("TableSelectionCell", () => {
     spy.mockRestore();
   });
 });
+
+describe("Shift-click range select", () => {
+  it("after a first click, shift-click on a later row selects the range", async () => {
+    const onChange = vi.fn();
+    const user = userEvent.setup();
+    renderWithSelectionCells({ onSelectedRowIdsChange: onChange });
+    const rowCbs = screen.getAllByRole("checkbox", { name: "Select row" });
+    await user.click(rowCbs[0]);            // select "a"; anchor = "a"
+    await user.keyboard("{Shift>}");
+    await user.click(rowCbs[2]);            // shift-click "c"; range a..c selected
+    await user.keyboard("{/Shift}");
+    expect(onChange).toHaveBeenLastCalledWith(["a", "b", "c"]);
+  });
+
+  it("shift-click with no prior click behaves as a plain toggle", async () => {
+    const onChange = vi.fn();
+    const user = userEvent.setup();
+    renderWithSelectionCells({ onSelectedRowIdsChange: onChange });
+    const rowCbs = screen.getAllByRole("checkbox", { name: "Select row" });
+    await user.keyboard("{Shift>}");
+    await user.click(rowCbs[1]);            // no anchor yet → simple toggle of "b"
+    await user.keyboard("{/Shift}");
+    expect(onChange).toHaveBeenLastCalledWith(["b"]);
+  });
+
+  it("shift-click reverse range (anchor below, click above)", async () => {
+    const onChange = vi.fn();
+    const user = userEvent.setup();
+    renderWithSelectionCells({ onSelectedRowIdsChange: onChange });
+    const rowCbs = screen.getAllByRole("checkbox", { name: "Select row" });
+    await user.click(rowCbs[2]);            // select "c"; anchor = "c"
+    await user.keyboard("{Shift>}");
+    await user.click(rowCbs[0]);            // shift-click "a"; range [a..c]
+    await user.keyboard("{/Shift}");
+    expect(onChange).toHaveBeenLastCalledWith(["c", "a", "b"]);
+  });
+
+  it("shift-click UNselects range when target row was selected", async () => {
+    const onChange = vi.fn();
+    const user = userEvent.setup();
+    renderWithSelectionCells({
+      defaultSelectedRowIds: ["a", "b", "c"],
+      onSelectedRowIdsChange: onChange,
+    });
+    const rowCbs = screen.getAllByRole("checkbox", { name: "Select row" });
+    await user.click(rowCbs[0]);            // unselect "a"; anchor = "a"
+    await user.keyboard("{Shift>}");
+    await user.click(rowCbs[2]);            // shift-click "c"; a was just unselected
+                                             // target state = !selectedSet.has("c") = false → unselect range a..c
+    await user.keyboard("{/Shift}");
+    expect(onChange).toHaveBeenLastCalledWith([]);
+  });
+});
