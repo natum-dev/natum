@@ -303,4 +303,22 @@ describe("FileCard — selection", () => {
     expect(onSelectedChange).toHaveBeenCalledTimes(1);
     expect(onClick).not.toHaveBeenCalled();
   });
+
+  it("library-managed data-selected wins over a consumer-supplied data-selected via rest", () => {
+    const { container } = render(
+      <FileCard
+        icon={IconFile}
+        name="x.pdf"
+        selected
+        onSelectedChange={() => {}}
+        // @ts-expect-error consumers shouldn't typically do this, but the
+        // library must protect its managed visual state anyway.
+        data-selected="false"
+      />
+    );
+    expect(container.firstElementChild).toHaveAttribute(
+      "data-selected",
+      "true"
+    );
+  });
 });

@@ -76,9 +76,6 @@ const FileCard = forwardRef<HTMLDivElement, FileCardProps>(
       <div
         ref={ref}
         className={cx(styles.file_card, className)}
-        data-has-thumbnail={hasThumbnail ? "true" : "false"}
-        data-selected={selected ? "true" : "false"}
-        data-size={size}
         role={isFocusable ? "button" : undefined}
         tabIndex={isFocusable ? 0 : undefined}
         aria-pressed={isFocusable && isSelectable ? selected : undefined}
@@ -86,6 +83,9 @@ const FileCard = forwardRef<HTMLDivElement, FileCardProps>(
         onDoubleClick={onDoubleClick}
         onKeyDown={isFocusable ? handleKeyDown : undefined}
         {...rest}
+        data-has-thumbnail={hasThumbnail ? "true" : "false"}
+        data-selected={selected ? "true" : "false"}
+        data-size={size}
       >
         {isSelectable && (
           <div
