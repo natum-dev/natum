@@ -7,8 +7,10 @@ import {
   type ReactNode,
 } from "react";
 import cx from "classnames";
+import { useControllable } from "../hooks/use-controllable";
 import {
   TableContext,
+  type SortSpec,
   type TableContextValue,
   type TableSize,
 } from "./context";
@@ -19,6 +21,10 @@ type TableBaseProps = {
   striped?: boolean;
   withRowBorders?: boolean;
   stickyHeader?: boolean;
+
+  sort?: SortSpec | null;
+  defaultSort?: SortSpec | null;
+  onSortChange?: (sort: SortSpec | null) => void;
 
   wrapperClassName?: string;
   className?: string;
@@ -35,6 +41,9 @@ const Table = forwardRef<HTMLTableElement, TableProps>(
       striped = true,
       withRowBorders = false,
       stickyHeader = false,
+      sort: sortProp,
+      defaultSort,
+      onSortChange,
       wrapperClassName,
       className,
       children,
@@ -42,12 +51,18 @@ const Table = forwardRef<HTMLTableElement, TableProps>(
     },
     ref
   ) => {
-    // Stub context — Task 6 wires sort, Task 7 wires selection.
+    const { value: sort, setValue: setSort } = useControllable<SortSpec>({
+      value: sortProp,
+      defaultValue: defaultSort ?? undefined,
+      onChange: onSortChange,
+    });
+
+    // Selection is stubbed until Task 7.
     const ctxValue = useMemo<TableContextValue>(
       () => ({
         size,
-        sort: null,
-        setSort: () => {},
+        sort: sort ?? null,
+        setSort,
         rowIds: [],
         selectedSet: new Set(),
         isAllSelected: false,
@@ -55,7 +70,7 @@ const Table = forwardRef<HTMLTableElement, TableProps>(
         toggleRow: () => {},
         toggleAll: () => {},
       }),
-      [size]
+      [size, sort, setSort]
     );
 
     return (

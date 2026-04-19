@@ -99,3 +99,37 @@
 .table tbody tr[aria-selected="true"]:hover {
   background: var(--primary-soft-hover);
 }
+
+.sort_button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  text-transform: inherit;
+  letter-spacing: inherit;
+
+  &:focus-visible {
+    outline: 2px solid var(--focus-ring-color);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+}
+
+.sort_icon {
+  color: currentColor;
+  flex: 0 0 auto;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: transform var(--duration-fast) var(--easing-default);
+  }
+}
+
+.sort_icon_none { opacity: 0.5; }
+.sort_icon_asc { transform: rotate(180deg); }
+.sort_icon_desc { transform: rotate(0deg); }
