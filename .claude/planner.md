@@ -58,7 +58,7 @@
 | DropZone | Drag-and-drop target area with visual feedback on dragover | P0 | Done | In-flow region + paired window-wide `DropZoneOverlay`; shared `useFileDrop` |
 | UploadPanel | Collapsible panel showing upload queue with per-file status | P0 | Done | Portaled bottom-right/left; auto-hide on empty; backed by `useUploadQueue` hook |
 | StorageQuotaBar | Progress bar showing used/total storage with labels | P0 | Planned | Sidebar and settings page |
-| FileCard | Card variant showing file icon/thumbnail, name, size, type | P1 | Planned | Grid view of files |
+| FileCard | Card variant showing file icon/thumbnail, name, size, type | P1 | Done | Grid view of files; fixed 4:3 preview; icon or thumbnail slot; controlled selection overlay; onClick/onDoubleClick for Finder-style UX. Planned to migrate to apps/vault. |
 | Badge | Small label/count indicator | P1 | Done | Inline pill; filled/outlined/soft × 7 colors × sm/md; dot mode; leftSection; polymorphic as=span/a/button with auto-derived interactive styling |
 
 ---
