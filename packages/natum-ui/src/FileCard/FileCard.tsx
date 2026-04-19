@@ -39,7 +39,16 @@ const ICON_PX: Record<FileCardSize, number> = {
 
 const FileCard = forwardRef<HTMLDivElement, FileCardProps>(
   (
-    { icon: Icon, thumbnail, name, meta, size = "md", className, ...rest },
+    {
+      icon: Icon,
+      thumbnail,
+      name,
+      meta,
+      action,
+      size = "md",
+      className,
+      ...rest
+    },
     ref
   ) => {
     const hasThumbnail = thumbnail != null;
@@ -52,6 +61,15 @@ const FileCard = forwardRef<HTMLDivElement, FileCardProps>(
         data-size={size}
         {...rest}
       >
+        {action != null && (
+          <div
+            className={styles.action_slot}
+            onClick={(e) => e.stopPropagation()}
+            onDoubleClick={(e) => e.stopPropagation()}
+          >
+            {action}
+          </div>
+        )}
         <div className={styles.preview}>
           {hasThumbnail ? (
             <div className={styles.thumbnail_wrapper}>{thumbnail}</div>

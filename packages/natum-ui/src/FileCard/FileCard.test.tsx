@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import userEvent from "@testing-library/user-event";
 import { IconFile } from "@natum/icons";
 import { FileCard } from "./FileCard";
 
@@ -101,5 +102,54 @@ describe("FileCard — meta slot", () => {
   it("omits the meta row from the DOM when meta is absent", () => {
     const { container } = render(<FileCard icon={IconFile} name="x.pdf" />);
     expect(container.querySelector('[class*="meta_line"]')).toBeNull();
+  });
+});
+
+describe("FileCard — action slot", () => {
+  it("renders the action slot when provided", () => {
+    render(
+      <FileCard
+        icon={IconFile}
+        name="x.pdf"
+        action={<button data-testid="act">⋮</button>}
+      />
+    );
+    expect(screen.getByTestId("act")).toBeInTheDocument();
+  });
+
+  it("omits the action slot wrapper from the DOM when action is absent", () => {
+    const { container } = render(<FileCard icon={IconFile} name="x.pdf" />);
+    expect(container.querySelector('[class*="action_slot"]')).toBeNull();
+  });
+
+  it("clicking inside the action slot does not bubble to card onClick", async () => {
+    const onClick = vi.fn();
+    const onActionClick = vi.fn();
+    render(
+      <FileCard
+        icon={IconFile}
+        name="x.pdf"
+        onClick={onClick}
+        action={<button data-testid="act" onClick={onActionClick}>⋮</button>}
+      />
+    );
+    await userEvent.click(screen.getByTestId("act"));
+    expect(onActionClick).toHaveBeenCalledTimes(1);
+    expect(onClick).not.toHaveBeenCalled();
+  });
+
+  it("double-clicking inside the action slot does not bubble to card onDoubleClick", async () => {
+    const onDoubleClick = vi.fn();
+    render(
+      <FileCard
+        icon={IconFile}
+        name="x.pdf"
+        onClick={() => {}}
+        onDoubleClick={onDoubleClick}
+        action={<button data-testid="act">⋮</button>}
+      />
+    );
+    await userEvent.dblClick(screen.getByTestId("act"));
+    expect(onDoubleClick).not.toHaveBeenCalled();
   });
 });
