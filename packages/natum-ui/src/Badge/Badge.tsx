@@ -1,5 +1,6 @@
 import {
   type ComponentPropsWithoutRef,
+  type MouseEventHandler,
   type ReactNode,
 } from "react";
 import styles from "./Badge.module.scss";
@@ -46,7 +47,7 @@ export const Badge = <T extends BadgeElementType = "span">({
   className,
   onClick,
   ...rest
-}: BadgeProps<T> & { onClick?: (e: unknown) => void }) => {
+}: BadgeProps<T> & { onClick?: MouseEventHandler<HTMLElement> }) => {
   const Tag = (as ?? "span") as BadgeElementType;
   const isInteractive = Tag === "a" || Tag === "button";
 
