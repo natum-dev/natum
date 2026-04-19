@@ -39,3 +39,15 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.thumbnail_wrapper {
+  inline-size: 100%;
+  block-size: 100%;
+
+  :where(img) {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+  }
+}

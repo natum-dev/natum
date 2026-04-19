@@ -32,18 +32,23 @@ type FileCardProps = FileCardBaseProps &
   >;
 
 const FileCard = forwardRef<HTMLDivElement, FileCardProps>(
-  ({ icon: Icon, name, className, ...rest }, ref) => {
+  ({ icon: Icon, thumbnail, name, className, ...rest }, ref) => {
+    const hasThumbnail = thumbnail != null;
     return (
       <div
         ref={ref}
         className={cx(styles.file_card, className)}
-        data-has-thumbnail="false"
+        data-has-thumbnail={hasThumbnail ? "true" : "false"}
         data-selected="false"
         data-size="md"
         {...rest}
       >
         <div className={styles.preview}>
-          <Icon size={40} aria-hidden="true" />
+          {hasThumbnail ? (
+            <div className={styles.thumbnail_wrapper}>{thumbnail}</div>
+          ) : (
+            <Icon size={40} aria-hidden="true" />
+          )}
         </div>
         <div className={styles.body}>
           <div className={styles.name} title={name}>
