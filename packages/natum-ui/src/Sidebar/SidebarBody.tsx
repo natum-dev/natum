@@ -17,4 +17,6 @@ const SidebarBody = ({ children, className, ...rest }: SidebarBodyProps) => {
   );
 };
 
+SidebarBody.displayName = "SidebarBody";
+
 export { SidebarBody };

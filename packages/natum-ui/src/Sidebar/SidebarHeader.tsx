@@ -17,4 +17,6 @@ const SidebarHeader = ({ children, className, ...rest }: SidebarHeaderProps) => 
   );
 };
 
+SidebarHeader.displayName = "SidebarHeader";
+
 export { SidebarHeader };

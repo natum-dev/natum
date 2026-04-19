@@ -58,7 +58,6 @@ const SidebarItemInner = <T extends ElementType = "a">(
     label ?? (typeof children === "string" ? children : undefined);
 
   if (collapsed && resolvedLabel === undefined && import.meta.env.DEV) {
-    // eslint-disable-next-line no-console
     console.warn(
       "SidebarItem: collapsed mode needs a string `children` or a `label` prop to announce the item."
     );
