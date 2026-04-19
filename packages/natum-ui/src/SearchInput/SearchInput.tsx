@@ -1,6 +1,6 @@
 "use client";
 
-import { forwardRef, useEffect, useState } from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
 import type { ComponentPropsWithoutRef } from "react";
 import { IconSearch } from "@natum/icons";
 import { TextField } from "../TextField";
@@ -53,21 +53,38 @@ const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
       defaultValue = "",
       onChange,
       onSubmit: _onSubmit,
-      debounceMs: _debounceMs = 250,
+      debounceMs = 250,
       clearable = true,
       ...rest
     },
     ref
   ) => {
     void _onSubmit;
-    void _debounceMs;
-    // Internal raw state — DOM input always reflects the latest keystroke
-    // immediately. External `value` changes sync back via effect.
+
     const [rawValue, setRawValue] = useState<string>(value ?? defaultValue);
 
     useEffect(() => {
       if (value !== undefined) setRawValue(value);
     }, [value]);
+
+    const timerRef = useRef<number | null>(null);
+
+    const cancelPending = () => {
+      if (timerRef.current !== null) {
+        window.clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+
+    const schedule = (next: string) => {
+      cancelPending();
+      timerRef.current = window.setTimeout(() => {
+        timerRef.current = null;
+        onChange?.(next);
+      }, Math.max(0, debounceMs));
+    };
+
+    useEffect(() => cancelPending, []);
 
     return (
       <TextField
@@ -77,10 +94,9 @@ const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
         clearable={clearable}
         value={rawValue}
         onChange={(e) => {
-          // Scaffold: synchronous passthrough. Debounce lands in Task 3.
           const next = e.target.value;
           setRawValue(next);
-          onChange?.(next);
+          schedule(next);
         }}
         {...rest}
       />

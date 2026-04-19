@@ -64,7 +64,8 @@ describe("SearchInput — external value sync", () => {
     // SearchInput's `value` prop is a seed + external-sync channel, NOT a DOM
     // lock. Typing always updates the DOM immediately. Consumers who want to
     // reject typing use onChange to veto by not echoing back.
-    const user = userEvent.setup();
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
     const handleChange = vi.fn();
     render(
       <SearchInput value="seed" onChange={handleChange} aria-label="Search" />
@@ -72,6 +73,97 @@ describe("SearchInput — external value sync", () => {
     const input = screen.getByRole<HTMLInputElement>("searchbox");
     await user.type(input, "x");
     expect(input.value).toBe("seedx");
+    // Debounced — flush the pending timer before asserting the emit.
+    vi.advanceTimersByTime(250);
     expect(handleChange).toHaveBeenCalledWith("seedx");
+    vi.useRealTimers();
+  });
+});
+
+describe("SearchInput — debounce", () => {
+  it("emits onChange once after the debounce window", async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    const handleChange = vi.fn();
+    render(<SearchInput onChange={handleChange} aria-label="Search" />);
+    const input = screen.getByRole<HTMLInputElement>("searchbox");
+    await user.type(input, "abc");
+    // Not yet — still inside the 250ms window.
+    expect(handleChange).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(250);
+    expect(handleChange).toHaveBeenCalledTimes(1);
+    expect(handleChange).toHaveBeenCalledWith("abc");
+    vi.useRealTimers();
+  });
+
+  it("later keystrokes reset the timer (no intermediate emits)", async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    const handleChange = vi.fn();
+    render(<SearchInput onChange={handleChange} aria-label="Search" />);
+    const input = screen.getByRole<HTMLInputElement>("searchbox");
+    await user.type(input, "a");
+    vi.advanceTimersByTime(200);
+    await user.type(input, "b");
+    vi.advanceTimersByTime(200);
+    expect(handleChange).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(50);
+    expect(handleChange).toHaveBeenCalledTimes(1);
+    expect(handleChange).toHaveBeenCalledWith("ab");
+    vi.useRealTimers();
+  });
+
+  it("honors a custom debounceMs", async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    const handleChange = vi.fn();
+    render(<SearchInput debounceMs={500} onChange={handleChange} aria-label="Search" />);
+    await user.type(screen.getByRole<HTMLInputElement>("searchbox"), "x");
+    vi.advanceTimersByTime(400);
+    expect(handleChange).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(100);
+    expect(handleChange).toHaveBeenCalledTimes(1);
+    vi.useRealTimers();
+  });
+
+  it("debounceMs=0 still emits asynchronously", () => {
+    // Pure fake timers (no shouldAdvanceTime) so the setTimeout(0) stays
+    // queued until we explicitly advance. Use the native setter pattern
+    // (like the unmount test) instead of userEvent to avoid needing
+    // shouldAdvanceTime for user.type internals.
+    vi.useFakeTimers();
+    const handleChange = vi.fn();
+    render(<SearchInput debounceMs={0} onChange={handleChange} aria-label="Search" />);
+    const input = screen.getByRole<HTMLInputElement>("searchbox");
+    const setter = Object.getOwnPropertyDescriptor(
+      HTMLInputElement.prototype,
+      "value"
+    )?.set;
+    setter?.call(input, "z");
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    expect(handleChange).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(0);
+    expect(handleChange).toHaveBeenCalledTimes(1);
+    expect(handleChange).toHaveBeenCalledWith("z");
+    vi.useRealTimers();
+  });
+
+  it("cancels pending timer on unmount", () => {
+    vi.useFakeTimers();
+    const handleChange = vi.fn();
+    const { unmount } = render(
+      <SearchInput defaultValue="" onChange={handleChange} aria-label="Search" />
+    );
+    const input = screen.getByRole<HTMLInputElement>("searchbox");
+    const setter = Object.getOwnPropertyDescriptor(
+      HTMLInputElement.prototype,
+      "value"
+    )?.set;
+    setter?.call(input, "late");
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    unmount();
+    vi.advanceTimersByTime(500);
+    expect(handleChange).not.toHaveBeenCalled();
+    vi.useRealTimers();
   });
 });
