@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 "use client";
 
 import { forwardRef, useEffect, useRef, useState } from "react";
@@ -61,6 +62,20 @@ const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
     },
     ref
   ) => {
+    if (import.meta.env.DEV) {
+      const restRecord = rest as Record<string, unknown>;
+      const ariaLabel = restRecord["aria-label"];
+      const ariaLabelledBy = restRecord["aria-labelledby"];
+      const hasAccessibleName =
+        (typeof ariaLabel === "string" && ariaLabel.length > 0) ||
+        typeof ariaLabelledBy === "string";
+      if (!hasAccessibleName) {
+        console.warn(
+          "SearchInput: no accessible name. Supply `aria-label` or `aria-labelledby`."
+        );
+      }
+    }
+
     const [rawValue, setRawValue] = useState<string>(value ?? defaultValue);
 
     useEffect(() => {
