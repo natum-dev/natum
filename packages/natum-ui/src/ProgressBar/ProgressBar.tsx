@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import { type HTMLAttributes, forwardRef } from "react";
 import cx from "classnames";
 import styles from "./ProgressBar.module.scss";
@@ -42,6 +43,16 @@ const ProgressBar = forwardRef<HTMLDivElement, ProgressBarProps>(
     },
     ref,
   ) => {
+    if (
+      import.meta.env.DEV &&
+      ariaLabel == null &&
+      ariaLabelledBy == null
+    ) {
+      console.warn(
+        "ProgressBar: an `aria-label` or `aria-labelledby` prop is required for screen-reader accessibility.",
+      );
+    }
+
     const isDeterminate = typeof value === "number" && Number.isFinite(value);
     const clamped = isDeterminate ? Math.min(Math.max(value, 0), 1) : 0;
     const percent = Math.round(clamped * 100);
