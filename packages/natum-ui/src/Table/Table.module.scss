@@ -83,3 +83,19 @@
     th { background: var(--neutral-bg); }
   }
 }
+
+.row {
+  // placeholder so tr can receive .interactive via cx merge
+}
+
+.table .row.interactive {
+  cursor: pointer;
+}
+
+// aria-selected reflects selection (selectedSet populates in Task 7)
+.table tbody tr[aria-selected="true"] {
+  background: var(--primary-soft);
+}
+.table tbody tr[aria-selected="true"]:hover {
+  background: var(--primary-soft-hover);
+}
