@@ -12,6 +12,13 @@
   line-height: 1;
   white-space: nowrap;
   box-sizing: border-box;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      background-color var(--duration-fast) var(--easing-default),
+      color var(--duration-fast) var(--easing-default),
+      border-color var(--duration-fast) var(--easing-default);
+  }
 }
 
 // --- Sizes ---
