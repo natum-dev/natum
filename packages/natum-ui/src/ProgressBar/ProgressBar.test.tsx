@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import { createRef } from "react";
 import { ProgressBar } from "./ProgressBar";
 
 describe("ProgressBar — determinate rendering", () => {
@@ -146,5 +147,65 @@ describe("ProgressBar — size + color", () => {
     );
     const bar = screen.getByRole("progressbar");
     expect(bar).toHaveClass("custom-bar");
+  });
+});
+
+describe("ProgressBar — a11y dev warning", () => {
+  it("warns in dev when neither aria-label nor aria-labelledby is provided", () => {
+    const spy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    render(<ProgressBar value={0.5} />);
+    expect(spy).toHaveBeenCalledWith(
+      expect.stringContaining("ProgressBar:"),
+    );
+    spy.mockRestore();
+  });
+
+  it("does not warn when aria-label is provided", () => {
+    const spy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    render(<ProgressBar value={0.5} aria-label="Loading" />);
+    expect(spy).not.toHaveBeenCalled();
+    spy.mockRestore();
+  });
+
+  it("does not warn when aria-labelledby is provided", () => {
+    const spy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    render(<ProgressBar value={0.5} aria-labelledby="external-label" />);
+    expect(spy).not.toHaveBeenCalled();
+    spy.mockRestore();
+  });
+});
+
+describe("ProgressBar — rest-spread + ref", () => {
+  it("forwards ref to the root div", () => {
+    const ref = createRef<HTMLDivElement>();
+    render(<ProgressBar value={0.5} ref={ref} aria-label="Loading" />);
+    expect(ref.current).toBeInstanceOf(HTMLDivElement);
+    expect(ref.current).toHaveAttribute("role", "progressbar");
+  });
+
+  it("managed role wins over a consumer-supplied role via rest spread", () => {
+    render(
+      <ProgressBar
+        value={0.5}
+        aria-label="Loading"
+        // @ts-expect-error — deliberately bypass Omit to assert runtime
+        role="button"
+      />,
+    );
+    expect(screen.getByRole("progressbar")).toBeInTheDocument();
+  });
+
+  it("passes through arbitrary data attributes", () => {
+    render(
+      <ProgressBar
+        value={0.5}
+        aria-label="Loading"
+        data-testid="my-bar"
+      />,
+    );
+    expect(screen.getByTestId("my-bar")).toHaveAttribute(
+      "role",
+      "progressbar",
+    );
   });
 });
