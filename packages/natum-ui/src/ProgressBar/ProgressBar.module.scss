@@ -1,0 +1,32 @@
+@use "../design-tokens" as *;
+
+.progress_bar {
+  position: relative;
+  inline-size: 100%;
+  background-color: var(--neutral-soft);
+  border-radius: 999px;
+  overflow: hidden;
+  display: block;
+}
+
+.progress_fill {
+  display: block;
+  block-size: 100%;
+  inline-size: 0;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: inline-size 120ms linear;
+  }
+}
+
+// Sizes
+.progress_bar[data-size="sm"] { block-size: 4px; }
+.progress_bar[data-size="md"] { block-size: 6px; }
+.progress_bar[data-size="lg"] { block-size: 8px; }
+
+// Colors
+.progress_bar[data-color="primary"] .progress_fill { background-color: var(--primary-bg); }
+.progress_bar[data-color="success"] .progress_fill { background-color: var(--success-bg); }
+.progress_bar[data-color="warning"] .progress_fill { background-color: var(--warning-bg); }
+.progress_bar[data-color="error"]   .progress_fill { background-color: var(--error-bg); }
+.progress_bar[data-color="info"]    .progress_fill { background-color: var(--info-bg); }
