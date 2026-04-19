@@ -54,6 +54,7 @@ const FileCard = forwardRef<HTMLDivElement, FileCardProps>(
       onDoubleClick,
       size = "md",
       className,
+      "aria-label": ariaLabel,
       ...rest
     },
     ref
@@ -79,6 +80,7 @@ const FileCard = forwardRef<HTMLDivElement, FileCardProps>(
         role={isFocusable ? "button" : undefined}
         tabIndex={isFocusable ? 0 : undefined}
         aria-pressed={isFocusable && isSelectable ? selected : undefined}
+        aria-label={ariaLabel ?? name}
         onClick={onClick}
         onDoubleClick={onDoubleClick}
         onKeyDown={isFocusable ? handleKeyDown : undefined}
