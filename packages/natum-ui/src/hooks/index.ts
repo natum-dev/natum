@@ -19,3 +19,11 @@ export { useScrollLock } from "./use-scroll-lock";
 export { useTypeahead } from "./use-typeahead";
 export type { UseTypeaheadProps, UseTypeaheadReturn } from "./use-typeahead";
 export { mergeRefs, useMergedRefs } from "./use-merge-refs";
+export { useUploadQueue } from "./use-upload-queue";
+export type {
+  UploadFn,
+  UploadItem,
+  UploadStatus,
+  UseUploadQueueOptions,
+  UseUploadQueueReturn,
+} from "./use-upload-queue";
