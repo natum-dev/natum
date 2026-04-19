@@ -1,0 +1,41 @@
+@use "../design-tokens" as *;
+
+.file_card {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background-color: var(--neutral-bg-elevated);
+  border: 1px solid var(--border-color-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-low);
+  color: var(--neutral-text);
+  overflow: hidden;
+}
+
+.preview {
+  aspect-ratio: 4 / 3;
+  inline-size: 100%;
+  background-color: var(--neutral-soft);
+  display: grid;
+  place-items: center;
+  color: var(--neutral-text-secondary);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-3);
+  min-inline-size: 0;
+}
+
+.name {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--neutral-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
