@@ -48,8 +48,8 @@ const ProgressBar = forwardRef<HTMLDivElement, ProgressBarProps>(
 
     return (
       <div
-        {...rest}
         ref={ref}
+        {...rest}
         role="progressbar"
         aria-label={ariaLabel}
         aria-labelledby={ariaLabelledBy}
