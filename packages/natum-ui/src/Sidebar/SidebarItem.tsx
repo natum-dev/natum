@@ -19,6 +19,7 @@ type SidebarItemOwnProps = {
   children?: ReactNode;
   active?: boolean;
   disabled?: boolean;
+  rightSection?: ReactNode;
   className?: string;
 };
 
@@ -33,6 +34,7 @@ const SidebarItemInner = <T extends ElementType = "a">(
     children,
     active = false,
     disabled = false,
+    rightSection,
     className,
     onClick,
     ...rest
@@ -67,6 +69,9 @@ const SidebarItemInner = <T extends ElementType = "a">(
       >
         <Icon className={styles.item_icon} size={20} />
         <span className={styles.item_label}>{children}</span>
+        {rightSection !== undefined && (
+          <span className={styles.right_section}>{rightSection}</span>
+        )}
       </Tag>
     </li>
   );
