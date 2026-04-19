@@ -1,6 +1,7 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
+import { useState } from "react";
 import { SearchInput } from "./SearchInput";
 
 describe("SearchInput — scaffold", () => {
@@ -38,5 +39,39 @@ describe("SearchInput — scaffold", () => {
     const ref = { current: null as HTMLInputElement | null };
     render(<SearchInput ref={ref} aria-label="Search" />);
     expect(ref.current).toBeInstanceOf(HTMLInputElement);
+  });
+});
+
+describe("SearchInput — external value sync", () => {
+  it("syncs internal DOM when controlled value changes externally", () => {
+    const Harness = () => {
+      const [v, setV] = useState("one");
+      return (
+        <>
+          <button type="button" onClick={() => setV("two")}>bump</button>
+          <SearchInput value={v} onChange={() => {}} aria-label="Search" />
+        </>
+      );
+    };
+    render(<Harness />);
+    const input = screen.getByRole<HTMLInputElement>("searchbox");
+    expect(input.value).toBe("one");
+    fireEvent.click(screen.getByRole("button", { name: "bump" }));
+    expect(input.value).toBe("two");
+  });
+
+  it("controlled: typing updates DOM responsively AND fires onChange", async () => {
+    // SearchInput's `value` prop is a seed + external-sync channel, NOT a DOM
+    // lock. Typing always updates the DOM immediately. Consumers who want to
+    // reject typing use onChange to veto by not echoing back.
+    const user = userEvent.setup();
+    const handleChange = vi.fn();
+    render(
+      <SearchInput value="seed" onChange={handleChange} aria-label="Search" />
+    );
+    const input = screen.getByRole<HTMLInputElement>("searchbox");
+    await user.type(input, "x");
+    expect(input.value).toBe("seedx");
+    expect(handleChange).toHaveBeenCalledWith("seedx");
   });
 });
