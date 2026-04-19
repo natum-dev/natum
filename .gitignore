@@ -71,4 +71,5 @@ out
 .vscode/
 
 
-dist/
+# Superpowers brainstorming sessions
+.superpowers/
