@@ -129,4 +129,9 @@ describe("Badge", () => {
     render(<Badge data-testid="badge">S</Badge>);
     expect(screen.getByTestId("badge")).not.toHaveClass("interactive");
   });
+
+  it("does not apply .interactive class when as='span' is explicit", () => {
+    render(<Badge data-testid="badge" as="span">S</Badge>);
+    expect(screen.getByTestId("badge")).not.toHaveClass("interactive");
+  });
 });

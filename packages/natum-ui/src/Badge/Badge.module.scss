@@ -126,7 +126,15 @@ $badge-colors: neutral, primary, secondary, success, warning, error, info;
       background-color: color-mix(in srgb, var(--#{$c}-bg) 90%, black);
     }
 
-    &:active {
+    &.soft:active {
+      background-color: color-mix(in srgb, var(--#{$c}-soft-hover) 85%, black);
+    }
+
+    &.outlined:active {
+      background-color: color-mix(in srgb, var(--#{$c}-soft) 85%, black);
+    }
+
+    &.filled:active {
       background-color: color-mix(in srgb, var(--#{$c}-bg) 80%, black);
     }
   }
