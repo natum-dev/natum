@@ -58,6 +58,16 @@ describe("Table structure — slots", () => {
     expect(screen.getByTestId("c")).toHaveStyle({ captionSide: "bottom" });
   });
 
+  it("captionSide prop wins over style.captionSide", () => {
+    render(
+      <Table>
+        <TableCaption data-testid="c" captionSide="bottom" style={{ captionSide: "top" }}>x</TableCaption>
+        <tbody><tr><td>x</td></tr></tbody>
+      </Table>
+    );
+    expect(screen.getByTestId("c")).toHaveStyle({ captionSide: "bottom" });
+  });
+
   it("caption text is the accessible name of the table", () => {
     render(
       <Table>

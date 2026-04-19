@@ -15,7 +15,7 @@ const TableCaption = forwardRef<HTMLTableCaptionElement, TableCaptionProps>(
         ref={ref}
         {...rest}
         className={className}
-        style={{ captionSide, ...style }}
+        style={{ ...style, captionSide }}
       >
         {children}
       </caption>
