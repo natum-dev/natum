@@ -126,3 +126,55 @@ describe("DropZone — aria-label override", () => {
     ).toBeInTheDocument();
   });
 });
+
+describe("DropZone — drag", () => {
+  const makeFile = (name = "a.txt") =>
+    new File(["x"], name, { type: "text/plain" });
+  const makeDT = (files: File[]) =>
+    ({ files, types: files.length > 0 ? ["Files"] : [] } as unknown as DataTransfer);
+
+  it("applies data-state=\"dragover\" on dragenter with Files", () => {
+    render(<DropZone onFilesSelected={vi.fn()} />);
+    const region = screen.getByRole("button", { name: /upload files/i });
+    const files = [makeFile()];
+
+    fireEvent.dragEnter(region, { dataTransfer: makeDT(files) });
+    expect(region.getAttribute("data-state")).toBe("dragover");
+  });
+
+  it("onDrop calls onFilesSelected + clears dragover", () => {
+    const onFilesSelected = vi.fn();
+    render(<DropZone onFilesSelected={onFilesSelected} />);
+    const region = screen.getByRole("button", { name: /upload files/i });
+    const files = [makeFile("b.txt")];
+
+    fireEvent.dragEnter(region, { dataTransfer: makeDT(files) });
+    fireEvent.drop(region, { dataTransfer: makeDT(files) });
+
+    expect(onFilesSelected).toHaveBeenCalledWith(files);
+    expect(region.getAttribute("data-state")).toBe("idle");
+  });
+
+  it("non-file drag does not toggle dragover", () => {
+    render(<DropZone onFilesSelected={vi.fn()} />);
+    const region = screen.getByRole("button", { name: /upload files/i });
+    fireEvent.dragEnter(region, {
+      dataTransfer: {
+        files: [],
+        types: ["text/plain"],
+      } as unknown as DataTransfer,
+    });
+    expect(region.getAttribute("data-state")).toBe("idle");
+  });
+
+  it("disabled short-circuits drag", () => {
+    const onFilesSelected = vi.fn();
+    render(<DropZone onFilesSelected={onFilesSelected} disabled />);
+    const region = screen.getByRole("button", { name: /upload files/i });
+    const files = [makeFile()];
+    fireEvent.dragEnter(region, { dataTransfer: makeDT(files) });
+    expect(region.getAttribute("data-state")).toBe("disabled");
+    fireEvent.drop(region, { dataTransfer: makeDT(files) });
+    expect(onFilesSelected).not.toHaveBeenCalled();
+  });
+});

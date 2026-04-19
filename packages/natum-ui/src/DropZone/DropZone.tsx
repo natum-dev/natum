@@ -12,6 +12,7 @@ import {
 import { IconUpload } from "@natum/icons";
 import { Typography } from "../Typography";
 import { useMergedRefs } from "../hooks/use-merge-refs";
+import { useFileDrop } from "../internal/file-drop/use-file-drop";
 import styles from "./DropZone.module.scss";
 import cx from "classnames";
 
@@ -46,6 +47,15 @@ const DropZone = forwardRef<HTMLDivElement, DropZoneProps>(
     const mergedRef = useMergedRefs(ref, internalRef);
     const inputRef = useRef<HTMLInputElement>(null);
 
+    const { isOver, bind } = useFileDrop({
+      target: internalRef,
+      onFilesDropped: (files) => {
+        if (files.length > 0) onFilesSelected(files);
+      },
+      filesOnly: true,
+      disabled,
+    });
+
     const openPicker = () => {
       if (disabled) return;
       inputRef.current?.click();
@@ -78,7 +88,7 @@ const DropZone = forwardRef<HTMLDivElement, DropZoneProps>(
       event.target.value = "";
     };
 
-    const dataState = disabled ? "disabled" : "idle";
+    const dataState = disabled ? "disabled" : isOver ? "dragover" : "idle";
     const ariaLabel = rest["aria-label"] ?? "Upload files";
 
     return (
@@ -89,6 +99,7 @@ const DropZone = forwardRef<HTMLDivElement, DropZoneProps>(
         aria-disabled={disabled || undefined}
         aria-label={ariaLabel}
         data-state={dataState}
+        {...bind!}
         {...rest}
         className={cx(styles.drop_zone, className)}
         onClick={handleClick}
