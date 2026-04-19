@@ -192,4 +192,26 @@ describe("TableActionCell", () => {
     expect(onCellClick).toHaveBeenCalledTimes(1);
     expect(onRowClick).not.toHaveBeenCalled();
   });
+
+  it("consumer-passed onKeyDown still fires + doesn't bubble to row", async () => {
+    const onCellKeyDown = vi.fn();
+    const onRowKeyDown = vi.fn();
+    const user = userEvent.setup();
+    render(
+      <Table>
+        <TableBody>
+          <TableRow rowId="a" onKeyDown={onRowKeyDown}>
+            <TableActionCell onKeyDown={onCellKeyDown}>
+              <button>x</button>
+            </TableActionCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    );
+    // Focus the button and press Enter
+    screen.getByRole("button").focus();
+    await user.keyboard("{Enter}");
+    expect(onCellKeyDown).toHaveBeenCalledTimes(1);
+    expect(onRowKeyDown).not.toHaveBeenCalled();
+  });
 });
