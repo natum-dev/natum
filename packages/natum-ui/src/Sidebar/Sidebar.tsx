@@ -60,4 +60,6 @@ const Sidebar = ({
   );
 };
 
+Sidebar.displayName = "Sidebar";
+
 export { Sidebar };

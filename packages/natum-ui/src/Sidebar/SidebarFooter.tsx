@@ -17,4 +17,6 @@ const SidebarFooter = ({ children, className, ...rest }: SidebarFooterProps) => 
   );
 };
 
+SidebarFooter.displayName = "SidebarFooter";
+
 export { SidebarFooter };

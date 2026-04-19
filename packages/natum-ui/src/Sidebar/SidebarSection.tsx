@@ -29,4 +29,6 @@ const SidebarSection = ({
   );
 };
 
+SidebarSection.displayName = "SidebarSection";
+
 export { SidebarSection };
