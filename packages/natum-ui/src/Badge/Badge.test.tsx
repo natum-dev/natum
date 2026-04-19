@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect } from "vitest";
+import userEvent from "@testing-library/user-event";
+import { describe, it, expect, vi } from "vitest";
 import { Badge } from "./Badge";
 
 describe("Badge", () => {
@@ -133,5 +134,52 @@ describe("Badge", () => {
   it("does not apply .interactive class when as='span' is explicit", () => {
     render(<Badge data-testid="badge" as="span">S</Badge>);
     expect(screen.getByTestId("badge")).not.toHaveClass("interactive");
+  });
+
+  // --- Disabled behavior ---
+  it("sets native disabled on <button> when disabled={true}", () => {
+    render(<Badge data-testid="badge" as="button" disabled>B</Badge>);
+    expect(screen.getByTestId("badge")).toBeDisabled();
+  });
+
+  it("strips href on disabled <a>", () => {
+    render(
+      <Badge data-testid="badge" as="a" href="https://example.com" disabled>
+        L
+      </Badge>
+    );
+    expect(screen.getByTestId("badge")).not.toHaveAttribute("href");
+  });
+
+  it("sets aria-disabled=true on disabled interactive badge", () => {
+    render(<Badge data-testid="badge" as="button" disabled>B</Badge>);
+    expect(screen.getByTestId("badge")).toHaveAttribute("aria-disabled", "true");
+  });
+
+  it("does not set aria-disabled on non-interactive (span) badge", () => {
+    render(<Badge data-testid="badge" disabled>S</Badge>);
+    expect(screen.getByTestId("badge")).not.toHaveAttribute("aria-disabled");
+  });
+
+  it("does not invoke onClick when disabled", async () => {
+    const onClick = vi.fn();
+    const user = userEvent.setup();
+    render(
+      <Badge as="button" disabled onClick={onClick}>
+        Click
+      </Badge>
+    );
+    await user.click(screen.getByText("Click"));
+    expect(onClick).not.toHaveBeenCalled();
+  });
+
+  it("applies .disabled class when disabled AND interactive", () => {
+    render(<Badge data-testid="badge" as="button" disabled>B</Badge>);
+    expect(screen.getByTestId("badge")).toHaveClass("disabled");
+  });
+
+  it("does NOT apply .disabled class on non-interactive span (no-op)", () => {
+    render(<Badge data-testid="badge" disabled>S</Badge>);
+    expect(screen.getByTestId("badge")).not.toHaveClass("disabled");
   });
 });
