@@ -76,7 +76,7 @@ describe("Badge", () => {
     const wrapper = icon.parentElement;
     expect(wrapper?.tagName).toBe("SPAN");
     expect(wrapper).toHaveAttribute("aria-hidden", "true");
-    expect(wrapper).toHaveClass("leftSection");
+    expect(wrapper).toHaveClass("left_section");
   });
 
   it("does not render leftSection when dot={true}", () => {
@@ -84,5 +84,10 @@ describe("Badge", () => {
       <Badge dot aria-label="Unread" leftSection={<svg data-testid="icon" />} />
     );
     expect(screen.queryByTestId("icon")).not.toBeInTheDocument();
+  });
+
+  it("renders leftSection when children is absent", () => {
+    render(<Badge aria-label="Status" leftSection={<svg data-testid="icon" />} />);
+    expect(screen.getByTestId("icon")).toBeInTheDocument();
   });
 });

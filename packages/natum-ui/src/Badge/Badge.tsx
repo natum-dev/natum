@@ -48,7 +48,7 @@ export const Badge = ({
     {...rest}
   >
     {!dot && leftSection && (
-      <span className={styles.leftSection} aria-hidden="true">
+      <span className={styles.left_section} aria-hidden="true">
         {leftSection}
       </span>
     )}
