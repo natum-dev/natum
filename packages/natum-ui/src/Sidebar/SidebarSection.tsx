@@ -23,6 +23,7 @@ const SidebarSection = ({
           {label}
         </div>
       )}
+      {/* role="list" preserves list semantics in Safari/VoiceOver when list-style: none is applied */}
       <ul role="list">{children}</ul>
     </div>
   );
