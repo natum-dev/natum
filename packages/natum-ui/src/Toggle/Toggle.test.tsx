@@ -69,3 +69,27 @@ describe("Toggle — scaffold", () => {
     expect(ref.current).toBeInstanceOf(HTMLInputElement);
   });
 });
+
+describe("Toggle — sizes + labelPosition", () => {
+  it("emits data-size=md by default", () => {
+    const { container } = render(<Toggle aria-label="N" />);
+    expect(container.querySelector("label")?.getAttribute("data-size")).toBe("md");
+  });
+
+  it("emits data-size=sm when size=sm", () => {
+    const { container } = render(<Toggle size="sm" aria-label="N" />);
+    expect(container.querySelector("label")?.getAttribute("data-size")).toBe("sm");
+  });
+
+  it("emits data-label-position=start by default", () => {
+    const { container } = render(<Toggle label="x" aria-label="N" />);
+    expect(container.querySelector("label")?.getAttribute("data-label-position")).toBe("start");
+  });
+
+  it("emits data-label-position=end when labelPosition=end", () => {
+    const { container } = render(
+      <Toggle label="x" labelPosition="end" aria-label="N" />
+    );
+    expect(container.querySelector("label")?.getAttribute("data-label-position")).toBe("end");
+  });
+});

@@ -66,3 +66,17 @@
   outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, var(--primary-border));
   outline-offset: var(--focus-ring-offset, 2px);
 }
+
+.toggle[data-size="sm"] .rail {
+  inline-size: 32px;
+  block-size: 18px;
+}
+
+.toggle[data-size="sm"] .thumb {
+  inline-size: 14px;
+  block-size: 14px;
+}
+
+.toggle[data-size="sm"] .rail:has(.input:checked) .thumb {
+  transform: translateX(14px);
+}
