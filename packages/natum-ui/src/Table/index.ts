@@ -20,3 +20,5 @@ export { TableRow } from "./TableRow";
 export type { TableRowProps } from "./TableRow";
 export { TableCell } from "./TableCell";
 export type { TableCellProps } from "./TableCell";
+export { TableHeaderCell } from "./TableHeaderCell";
+export type { TableHeaderCellProps } from "./TableHeaderCell";

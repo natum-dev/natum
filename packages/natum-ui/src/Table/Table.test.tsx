@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { createRef } from "react";
 import { render, screen } from "@testing-library/react";
 import { Table } from "./Table";
+import { TableHeaderCell } from "./TableHeaderCell";
 
 describe("Table root", () => {
   it("renders a wrapper <div> containing a <table>", () => {
@@ -59,5 +60,40 @@ describe("Table root", () => {
       </Table>
     );
     expect(screen.getByTestId("t")).toHaveAttribute("aria-label", "File list");
+  });
+});
+
+describe("TableHeaderCell (no sort)", () => {
+  it("renders as <th scope='col'>", () => {
+    render(
+      <Table>
+        <thead><tr><TableHeaderCell data-testid="h">Name</TableHeaderCell></tr></thead>
+        <tbody><tr><td>x</td></tr></tbody>
+      </Table>
+    );
+    const th = screen.getByTestId("h");
+    expect(th.tagName).toBe("TH");
+    expect(th).toHaveAttribute("scope", "col");
+  });
+
+  it("renders children as plain text (no button when sortKey absent)", () => {
+    render(
+      <Table>
+        <thead><tr><TableHeaderCell data-testid="h">Name</TableHeaderCell></tr></thead>
+        <tbody><tr><td>x</td></tr></tbody>
+      </Table>
+    );
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+    expect(screen.getByTestId("h")).toHaveTextContent("Name");
+  });
+
+  it("align='end' applies text-align: end", () => {
+    render(
+      <Table>
+        <thead><tr><TableHeaderCell data-testid="h" align="end">Size</TableHeaderCell></tr></thead>
+        <tbody><tr><td>x</td></tr></tbody>
+      </Table>
+    );
+    expect(screen.getByTestId("h")).toHaveStyle({ textAlign: "end" });
   });
 });
