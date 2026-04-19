@@ -64,16 +64,16 @@ const SidebarItemInner = <T extends ElementType = "a">(
     );
   }
 
-  // If consumer supplied aria-label (via rest), honor it. Otherwise derive from collapsed+resolvedLabel.
-  const consumerAriaLabel = spreadProps["aria-label"] as string | undefined;
-  const ariaLabel =
-    consumerAriaLabel !== undefined
-      ? consumerAriaLabel
-      : collapsed && resolvedLabel !== undefined
-        ? resolvedLabel
-        : undefined;
+  // If consumer provided aria-label (even explicitly `undefined`), honor that intent.
+  // Otherwise derive from collapsed + resolvedLabel.
+  const consumerProvidedAriaLabel = "aria-label" in spreadProps;
+  const ariaLabel = consumerProvidedAriaLabel
+    ? (spreadProps["aria-label"] as string | undefined)
+    : collapsed && resolvedLabel !== undefined
+      ? resolvedLabel
+      : undefined;
 
-  // Remove aria-label from spread so we can set it once from the resolved value above.
+  // Remove aria-label from spread so we set it once from the resolved value above.
   delete spreadProps["aria-label"];
 
   const itemNode = (
