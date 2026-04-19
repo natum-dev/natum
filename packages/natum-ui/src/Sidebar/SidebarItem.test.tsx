@@ -268,3 +268,74 @@ describe("SidebarItem rightSection", () => {
     expect(screen.getByTestId("rs")).toBeInTheDocument();
   });
 });
+
+describe("SidebarItem tooltip on collapsed", () => {
+  it("does NOT wrap in Tooltip when expanded", () => {
+    const { container } = render(
+      <Sidebar>
+        <SidebarBody>
+          <SidebarItem icon={IconFile} href="/">Files</SidebarItem>
+        </SidebarBody>
+      </Sidebar>
+    );
+    // Tooltip injects an element with aria-describedby linkage;
+    // when absent, the link has no aria-describedby from tooltip
+    const link = container.querySelector("a")!;
+    expect(link).not.toHaveAttribute("aria-describedby");
+  });
+
+  it("sets aria-label to string children when collapsed", () => {
+    render(
+      <Sidebar defaultCollapsed>
+        <SidebarBody>
+          <SidebarItem icon={IconFile} href="/">Files</SidebarItem>
+        </SidebarBody>
+      </Sidebar>
+    );
+    expect(screen.getByRole("link")).toHaveAttribute("aria-label", "Files");
+  });
+
+  it("prefers explicit label prop over children for aria-label in collapsed mode", () => {
+    render(
+      <Sidebar defaultCollapsed>
+        <SidebarBody>
+          <SidebarItem icon={IconFile} href="/" label="Files section">
+            <strong>Files</strong>
+          </SidebarItem>
+        </SidebarBody>
+      </Sidebar>
+    );
+    expect(screen.getByRole("link")).toHaveAttribute("aria-label", "Files section");
+  });
+
+  it("consumer-supplied aria-label wins over auto-derived", () => {
+    render(
+      <Sidebar defaultCollapsed>
+        <SidebarBody>
+          <SidebarItem icon={IconFile} href="/" aria-label="Consumer choice">
+            Files
+          </SidebarItem>
+        </SidebarBody>
+      </Sidebar>
+    );
+    expect(screen.getByRole("link")).toHaveAttribute("aria-label", "Consumer choice");
+  });
+
+  it("logs a dev warning and omits aria-label when collapsed with non-string children and no label prop", () => {
+    const spy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    render(
+      <Sidebar defaultCollapsed>
+        <SidebarBody>
+          <SidebarItem icon={IconFile} href="/">
+            <strong>Files</strong>
+          </SidebarItem>
+        </SidebarBody>
+      </Sidebar>
+    );
+    expect(screen.getByRole("link")).not.toHaveAttribute("aria-label");
+    expect(spy).toHaveBeenCalledWith(
+      "SidebarItem: collapsed mode needs a string `children` or a `label` prop to announce the item."
+    );
+    spy.mockRestore();
+  });
+});
