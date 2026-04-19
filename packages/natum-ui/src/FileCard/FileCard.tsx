@@ -31,8 +31,17 @@ type FileCardProps = FileCardBaseProps &
     keyof FileCardBaseProps | "onKeyDown"
   >;
 
+const ICON_PX: Record<FileCardSize, number> = {
+  sm: 32,
+  md: 40,
+  lg: 56,
+};
+
 const FileCard = forwardRef<HTMLDivElement, FileCardProps>(
-  ({ icon: Icon, thumbnail, name, className, ...rest }, ref) => {
+  (
+    { icon: Icon, thumbnail, name, size = "md", className, ...rest },
+    ref
+  ) => {
     const hasThumbnail = thumbnail != null;
     return (
       <div
@@ -40,14 +49,14 @@ const FileCard = forwardRef<HTMLDivElement, FileCardProps>(
         className={cx(styles.file_card, className)}
         data-has-thumbnail={hasThumbnail ? "true" : "false"}
         data-selected="false"
-        data-size="md"
+        data-size={size}
         {...rest}
       >
         <div className={styles.preview}>
           {hasThumbnail ? (
             <div className={styles.thumbnail_wrapper}>{thumbnail}</div>
           ) : (
-            <Icon size={40} aria-hidden="true" />
+            <Icon size={ICON_PX[size]} aria-hidden="true" />
           )}
         </div>
         <div className={styles.body}>
