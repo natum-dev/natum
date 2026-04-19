@@ -45,9 +45,9 @@ const SidebarItemInner = <T extends ElementType = "a">(
       <Tag
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ref={ref as any}
+        aria-current={active ? "page" : undefined}
         {...rest}
         className={cx(styles.item, { [styles.active]: active }, className)}
-        aria-current={active ? "page" : undefined}
         onClick={onClick}
       >
         <Icon className={styles.item_icon} size={20} />
