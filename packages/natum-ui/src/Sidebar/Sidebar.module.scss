@@ -25,3 +25,29 @@
     inline-size: var(--sidebar-width-collapsed);
   }
 }
+
+// --- Slot wrappers ---
+.header {
+  flex: 0 0 auto;
+  padding: var(--space-3) var(--space-4);
+  box-sizing: border-box;
+}
+
+.body {
+  flex: 1 1 auto;
+  min-block-size: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: var(--space-2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  box-sizing: border-box;
+}
+
+.footer {
+  flex: 0 0 auto;
+  padding: var(--space-3) var(--space-4);
+  border-block-start: 1px solid var(--border-color);
+  box-sizing: border-box;
+}

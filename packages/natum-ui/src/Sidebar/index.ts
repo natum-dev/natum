@@ -1,4 +1,10 @@
 export { Sidebar } from "./Sidebar";
 export type { SidebarProps } from "./Sidebar";
+export { SidebarHeader } from "./SidebarHeader";
+export type { SidebarHeaderProps } from "./SidebarHeader";
+export { SidebarBody } from "./SidebarBody";
+export type { SidebarBodyProps } from "./SidebarBody";
+export { SidebarFooter } from "./SidebarFooter";
+export type { SidebarFooterProps } from "./SidebarFooter";
 export { useSidebarCollapsed } from "./context";
 export type { SidebarContextValue } from "./context";
