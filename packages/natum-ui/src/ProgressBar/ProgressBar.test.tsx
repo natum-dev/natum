@@ -97,3 +97,54 @@ describe("ProgressBar — indeterminate", () => {
     expect(fill.getAttribute("style")).toBeNull();
   });
 });
+
+describe("ProgressBar — size + color", () => {
+  it.each(["sm", "md", "lg"] as const)(
+    "sets data-size=%s",
+    (size) => {
+      render(<ProgressBar value={0.5} size={size} aria-label="Loading" />);
+      expect(screen.getByRole("progressbar")).toHaveAttribute(
+        "data-size",
+        size,
+      );
+    },
+  );
+
+  it("defaults data-size to 'md'", () => {
+    render(<ProgressBar value={0.5} aria-label="Loading" />);
+    expect(screen.getByRole("progressbar")).toHaveAttribute("data-size", "md");
+  });
+
+  it.each(["primary", "success", "error", "warning", "info"] as const)(
+    "sets data-color=%s",
+    (color) => {
+      render(
+        <ProgressBar value={0.5} color={color} aria-label="Loading" />,
+      );
+      expect(screen.getByRole("progressbar")).toHaveAttribute(
+        "data-color",
+        color,
+      );
+    },
+  );
+
+  it("defaults data-color to 'primary'", () => {
+    render(<ProgressBar value={0.5} aria-label="Loading" />);
+    expect(screen.getByRole("progressbar")).toHaveAttribute(
+      "data-color",
+      "primary",
+    );
+  });
+
+  it("merges className onto the root", () => {
+    render(
+      <ProgressBar
+        value={0.5}
+        className="custom-bar"
+        aria-label="Loading"
+      />,
+    );
+    const bar = screen.getByRole("progressbar");
+    expect(bar).toHaveClass("custom-bar");
+  });
+});
