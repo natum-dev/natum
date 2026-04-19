@@ -1,43 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import { IconCheck, IconFolder, IconEyeOff } from "@natum/icons";
-import { Badge } from "../Badge";
+import { Badge } from "./Badge";
 import type {
   BadgeColor,
   BadgeVariant,
   BadgeSize,
-} from "../Badge";
-
-const meta: Meta<typeof Badge> = {
-  title: "Display/Badge",
-  component: Badge,
-  tags: ["autodocs"],
-  argTypes: {
-    color: {
-      control: "inline-radio",
-      options: [
-        "neutral",
-        "primary",
-        "secondary",
-        "success",
-        "warning",
-        "error",
-        "info",
-      ] satisfies BadgeColor[],
-    },
-    variant: {
-      control: "inline-radio",
-      options: ["filled", "outlined", "soft"] satisfies BadgeVariant[],
-    },
-    size: {
-      control: "inline-radio",
-      options: ["sm", "md"] satisfies BadgeSize[],
-    },
-  },
-};
-
-export default meta;
-type Story = StoryObj<typeof Badge>;
+} from "./Badge";
 
 const ALL_COLORS: BadgeColor[] = [
   "neutral",
@@ -50,8 +19,30 @@ const ALL_COLORS: BadgeColor[] = [
 ];
 const ALL_VARIANTS: BadgeVariant[] = ["filled", "outlined", "soft"];
 
+const meta: Meta<typeof Badge> = {
+  title: "Display/Badge",
+  component: Badge,
+  tags: ["autodocs"],
+  argTypes: {
+    color: { control: "inline-radio", options: ALL_COLORS },
+    variant: { control: "inline-radio", options: ALL_VARIANTS },
+    size: {
+      control: "inline-radio",
+      options: ["sm", "md"] satisfies BadgeSize[],
+    },
+  },
+};
+
+export default meta;
+type Story = StoryObj<typeof Badge>;
+
 export const Default: Story = {
-  args: { children: "Default" },
+  args: {
+    children: "Badge",
+    color: "primary",
+    variant: "soft",
+    size: "md",
+  },
 };
 
 export const ColorMatrix: Story = {
