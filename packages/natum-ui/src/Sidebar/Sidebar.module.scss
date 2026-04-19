@@ -1,0 +1,27 @@
+@use "../design-tokens" as *;
+
+:root {
+  --sidebar-width-expanded: 240px;
+  --sidebar-width-collapsed: 64px;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  inline-size: var(--sidebar-width-expanded);
+  block-size: 100vh;
+  block-size: 100dvh;
+  position: sticky;
+  inset-block-start: 0;
+  background: var(--neutral-bg);
+  border-inline-end: 1px solid var(--border-color);
+  box-sizing: border-box;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: inline-size var(--duration-normal) var(--easing-default);
+  }
+
+  &[data-collapsed="true"] {
+    inline-size: var(--sidebar-width-collapsed);
+  }
+}
