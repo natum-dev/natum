@@ -33,4 +33,5 @@ export * from "./UploadPanel";
 export * from "./FileCard";
 export * from "./ProgressBar";
 export * from "./StorageQuotaBar";
+export * from "./SearchInput";
 export * from "./utils";

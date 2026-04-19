@@ -39,6 +39,7 @@ type SearchInputForwardedProps = Pick<
   | "autoFocus"
   | "aria-label"
   | "aria-labelledby"
+  | "rightSection"
 > &
   Omit<
     ComponentPropsWithoutRef<"input">,
