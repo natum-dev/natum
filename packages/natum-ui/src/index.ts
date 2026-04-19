@@ -24,3 +24,4 @@ export * from "./Radio";
 export * from "./RadioGroup";
 export * from "./Select";
 export * from "./Combobox";
+export * from "./Badge";

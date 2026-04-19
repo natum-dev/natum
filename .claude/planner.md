@@ -59,7 +59,7 @@
 | UploadPanel | Collapsible panel showing upload queue with per-file status | P0 | Planned | Gmail-style bottom-right; multi-file upload tracking |
 | StorageQuotaBar | Progress bar showing used/total storage with labels | P0 | Planned | Sidebar and settings page |
 | FileCard | Card variant showing file icon/thumbnail, name, size, type | P1 | Planned | Grid view of files |
-| Badge | Small label/count indicator | P1 | Planned | File count in folders, "shared" indicator |
+| Badge | Small label/count indicator | P1 | Done | Inline pill; filled/outlined/soft × 7 colors × sm/md; dot mode; leftSection; polymorphic as=span/a/button with auto-derived interactive styling |
 
 ---
 
