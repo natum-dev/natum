@@ -80,7 +80,7 @@ const BadgeInner = <T extends BadgeElementType = "span">(
       )}
       aria-disabled={disabled && isInteractive ? true : undefined}
       disabled={Tag === "button" && disabled ? true : undefined}
-      onClick={disabled ? undefined : (onClick as MouseEventHandler<HTMLElement> | undefined)}
+      onClick={disabled ? undefined : onClick}
       {...spreadProps}
     >
       {!dot && leftSection && (

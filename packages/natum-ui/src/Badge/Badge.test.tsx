@@ -249,19 +249,27 @@ describe("Badge", () => {
 
   // --- A11y ---
   it("accessible name comes from text children when no aria-label", () => {
-    render(<Badge>Shared</Badge>);
-    expect(screen.getByText("Shared")).toBeInTheDocument();
+    render(<Badge data-testid="badge">Shared</Badge>);
+    const el = screen.getByTestId("badge");
+    expect(el).toHaveTextContent("Shared");
+    expect(el).not.toHaveAttribute("aria-label");
   });
 
   // --- RTL ---
-  it("renders correctly under dir=rtl container", () => {
+  it("renders badge + leftSection slot correctly under dir=rtl container", () => {
     render(
       <div dir="rtl">
-        <Badge data-testid="badge" leftSection={<svg />}>
+        <Badge data-testid="badge" leftSection={<svg data-testid="rtl-icon" />}>
           Shared
         </Badge>
       </div>
     );
-    expect(screen.getByTestId("badge")).toHaveClass("badge");
+    const badge = screen.getByTestId("badge");
+    expect(badge).toHaveClass("badge");
+    expect(badge).toHaveTextContent("Shared");
+    // leftSection slot renders correctly under RTL — the icon is still inside the badge.
+    expect(screen.getByTestId("rtl-icon")).toBeInTheDocument();
+    // Wrapper is the aria-hidden span, regardless of RTL.
+    expect(screen.getByTestId("rtl-icon").parentElement).toHaveAttribute("aria-hidden", "true");
   });
 });
