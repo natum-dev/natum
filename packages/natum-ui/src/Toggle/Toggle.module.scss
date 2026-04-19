@@ -1,0 +1,68 @@
+@use "../design-tokens" as *;
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3, 12px);
+  cursor: pointer;
+  user-select: none;
+  @include hit-target-min;
+}
+
+.rail {
+  position: relative;
+  flex-shrink: 0;
+  inline-size: 40px;
+  block-size: 22px;
+  border-radius: 999px;
+  background-color: var(--neutral-soft);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .rail {
+    transition: background-color var(--duration-fast) var(--easing-default);
+  }
+}
+
+.input {
+  // Visually hidden but focusable.
+  position: absolute;
+  inline-size: 100%;
+  block-size: 100%;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  cursor: inherit;
+  z-index: 1;
+}
+
+.thumb {
+  position: absolute;
+  inset-block-start: 2px;
+  inset-inline-start: 2px;
+  inline-size: 18px;
+  block-size: 18px;
+  border-radius: 50%;
+  background-color: var(--neutral-bg-elevated);
+  box-shadow: var(--shadow-low);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .thumb {
+    transition: transform var(--duration-fast) var(--easing-default);
+  }
+}
+
+.rail:has(.input:checked) {
+  background-color: var(--primary-bg);
+}
+
+.rail:has(.input:checked) .thumb {
+  transform: translateX(18px);
+}
+
+.rail:has(.input:focus-visible) {
+  outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, var(--primary-border));
+  outline-offset: var(--focus-ring-offset, 2px);
+}
