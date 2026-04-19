@@ -59,6 +59,7 @@ const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
         className={cx(styles.toggle, className)}
         data-size={size}
         data-label-position={labelPosition}
+        data-disabled={disabled || undefined}
       >
         {hasContent && (
           <span className={styles.content}>
