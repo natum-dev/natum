@@ -48,11 +48,11 @@ const Sidebar = ({
   return (
     <SidebarContext.Provider value={ctxValue}>
       <aside
+        {...rest}
         role="navigation"
         aria-label={ariaLabel}
         data-collapsed={isCollapsed ? "true" : "false"}
         className={cx(styles.sidebar, className)}
-        {...rest}
       >
         {children}
       </aside>
