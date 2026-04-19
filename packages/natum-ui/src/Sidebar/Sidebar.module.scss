@@ -137,3 +137,15 @@
 .sidebar[data-collapsed="true"] .item_label {
   display: none;
 }
+
+// --- Active state ---
+.item.active {
+  background: var(--primary-soft);
+  color: var(--primary-text);
+  border-inline-start: 2px solid var(--primary-bg);
+  padding-inline-start: calc(var(--space-3) - 2px);
+
+  &:hover {
+    background: var(--primary-soft-hover);
+  }
+}
