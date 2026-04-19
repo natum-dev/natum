@@ -128,6 +128,9 @@ const UploadPanel = ({
           />
         ))}
       </ul>
+      <div role="status" aria-live="polite" className={styles.live_region}>
+        {derivedTitle}
+      </div>
     </aside>,
     document.body
   );
