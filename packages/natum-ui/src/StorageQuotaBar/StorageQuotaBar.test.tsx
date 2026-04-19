@@ -24,3 +24,69 @@ describe("StorageQuotaBar — default labels", () => {
     expect(bar).toHaveAttribute("aria-valuenow", "40");
   });
 });
+
+describe("StorageQuotaBar — threshold state", () => {
+  it("renders data-state='ok' below warnAt (default 0.9)", () => {
+    const { container } = render(
+      <StorageQuotaBar used={8 * GB} total={15 * GB} />,
+    );
+    const root = container.firstElementChild as HTMLElement;
+    expect(root).toHaveAttribute("data-state", "ok");
+    expect(screen.getByRole("progressbar")).toHaveAttribute(
+      "data-color",
+      "primary",
+    );
+  });
+
+  it("renders data-state='warn' at or above warnAt", () => {
+    const { container } = render(
+      <StorageQuotaBar used={13.5 * GB} total={15 * GB} />,
+    );
+    const root = container.firstElementChild as HTMLElement;
+    expect(root).toHaveAttribute("data-state", "warn");
+    expect(screen.getByRole("progressbar")).toHaveAttribute(
+      "data-color",
+      "warning",
+    );
+  });
+
+  it("renders data-state='error' at or above errorAt (default 1.0)", () => {
+    const { container } = render(
+      <StorageQuotaBar used={15 * GB} total={15 * GB} />,
+    );
+    const root = container.firstElementChild as HTMLElement;
+    expect(root).toHaveAttribute("data-state", "error");
+    expect(screen.getByRole("progressbar")).toHaveAttribute(
+      "data-color",
+      "error",
+    );
+  });
+
+  it("honors custom warnAt=0.75 and errorAt=0.95", () => {
+    const { container, rerender } = render(
+      <StorageQuotaBar
+        used={12 * GB}
+        total={15 * GB}
+        warnAt={0.75}
+        errorAt={0.95}
+      />,
+    );
+    expect(container.firstElementChild).toHaveAttribute(
+      "data-state",
+      "warn",
+    );
+
+    rerender(
+      <StorageQuotaBar
+        used={14.5 * GB}
+        total={15 * GB}
+        warnAt={0.75}
+        errorAt={0.95}
+      />,
+    );
+    expect(container.firstElementChild).toHaveAttribute(
+      "data-state",
+      "error",
+    );
+  });
+});
