@@ -1,6 +1,8 @@
 import {
   type ComponentType,
   type HTMLAttributes,
+  type KeyboardEvent,
+  type MouseEvent,
   type MouseEventHandler,
   type ReactNode,
   forwardRef,
@@ -45,6 +47,8 @@ const FileCard = forwardRef<HTMLDivElement, FileCardProps>(
       name,
       meta,
       action,
+      onClick,
+      onDoubleClick,
       size = "md",
       className,
       ...rest
@@ -52,6 +56,18 @@ const FileCard = forwardRef<HTMLDivElement, FileCardProps>(
     ref
   ) => {
     const hasThumbnail = thumbnail != null;
+    const isFocusable = typeof onClick === "function";
+
+    const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+      if (!isFocusable) return;
+      if (e.key === "Enter") {
+        onClick?.(e as unknown as MouseEvent<HTMLDivElement>);
+      } else if (e.key === " ") {
+        e.preventDefault();
+        onClick?.(e as unknown as MouseEvent<HTMLDivElement>);
+      }
+    };
+
     return (
       <div
         ref={ref}
@@ -59,6 +75,11 @@ const FileCard = forwardRef<HTMLDivElement, FileCardProps>(
         data-has-thumbnail={hasThumbnail ? "true" : "false"}
         data-selected="false"
         data-size={size}
+        role={isFocusable ? "button" : undefined}
+        tabIndex={isFocusable ? 0 : undefined}
+        onClick={onClick}
+        onDoubleClick={onDoubleClick}
+        onKeyDown={isFocusable ? handleKeyDown : undefined}
         {...rest}
       >
         {action != null && (

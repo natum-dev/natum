@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import userEvent from "@testing-library/user-event";
 import { IconFile } from "@natum/icons";
@@ -151,5 +151,64 @@ describe("FileCard — action slot", () => {
     );
     await userEvent.dblClick(screen.getByTestId("act"));
     expect(onDoubleClick).not.toHaveBeenCalled();
+  });
+});
+
+describe("FileCard — interaction", () => {
+  it("does not set role/tabIndex when onClick is absent", () => {
+    const { container } = render(<FileCard icon={IconFile} name="x.pdf" />);
+    const root = container.firstElementChild as HTMLElement;
+    expect(root).not.toHaveAttribute("role");
+    expect(root).not.toHaveAttribute("tabIndex");
+  });
+
+  it("sets role='button' and tabIndex=0 when onClick is wired", () => {
+    const { container } = render(
+      <FileCard icon={IconFile} name="x.pdf" onClick={() => {}} />
+    );
+    const root = container.firstElementChild as HTMLElement;
+    expect(root).toHaveAttribute("role", "button");
+    expect(root).toHaveAttribute("tabIndex", "0");
+  });
+
+  it("fires onClick on click", async () => {
+    const onClick = vi.fn();
+    render(<FileCard icon={IconFile} name="x.pdf" onClick={onClick} />);
+    await userEvent.click(screen.getByRole("button"));
+    expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+  it("fires onDoubleClick on dblclick", async () => {
+    const onDoubleClick = vi.fn();
+    render(
+      <FileCard
+        icon={IconFile}
+        name="x.pdf"
+        onClick={() => {}}
+        onDoubleClick={onDoubleClick}
+      />
+    );
+    await userEvent.dblClick(screen.getByRole("button"));
+    expect(onDoubleClick).toHaveBeenCalledTimes(1);
+  });
+
+  it("fires onClick on Enter when focused", async () => {
+    const onClick = vi.fn();
+    render(<FileCard icon={IconFile} name="x.pdf" onClick={onClick} />);
+    const root = screen.getByRole("button");
+    root.focus();
+    await userEvent.keyboard("{Enter}");
+    expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+  it("fires onClick on Space when focused and preventDefaults the space", () => {
+    const onClick = vi.fn();
+    render(<FileCard icon={IconFile} name="x.pdf" onClick={onClick} />);
+    const root = screen.getByRole("button");
+    root.focus();
+    // fireEvent.keyDown returns `false` if any listener called preventDefault.
+    const wasNotPrevented = fireEvent.keyDown(root, { key: " " });
+    expect(onClick).toHaveBeenCalledTimes(1);
+    expect(wasNotPrevented).toBe(false);
   });
 });
