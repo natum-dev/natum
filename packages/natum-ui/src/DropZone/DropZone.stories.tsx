@@ -14,7 +14,6 @@ type Story = StoryObj<typeof DropZone>;
 export const Default: Story = {
   args: {
     onFilesSelected: (files) => {
-      // eslint-disable-next-line no-console
       console.log("selected", files);
     },
   },
