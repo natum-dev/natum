@@ -56,14 +56,11 @@ export function useFileDrop(options: UseFileDropOptions): UseFileDropReturn {
     [disabled]
   );
 
-  const handleLeave = useCallback(
-    (_e: unknown) => {
-      if (disabled) return;
-      if (counterRef.current > 0) counterRef.current -= 1;
-      if (counterRef.current === 0) setIsOver(false);
-    },
-    [disabled]
-  );
+  const handleLeave = useCallback(() => {
+    if (disabled) return;
+    if (counterRef.current > 0) counterRef.current -= 1;
+    if (counterRef.current === 0) setIsOver(false);
+  }, [disabled]);
 
   const handleDrop = useCallback(
     (e: { dataTransfer?: DataTransfer | null; preventDefault: () => void }) => {

@@ -275,10 +275,12 @@ export function useUploadQueue(
 
   // Unmount cleanup
   useEffect(() => {
+    const controllers = controllersRef.current;
+    const queue = queueRef.current;
     return () => {
-      controllersRef.current.forEach((c) => c.abort());
-      controllersRef.current.clear();
-      queueRef.current.clear();
+      controllers.forEach((c) => c.abort());
+      controllers.clear();
+      queue.clear();
     };
   }, []);
 
