@@ -149,3 +149,10 @@
     background: var(--primary-soft-hover);
   }
 }
+
+// --- Disabled state ---
+.item.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}

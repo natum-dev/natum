@@ -18,6 +18,7 @@ type SidebarItemOwnProps = {
   icon: IconComponent;
   children?: ReactNode;
   active?: boolean;
+  disabled?: boolean;
   className?: string;
 };
 
@@ -31,6 +32,7 @@ const SidebarItemInner = <T extends ElementType = "a">(
     icon: Icon,
     children,
     active = false,
+    disabled = false,
     className,
     onClick,
     ...rest
@@ -39,6 +41,13 @@ const SidebarItemInner = <T extends ElementType = "a">(
 ) => {
   useSidebarCollapsed();
   const Tag = (as ?? "a") as ElementType;
+  const isAnchor = Tag === "a";
+  const isButton = Tag === "button";
+
+  const spreadProps = { ...rest } as Record<string, unknown>;
+  if (isAnchor && disabled) {
+    delete spreadProps.href;
+  }
 
   return (
     <li>
@@ -46,9 +55,15 @@ const SidebarItemInner = <T extends ElementType = "a">(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ref={ref as any}
         aria-current={active ? "page" : undefined}
-        {...rest}
-        className={cx(styles.item, { [styles.active]: active }, className)}
-        onClick={onClick}
+        aria-disabled={disabled ? "true" : undefined}
+        disabled={isButton && disabled ? true : undefined}
+        {...spreadProps}
+        className={cx(
+          styles.item,
+          { [styles.active]: active, [styles.disabled]: disabled },
+          className
+        )}
+        onClick={disabled ? undefined : onClick}
       >
         <Icon className={styles.item_icon} size={20} />
         <span className={styles.item_label}>{children}</span>

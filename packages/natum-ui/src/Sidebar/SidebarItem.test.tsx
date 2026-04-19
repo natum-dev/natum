@@ -155,3 +155,76 @@ describe("SidebarItem active state", () => {
     expect(screen.getByRole("link")).toHaveAttribute("aria-current", "page");
   });
 });
+
+describe("SidebarItem disabled state", () => {
+  it("disabled anchor: strips href + sets aria-disabled + suppresses onClick", async () => {
+    const onClick = vi.fn();
+    const user = (await import("@testing-library/user-event")).default.setup();
+    render(
+      <Sidebar>
+        <SidebarBody>
+          <SidebarItem icon={IconFile} href="/files" disabled onClick={onClick}>
+            Files
+          </SidebarItem>
+        </SidebarBody>
+      </Sidebar>
+    );
+    const link = screen.getByText("Files").closest("a")!;
+    expect(link).not.toHaveAttribute("href");
+    expect(link).toHaveAttribute("aria-disabled", "true");
+    await user.click(link);
+    expect(onClick).not.toHaveBeenCalled();
+  });
+
+  it("disabled button: sets native disabled + aria-disabled + suppresses onClick", async () => {
+    const onClick = vi.fn();
+    const user = (await import("@testing-library/user-event")).default.setup();
+    render(
+      <Sidebar>
+        <SidebarBody>
+          <SidebarItem as="button" icon={IconFile} disabled onClick={onClick}>
+            Go
+          </SidebarItem>
+        </SidebarBody>
+      </Sidebar>
+    );
+    const btn = screen.getByRole("button", { name: "Go" });
+    expect(btn).toBeDisabled();
+    expect(btn).toHaveAttribute("aria-disabled", "true");
+    await user.click(btn);
+    expect(onClick).not.toHaveBeenCalled();
+  });
+
+  it("disabled custom component: sets aria-disabled only + suppresses onClick", async () => {
+    const onClick = vi.fn();
+    const user = (await import("@testing-library/user-event")).default.setup();
+    type LinkStubProps = { to: string; children?: React.ReactNode; className?: string; onClick?: React.MouseEventHandler };
+    const LinkStub = ({ to, children, className, onClick: cb, ...r }: LinkStubProps) => (
+      <a href={to} className={className} onClick={cb} {...r}>{children}</a>
+    );
+    render(
+      <Sidebar>
+        <SidebarBody>
+          <SidebarItem as={LinkStub} to="/x" icon={IconFile} disabled onClick={onClick}>
+            X
+          </SidebarItem>
+        </SidebarBody>
+      </Sidebar>
+    );
+    const link = screen.getByText("X").closest("a")!;
+    expect(link).toHaveAttribute("aria-disabled", "true");
+    await user.click(link);
+    expect(onClick).not.toHaveBeenCalled();
+  });
+
+  it("applies disabled CSS class", () => {
+    const { container } = render(
+      <Sidebar>
+        <SidebarBody>
+          <SidebarItem icon={IconFile} href="/" disabled>X</SidebarItem>
+        </SidebarBody>
+      </Sidebar>
+    );
+    expect(container.querySelector("a")?.className).toMatch(/disabled/);
+  });
+});
