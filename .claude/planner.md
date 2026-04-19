@@ -53,7 +53,7 @@
 
 | Component | Description | Priority | Status | Notes |
 |-----------|-------------|:--------:|--------|-------|
-| Sidebar / NavRail | Collapsible vertical navigation panel | P0 | Planned | Main app nav: folder tree, user menu |
+| Sidebar / NavRail | Collapsible vertical navigation panel | P0 | Done | Shell-only; compound subcomponents (Header/Body/Footer/Section/Item); polymorphic item `as=ElementType`; controlled/uncontrolled collapse; tooltip auto-wrap in rail mode |
 | Table / DataGrid | Sortable, selectable table with column definitions | P0 | Planned | File list view (name, size, type, date, actions) |
 | DropZone | Drag-and-drop target area with visual feedback on dragover | P0 | Planned | Drag files from desktop to upload |
 | UploadPanel | Collapsible panel showing upload queue with per-file status | P0 | Planned | Gmail-style bottom-right; multi-file upload tracking |
