@@ -30,4 +30,5 @@ export * from "./Table";
 export * from "./DropZone";
 export * from "./DropZoneOverlay";
 export * from "./UploadPanel";
+export * from "./FileCard";
 export * from "./utils";
