@@ -106,3 +106,52 @@ describe("SidebarItem base", () => {
     spy.mockRestore();
   });
 });
+
+describe("SidebarItem active state", () => {
+  it("sets aria-current=page when active", () => {
+    render(
+      <Sidebar>
+        <SidebarBody>
+          <SidebarItem icon={IconFile} href="/" active>Home</SidebarItem>
+        </SidebarBody>
+      </Sidebar>
+    );
+    expect(screen.getByRole("link")).toHaveAttribute("aria-current", "page");
+  });
+
+  it("does NOT set aria-current when not active", () => {
+    render(
+      <Sidebar>
+        <SidebarBody>
+          <SidebarItem icon={IconFile} href="/">Home</SidebarItem>
+        </SidebarBody>
+      </Sidebar>
+    );
+    expect(screen.getByRole("link")).not.toHaveAttribute("aria-current");
+  });
+
+  it("applies the active CSS class when active", () => {
+    const { container } = render(
+      <Sidebar>
+        <SidebarBody>
+          <SidebarItem icon={IconFile} href="/" active>Home</SidebarItem>
+        </SidebarBody>
+      </Sidebar>
+    );
+    const link = container.querySelector("a");
+    expect(link?.className).toMatch(/active/);
+  });
+
+  it("renders with dir=rtl without throwing (RTL smoke)", () => {
+    render(
+      <div dir="rtl">
+        <Sidebar>
+          <SidebarBody>
+            <SidebarItem icon={IconFile} href="/" active>Home</SidebarItem>
+          </SidebarBody>
+        </Sidebar>
+      </div>
+    );
+    expect(screen.getByRole("link")).toHaveAttribute("aria-current", "page");
+  });
+});

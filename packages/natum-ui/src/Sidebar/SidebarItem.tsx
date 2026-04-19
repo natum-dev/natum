@@ -17,6 +17,7 @@ type IconComponent = ComponentType<{ size?: number; className?: string }>;
 type SidebarItemOwnProps = {
   icon: IconComponent;
   children?: ReactNode;
+  active?: boolean;
   className?: string;
 };
 
@@ -29,6 +30,7 @@ const SidebarItemInner = <T extends ElementType = "a">(
     as,
     icon: Icon,
     children,
+    active = false,
     className,
     onClick,
     ...rest
@@ -44,7 +46,8 @@ const SidebarItemInner = <T extends ElementType = "a">(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ref={ref as any}
         {...rest}
-        className={cx(styles.item, className)}
+        className={cx(styles.item, { [styles.active]: active }, className)}
+        aria-current={active ? "page" : undefined}
         onClick={onClick}
       >
         <Icon className={styles.item_icon} size={20} />
