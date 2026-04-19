@@ -228,3 +228,43 @@ describe("SidebarItem disabled state", () => {
     expect(container.querySelector("a")?.className).toMatch(/disabled/);
   });
 });
+
+describe("SidebarItem rightSection", () => {
+  it("renders rightSection when expanded", () => {
+    render(
+      <Sidebar>
+        <SidebarBody>
+          <SidebarItem icon={IconFile} href="/" rightSection={<span>12</span>}>
+            Files
+          </SidebarItem>
+        </SidebarBody>
+      </Sidebar>
+    );
+    expect(screen.getByText("12")).toBeInTheDocument();
+  });
+
+  it("omits rightSection wrapper when prop not passed", () => {
+    const { container } = render(
+      <Sidebar>
+        <SidebarBody>
+          <SidebarItem icon={IconFile} href="/">Files</SidebarItem>
+        </SidebarBody>
+      </Sidebar>
+    );
+    expect(container.querySelector(".right_section, [class*='right_section']")).toBeNull();
+  });
+
+  it("rightSection element is always present in DOM when passed (CSS hides it in collapsed mode, not JS)", () => {
+    render(
+      <Sidebar defaultCollapsed>
+        <SidebarBody>
+          <SidebarItem icon={IconFile} href="/" rightSection={<span data-testid="rs">12</span>}>
+            Files
+          </SidebarItem>
+        </SidebarBody>
+      </Sidebar>
+    );
+    // DOM stays; CSS handles visibility via `.sidebar[data-collapsed="true"] .right_section { display: none }`
+    expect(screen.getByTestId("rs")).toBeInTheDocument();
+  });
+});

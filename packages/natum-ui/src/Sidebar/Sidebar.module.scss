@@ -156,3 +156,15 @@
   cursor: not-allowed;
   pointer-events: none;
 }
+
+// --- Right section ---
+.right_section {
+  flex: 0 0 auto;
+  margin-inline-start: auto;
+  display: inline-flex;
+  align-items: center;
+}
+
+.sidebar[data-collapsed="true"] .right_section {
+  display: none;
+}
