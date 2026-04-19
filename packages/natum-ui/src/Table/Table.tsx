@@ -94,18 +94,33 @@ const Table = forwardRef<HTMLTableElement, TableProps>(
     const lastSelectedRef = useRef<string | null>(null);
 
     const toggleRow = useCallback(
-      (id: string, _extend: boolean) => {
-        // Simple toggle for Task 7 — range-select (extend=true) lands in Task 9.
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        void _extend;
+      (id: string, extend: boolean) => {
+        const anchor = lastSelectedRef.current;
+        if (extend && anchor !== null) {
+          const i = rowIds.indexOf(anchor);
+          const j = rowIds.indexOf(id);
+          if (i !== -1 && j !== -1) {
+            const [lo, hi] = i < j ? [i, j] : [j, i];
+            const rangeIds = rowIds.slice(lo, hi + 1);
+            const targetState = !selectedSet.has(id); // target = new state for clicked id
+            const next = new Set(selectedSet);
+            for (const rid of rangeIds) {
+              if (targetState) next.add(rid);
+              else next.delete(rid);
+            }
+            setSelectedRaw(Array.from(next));
+            // Anchor persists through range operations.
+            return;
+          }
+        }
+        // Simple toggle.
         const next = new Set(selectedSet);
         if (next.has(id)) next.delete(id);
         else next.add(id);
         setSelectedRaw(Array.from(next));
         lastSelectedRef.current = id;
       },
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      [selectedSet, setSelectedRaw]
+      [rowIds, selectedSet, setSelectedRaw]
     );
 
     const toggleAll = useCallback(() => {

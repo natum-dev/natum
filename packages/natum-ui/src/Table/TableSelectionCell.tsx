@@ -1,6 +1,6 @@
 "use client";
 
-import type { ChangeEvent, MouseEvent } from "react";
+import { useRef, type ChangeEvent, type MouseEvent } from "react";
 import cx from "classnames";
 import { Checkbox } from "../Checkbox";
 import { useTableContext, useTableRowContext } from "./context";
@@ -21,21 +21,24 @@ const TableSelectionCell = ({
     throw new Error("TableSelectionCell requires rowId on its <TableRow>.");
   }
   const checked = selectedSet.has(rowId);
+  const shiftRef = useRef(false);
+
+  const onMouseDown = (e: MouseEvent<HTMLTableCellElement>) => {
+    shiftRef.current = e.shiftKey;
+  };
 
   const onChange = (_e: ChangeEvent<HTMLInputElement>) => {
-    toggleRow(rowId, false);
+    toggleRow(rowId, shiftRef.current);
+    shiftRef.current = false;
   };
 
   return (
     <td
       className={cx(styles.selection_cell, className)}
+      onMouseDown={onMouseDown}
       onClick={(e: MouseEvent<HTMLTableCellElement>) => e.stopPropagation()}
     >
-      <Checkbox
-        checked={checked}
-        onChange={onChange}
-        aria-label={ariaLabel}
-      />
+      <Checkbox checked={checked} onChange={onChange} aria-label={ariaLabel} />
     </td>
   );
 };
