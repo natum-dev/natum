@@ -52,15 +52,14 @@ const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
       value,
       defaultValue = "",
       onChange,
-      onSubmit: _onSubmit,
+      onSubmit,
       debounceMs = 250,
       clearable = true,
+      onKeyDown,
       ...rest
     },
     ref
   ) => {
-    void _onSubmit;
-
     const [rawValue, setRawValue] = useState<string>(value ?? defaultValue);
 
     useEffect(() => {
@@ -68,18 +67,32 @@ const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
     }, [value]);
 
     const timerRef = useRef<number | null>(null);
+    const pendingRef = useRef<string | null>(null);
 
     const cancelPending = () => {
       if (timerRef.current !== null) {
         window.clearTimeout(timerRef.current);
         timerRef.current = null;
+        pendingRef.current = null;
+      }
+    };
+
+    const flush = () => {
+      if (timerRef.current !== null) {
+        window.clearTimeout(timerRef.current);
+        timerRef.current = null;
+        const pending = pendingRef.current;
+        pendingRef.current = null;
+        if (pending !== null) onChange?.(pending);
       }
     };
 
     const schedule = (next: string) => {
       cancelPending();
+      pendingRef.current = next;
       timerRef.current = window.setTimeout(() => {
         timerRef.current = null;
+        pendingRef.current = null;
         onChange?.(next);
       }, Math.max(0, debounceMs));
     };
@@ -97,6 +110,14 @@ const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
           const next = e.target.value;
           setRawValue(next);
           schedule(next);
+        }}
+        onKeyDown={(e) => {
+          onKeyDown?.(e);
+          if (e.defaultPrevented) return;
+          if (e.key === "Enter") {
+            flush();
+            onSubmit?.(rawValue);
+          }
         }}
         {...rest}
       />

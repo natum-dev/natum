@@ -167,3 +167,78 @@ describe("SearchInput — debounce", () => {
     vi.useRealTimers();
   });
 });
+
+describe("SearchInput — Enter + submit", () => {
+  it("Enter flushes pending onChange and fires onSubmit", async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    const handleChange = vi.fn();
+    const handleSubmit = vi.fn();
+    render(
+      <SearchInput
+        onChange={handleChange}
+        onSubmit={handleSubmit}
+        aria-label="Search"
+      />
+    );
+    const input = screen.getByRole<HTMLInputElement>("searchbox");
+    await user.type(input, "hello");
+    await user.keyboard("{Enter}");
+    expect(handleChange).toHaveBeenCalledTimes(1);
+    expect(handleChange).toHaveBeenCalledWith("hello");
+    expect(handleSubmit).toHaveBeenCalledTimes(1);
+    expect(handleSubmit).toHaveBeenCalledWith("hello");
+    // No late emit from the cancelled timer.
+    vi.advanceTimersByTime(500);
+    expect(handleChange).toHaveBeenCalledTimes(1);
+    vi.useRealTimers();
+  });
+
+  it("Enter with no pending change still fires onSubmit", async () => {
+    const user = userEvent.setup();
+    const handleChange = vi.fn();
+    const handleSubmit = vi.fn();
+    render(
+      <SearchInput
+        defaultValue="preset"
+        onChange={handleChange}
+        onSubmit={handleSubmit}
+        aria-label="Search"
+      />
+    );
+    screen.getByRole<HTMLInputElement>("searchbox").focus();
+    await user.keyboard("{Enter}");
+    expect(handleChange).not.toHaveBeenCalled();
+    expect(handleSubmit).toHaveBeenCalledTimes(1);
+    expect(handleSubmit).toHaveBeenCalledWith("preset");
+  });
+
+  it("consumer onKeyDown runs before internal Enter handling; preventDefault suppresses", async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    const handleChange = vi.fn();
+    const handleSubmit = vi.fn();
+    const order: string[] = [];
+    render(
+      <SearchInput
+        onChange={handleChange}
+        onSubmit={handleSubmit}
+        onKeyDown={(e) => {
+          if (e.key !== "Enter") return;
+          order.push("consumer");
+          e.preventDefault();
+        }}
+        aria-label="Search"
+      />
+    );
+    const input = screen.getByRole<HTMLInputElement>("searchbox");
+    await user.type(input, "x");
+    await user.keyboard("{Enter}");
+    expect(order).toEqual(["consumer"]);
+    expect(handleSubmit).not.toHaveBeenCalled();
+    // Pending debounce timer NOT cancelled (no flush happened either).
+    vi.advanceTimersByTime(300);
+    expect(handleChange).toHaveBeenCalledWith("x");
+    vi.useRealTimers();
+  });
+});
