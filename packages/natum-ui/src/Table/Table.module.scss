@@ -133,3 +133,9 @@
 .sort_icon_none { opacity: 0.5; }
 .sort_icon_asc { transform: rotate(180deg); }
 .sort_icon_desc { transform: rotate(0deg); }
+
+.selection_cell {
+  inline-size: 1%;
+  padding-inline: var(--space-3);
+  vertical-align: middle;
+}
