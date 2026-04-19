@@ -18,6 +18,7 @@ type BadgeBaseProps = {
   variant?: BadgeVariant;
   size?: BadgeSize;
   dot?: boolean;
+  leftSection?: ReactNode;
   children?: ReactNode;
   className?: string;
 };
@@ -30,6 +31,7 @@ export const Badge = ({
   variant = "soft",
   size = "md",
   dot = false,
+  leftSection,
   children,
   className,
   ...rest
@@ -45,6 +47,11 @@ export const Badge = ({
     )}
     {...rest}
   >
+    {!dot && leftSection && (
+      <span className={styles.leftSection} aria-hidden="true">
+        {leftSection}
+      </span>
+    )}
     {!dot && children}
   </span>
 );

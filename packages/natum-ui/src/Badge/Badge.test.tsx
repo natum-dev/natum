@@ -68,4 +68,21 @@ describe("Badge", () => {
     render(<Badge data-testid="badge" dot aria-label="Unread" />);
     expect(screen.getByTestId("badge")).toHaveAttribute("aria-label", "Unread");
   });
+
+  // --- leftSection ---
+  it("renders leftSection wrapped in an aria-hidden span", () => {
+    render(<Badge leftSection={<svg data-testid="icon" />}>Shared</Badge>);
+    const icon = screen.getByTestId("icon");
+    const wrapper = icon.parentElement;
+    expect(wrapper?.tagName).toBe("SPAN");
+    expect(wrapper).toHaveAttribute("aria-hidden", "true");
+    expect(wrapper).toHaveClass("leftSection");
+  });
+
+  it("does not render leftSection when dot={true}", () => {
+    render(
+      <Badge dot aria-label="Unread" leftSection={<svg data-testid="icon" />} />
+    );
+    expect(screen.queryByTestId("icon")).not.toBeInTheDocument();
+  });
 });
