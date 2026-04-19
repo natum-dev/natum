@@ -199,3 +199,173 @@ describe("useUploadQueue — add + scheduler", () => {
     );
   });
 });
+
+describe("useUploadQueue — cancel + remove + retry + clear", () => {
+  it("cancel aborts an in-flight upload and splices item", async () => {
+    const { result } = renderHook(() => useUploadQueue());
+    let capturedSignal!: AbortSignal;
+    const pending = deferred<void>();
+    const fn: UploadFn = (_f, ctx) => {
+      capturedSignal = ctx.signal;
+      return new Promise<void>((_, reject) => {
+        ctx.signal.addEventListener("abort", () => {
+          const err = new Error("aborted");
+          err.name = "AbortError";
+          reject(err);
+        });
+        pending.promise.then(() => _(undefined as unknown as void));
+      });
+    };
+
+    let id!: string;
+    act(() => {
+      id = result.current.add(makeFile(), fn);
+    });
+    expect(result.current.items[0].status).toBe("uploading");
+
+    act(() => {
+      result.current.cancel(id);
+    });
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    expect(capturedSignal.aborted).toBe(true);
+    expect(result.current.items).toHaveLength(0);
+  });
+
+  it("cancel removes a pending item directly (no controller)", () => {
+    const { result } = renderHook(() => useUploadQueue({ concurrency: 1 }));
+    const a = deferred<void>();
+    const b = deferred<void>();
+    let idB!: string;
+    act(() => {
+      result.current.add(makeFile("a"), () => a.promise);
+      idB = result.current.add(makeFile("b"), () => b.promise);
+    });
+    expect(result.current.items).toHaveLength(2);
+    expect(result.current.stats.pending).toBe(1);
+
+    act(() => {
+      result.current.cancel(idB);
+    });
+    expect(result.current.items).toHaveLength(1);
+    expect(result.current.items[0].name).toBe("a");
+  });
+
+  it("remove splices a terminal item", async () => {
+    const { result } = renderHook(() => useUploadQueue());
+    const d = deferred<void>();
+    let id!: string;
+    act(() => {
+      id = result.current.add(makeFile(), () => d.promise);
+    });
+    act(() => d.resolve());
+    await act(async () => {
+      await Promise.resolve();
+    });
+    expect(result.current.items[0].status).toBe("success");
+
+    act(() => {
+      result.current.remove(id);
+    });
+    expect(result.current.items).toHaveLength(0);
+  });
+
+  it("cancel on missing id is a no-op", () => {
+    const { result } = renderHook(() => useUploadQueue());
+    act(() => {
+      result.current.cancel("nonexistent");
+    });
+    expect(result.current.items).toHaveLength(0);
+  });
+
+  it("retry resets an errored item and re-schedules", async () => {
+    const { result } = renderHook(() => useUploadQueue());
+    const d1 = deferred<void>();
+    let id!: string;
+    act(() => {
+      id = result.current.add(makeFile(), () => d1.promise);
+    });
+    act(() => d1.reject(new Error("x")));
+    await act(async () => {
+      await Promise.resolve();
+    });
+    expect(result.current.items[0].status).toBe("error");
+
+    const d2 = deferred<void>();
+    act(() => {
+      result.current.retry(id, () => d2.promise);
+    });
+    expect(["pending", "uploading"]).toContain(result.current.items[0].status);
+
+    act(() => d2.resolve());
+    await act(async () => {
+      await Promise.resolve();
+    });
+    expect(result.current.items[0].status).toBe("success");
+  });
+
+  it("retry throws when item is not in error state", async () => {
+    const { result } = renderHook(() => useUploadQueue());
+    const d = deferred<void>();
+    let id!: string;
+    act(() => {
+      id = result.current.add(makeFile(), () => d.promise);
+    });
+    expect(() => result.current.retry(id, () => Promise.resolve())).toThrow(
+      /not in error state/i
+    );
+  });
+
+  it("retry throws when item not found", () => {
+    const { result } = renderHook(() => useUploadQueue());
+    expect(() => result.current.retry("nope", () => Promise.resolve())).toThrow(
+      /not found/i
+    );
+  });
+
+  it("clear default removes success + error items", async () => {
+    const { result } = renderHook(() => useUploadQueue());
+    const d1 = deferred<void>();
+    const d2 = deferred<void>();
+    const d3 = deferred<void>();
+    act(() => {
+      result.current.add(makeFile("a"), () => d1.promise);
+      result.current.add(makeFile("b"), () => d2.promise);
+      result.current.add(makeFile("c"), () => d3.promise);
+    });
+    act(() => {
+      d1.resolve();
+      d2.reject(new Error("fail"));
+    });
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    expect(result.current.stats.success).toBe(1);
+    expect(result.current.stats.error).toBe(1);
+    expect(result.current.stats.uploading).toBe(1);
+
+    act(() => {
+      result.current.clear();
+    });
+    expect(result.current.items).toHaveLength(1);
+    expect(result.current.items[0].name).toBe("c");
+  });
+
+  it("clear with filter removes matching items", () => {
+    const { result } = renderHook(() => useUploadQueue({ concurrency: 1 }));
+    const d1 = deferred<void>();
+    const d2 = deferred<void>();
+    act(() => {
+      result.current.add(makeFile("a"), () => d1.promise);
+      result.current.add(makeFile("b"), () => d2.promise);
+    });
+    act(() => {
+      result.current.clear((i) => i.name === "b");
+    });
+    expect(result.current.items.map((i) => i.name)).toEqual(["a"]);
+  });
+});

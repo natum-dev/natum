@@ -53,6 +53,8 @@ export function useUploadQueue(
 ): UseUploadQueueReturn {
   const { concurrency = 3, onItemChange } = options;
   const [items, setItems] = useState<UploadItem[]>([]);
+  const itemsRef = useRef<UploadItem[]>([]);
+  itemsRef.current = items;
   const controllersRef = useRef<Map<string, AbortController>>(new Map());
   const queueRef = useRef<Map<string, QueueEntry>>(new Map());
   const counterRef = useRef(0);
@@ -185,11 +187,81 @@ export function useUploadQueue(
     []
   );
 
-  // Task 4 will add cancel/remove/retry/clear; stub them out here with no-ops
-  const cancel = useCallback((_id: string) => {}, []);
-  const remove = useCallback((_id: string) => {}, []);
-  const retry = useCallback((_id: string, _fn: UploadFn) => {}, []);
-  const clear = useCallback((_filter?: (i: UploadItem) => boolean) => {}, []);
+  const cancel = useCallback(
+    (id: string) => {
+      setItems((prev) => {
+        const item = prev.find((i) => i.id === id);
+        if (!item) return prev;
+        if (item.status === "uploading") {
+          const controller = controllersRef.current.get(id);
+          controller?.abort();
+          // The abort handler in startUpload will call splice(id);
+          // here we just return the current list (splice handles removal).
+          return prev;
+        }
+        controllersRef.current.delete(id);
+        queueRef.current.delete(id);
+        return prev.filter((i) => i.id !== id);
+      });
+    },
+    []
+  );
+
+  const remove = useCallback(
+    (id: string) => {
+      const controller = controllersRef.current.get(id);
+      controller?.abort();
+      controllersRef.current.delete(id);
+      queueRef.current.delete(id);
+      setItems((prev) => prev.filter((i) => i.id !== id));
+    },
+    []
+  );
+
+  const retry = useCallback(
+    (id: string, uploadFn: UploadFn) => {
+      const item = itemsRef.current.find((i) => i.id === id);
+      if (!item) throw new Error(`retry: item "${id}" not found`);
+      if (item.status !== "error")
+        throw new Error(`retry: item "${id}" is not in error state`);
+      const file = item.file;
+      setItems((prev) =>
+        prev.map((i) =>
+          i.id === id
+            ? {
+                ...i,
+                status: "pending" as const,
+                progress: 0,
+                error: undefined,
+                startedAt: undefined,
+                finishedAt: undefined,
+              }
+            : i
+        )
+      );
+      queueRef.current.set(id, { fn: uploadFn, file });
+    },
+    []
+  );
+
+  const clear = useCallback(
+    (filter?: (item: UploadItem) => boolean) => {
+      const predicate =
+        filter ??
+        ((item: UploadItem) =>
+          item.status === "success" || item.status === "error");
+      setItems((prev) => {
+        const toRemove = prev.filter(predicate);
+        toRemove.forEach((item) => {
+          controllersRef.current.get(item.id)?.abort();
+          controllersRef.current.delete(item.id);
+          queueRef.current.delete(item.id);
+        });
+        return prev.filter((item) => !predicate(item));
+      });
+    },
+    []
+  );
 
   const stats = useMemo(
     () => ({
