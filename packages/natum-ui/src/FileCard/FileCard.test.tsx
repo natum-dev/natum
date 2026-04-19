@@ -85,3 +85,21 @@ describe("FileCard — sizes", () => {
     expect(svg.getAttribute("width")).toBe("56");
   });
 });
+
+describe("FileCard — meta slot", () => {
+  it("renders the meta ReactNode when provided", () => {
+    render(
+      <FileCard
+        icon={IconFile}
+        name="x.pdf"
+        meta={<span data-testid="meta">2.4 MB · 2d ago</span>}
+      />
+    );
+    expect(screen.getByTestId("meta")).toHaveTextContent("2.4 MB · 2d ago");
+  });
+
+  it("omits the meta row from the DOM when meta is absent", () => {
+    const { container } = render(<FileCard icon={IconFile} name="x.pdf" />);
+    expect(container.querySelector('[class*="meta_line"]')).toBeNull();
+  });
+});

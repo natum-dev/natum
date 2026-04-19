@@ -39,7 +39,7 @@ const ICON_PX: Record<FileCardSize, number> = {
 
 const FileCard = forwardRef<HTMLDivElement, FileCardProps>(
   (
-    { icon: Icon, thumbnail, name, size = "md", className, ...rest },
+    { icon: Icon, thumbnail, name, meta, size = "md", className, ...rest },
     ref
   ) => {
     const hasThumbnail = thumbnail != null;
@@ -63,6 +63,7 @@ const FileCard = forwardRef<HTMLDivElement, FileCardProps>(
           <div className={styles.name} title={name}>
             {name}
           </div>
+          {meta != null && <div className={styles.meta_line}>{meta}</div>}
         </div>
       </div>
     );
