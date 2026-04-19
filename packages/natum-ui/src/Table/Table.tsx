@@ -2,7 +2,9 @@
 
 import {
   forwardRef,
+  useCallback,
   useMemo,
+  useRef,
   type HTMLAttributes,
   type ReactNode,
 } from "react";
@@ -26,6 +28,11 @@ type TableBaseProps = {
   defaultSort?: SortSpec | null;
   onSortChange?: (sort: SortSpec | null) => void;
 
+  rowIds?: string[];
+  selectedRowIds?: string[];
+  defaultSelectedRowIds?: string[];
+  onSelectedRowIdsChange?: (ids: string[]) => void;
+
   wrapperClassName?: string;
   className?: string;
   children: ReactNode;
@@ -33,6 +40,8 @@ type TableBaseProps = {
 
 export type TableProps = TableBaseProps &
   Omit<HTMLAttributes<HTMLTableElement>, keyof TableBaseProps>;
+
+const EMPTY_ROW_IDS: string[] = [];
 
 const Table = forwardRef<HTMLTableElement, TableProps>(
   (
@@ -44,6 +53,10 @@ const Table = forwardRef<HTMLTableElement, TableProps>(
       sort: sortProp,
       defaultSort,
       onSortChange,
+      rowIds = EMPTY_ROW_IDS,
+      selectedRowIds: selectedRowIdsProp,
+      defaultSelectedRowIds,
+      onSelectedRowIdsChange,
       wrapperClassName,
       className,
       children,
@@ -57,20 +70,72 @@ const Table = forwardRef<HTMLTableElement, TableProps>(
       onChange: onSortChange,
     });
 
-    // Selection is stubbed until Task 7.
+    // Selection — useControllable expects (T | null) on onChange, so adapt to (string[]).
+    const onSelectedChangeInternal = useMemo(
+      () =>
+        onSelectedRowIdsChange
+          ? (v: string[] | null) => onSelectedRowIdsChange(v ?? [])
+          : undefined,
+      [onSelectedRowIdsChange]
+    );
+    const { value: selectedRaw, setValue: setSelectedRaw } = useControllable<string[]>({
+      value: selectedRowIdsProp,
+      defaultValue: defaultSelectedRowIds ?? [],
+      onChange: onSelectedChangeInternal,
+    });
+    const selectedRowIds = selectedRaw ?? EMPTY_ROW_IDS;
+    const selectedSet = new Set(selectedRowIds);
+
+    const isAllSelected =
+      rowIds.length > 0 && rowIds.every((id) => selectedSet.has(id));
+    const isIndeterminate =
+      !isAllSelected && rowIds.some((id) => selectedSet.has(id));
+
+    const lastSelectedRef = useRef<string | null>(null);
+
+    const toggleRow = useCallback(
+      (id: string, _extend: boolean) => {
+        // Simple toggle for Task 7 — range-select (extend=true) lands in Task 9.
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        void _extend;
+        const next = new Set(selectedSet);
+        if (next.has(id)) next.delete(id);
+        else next.add(id);
+        setSelectedRaw(Array.from(next));
+        lastSelectedRef.current = id;
+      },
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [selectedSet, setSelectedRaw]
+    );
+
+    const toggleAll = useCallback(() => {
+      if (isAllSelected) {
+        // Clear only ids present in rowIds; preserve others.
+        const rowIdSet = new Set(rowIds);
+        const next = selectedRowIds.filter((id) => !rowIdSet.has(id));
+        setSelectedRaw(next);
+      } else {
+        const next = new Set(selectedRowIds);
+        for (const id of rowIds) next.add(id);
+        setSelectedRaw(Array.from(next));
+      }
+      lastSelectedRef.current = null;
+    }, [isAllSelected, rowIds, selectedRowIds, setSelectedRaw]);
+
     const ctxValue = useMemo<TableContextValue>(
       () => ({
         size,
         sort: sort ?? null,
         setSort,
-        rowIds: [],
-        selectedSet: new Set(),
-        isAllSelected: false,
-        isIndeterminate: false,
-        toggleRow: () => {},
-        toggleAll: () => {},
+        rowIds,
+        selectedSet,
+        isAllSelected,
+        isIndeterminate,
+        toggleRow,
+        toggleAll,
       }),
-      [size, sort, setSort]
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [size, sort, setSort, rowIds, selectedSet, isAllSelected, isIndeterminate, toggleRow, toggleAll]
     );
 
     return (
