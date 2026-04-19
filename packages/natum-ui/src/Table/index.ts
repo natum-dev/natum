@@ -24,3 +24,5 @@ export { TableHeaderCell } from "./TableHeaderCell";
 export type { TableHeaderCellProps } from "./TableHeaderCell";
 export { TableSelectAllCell } from "./TableSelectAllCell";
 export type { TableSelectAllCellProps } from "./TableSelectAllCell";
+export { TableSelectionCell } from "./TableSelectionCell";
+export type { TableSelectionCellProps } from "./TableSelectionCell";
