@@ -18,6 +18,7 @@ import { TableActionCell } from "./TableActionCell";
 import { IconButton } from "../IconButton";
 import { Figure } from "../Figure";
 import { Skeleton } from "../Skeleton";
+import { formatFileSize } from "../utils/format-size";
 import type { SortSpec } from "./context";
 
 const meta = {
@@ -45,9 +46,6 @@ const FILES: FileRow[] = [
   { id: "e", name: "draft.docx", size: 82_000, modified: "2 weeks ago" },
 ];
 
-const formatSize = (bytes: number) =>
-  bytes > 1_000_000 ? `${(bytes / 1_000_000).toFixed(1)} MB` : `${Math.round(bytes / 1000)} KB`;
-
 export const Default: Story = {
   render: (args) => (
     <Table {...args}>
@@ -62,7 +60,7 @@ export const Default: Story = {
         {FILES.map((f) => (
           <TableRow key={f.id}>
             <TableCell>{f.name}</TableCell>
-            <TableCell align="end">{formatSize(f.size)}</TableCell>
+            <TableCell align="end">{formatFileSize(f.size)}</TableCell>
             <TableCell>{f.modified}</TableCell>
           </TableRow>
         ))}
@@ -87,7 +85,7 @@ export const AllDensities: Story = {
             {FILES.slice(0, 3).map((f) => (
               <TableRow key={f.id}>
                 <TableCell>{f.name}</TableCell>
-                <TableCell align="end">{formatSize(f.size)}</TableCell>
+                <TableCell align="end">{formatFileSize(f.size)}</TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -112,7 +110,7 @@ export const WithRowBorders: Story = {
         {FILES.map((f) => (
           <TableRow key={f.id}>
             <TableCell>{f.name}</TableCell>
-            <TableCell align="end">{formatSize(f.size)}</TableCell>
+            <TableCell align="end">{formatFileSize(f.size)}</TableCell>
             <TableCell>{f.modified}</TableCell>
           </TableRow>
         ))}
@@ -136,7 +134,7 @@ export const StickyHeader: Story = {
           {[...FILES, ...FILES, ...FILES].map((f, i) => (
             <TableRow key={`${f.id}-${i}`}>
               <TableCell>{f.name}</TableCell>
-              <TableCell align="end">{formatSize(f.size)}</TableCell>
+              <TableCell align="end">{formatFileSize(f.size)}</TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -169,7 +167,7 @@ const SortableDemo = () => {
         {sorted.map((f) => (
           <TableRow key={f.id}>
             <TableCell>{f.name}</TableCell>
-            <TableCell align="end">{formatSize(f.size)}</TableCell>
+            <TableCell align="end">{formatFileSize(f.size)}</TableCell>
             <TableCell>{f.modified}</TableCell>
           </TableRow>
         ))}
@@ -204,7 +202,7 @@ const SelectionDemo = () => {
             <TableRow key={f.id} rowId={f.id}>
               <TableSelectionCell aria-label={`Select ${f.name}`} />
               <TableCell>{f.name}</TableCell>
-              <TableCell align="end">{formatSize(f.size)}</TableCell>
+              <TableCell align="end">{formatFileSize(f.size)}</TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -241,7 +239,7 @@ const ClickableDemo = () => {
               onClick={() => setLastClicked(f.name)}
             >
               <TableCell>{f.name}</TableCell>
-              <TableCell align="end">{formatSize(f.size)}</TableCell>
+              <TableCell align="end">{formatFileSize(f.size)}</TableCell>
               <TableActionCell>
                 <IconButton
                   aria-label={`Open ${f.name}`}
@@ -282,7 +280,7 @@ export const WithCaption: Story = {
         {FILES.map((f) => (
           <TableRow key={f.id}>
             <TableCell>{f.name}</TableCell>
-            <TableCell align="end">{formatSize(f.size)}</TableCell>
+            <TableCell align="end">{formatFileSize(f.size)}</TableCell>
           </TableRow>
         ))}
       </TableBody>
@@ -347,14 +345,14 @@ export const WithFooter: Story = {
           {FILES.map((f) => (
             <TableRow key={f.id}>
               <TableCell>{f.name}</TableCell>
-              <TableCell align="end">{formatSize(f.size)}</TableCell>
+              <TableCell align="end">{formatFileSize(f.size)}</TableCell>
             </TableRow>
           ))}
         </TableBody>
         <TableFoot>
           <TableRow>
             <TableCell><strong>Total</strong></TableCell>
-            <TableCell align="end"><strong>{formatSize(total)}</strong></TableCell>
+            <TableCell align="end"><strong>{formatFileSize(total)}</strong></TableCell>
           </TableRow>
         </TableFoot>
       </Table>

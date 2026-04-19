@@ -5,7 +5,7 @@ import {
   IconX,
 } from "@natum/icons";
 import { IconButton } from "../IconButton";
-import { formatSize } from "./format-size";
+import { formatFileSize } from "../utils/format-size";
 import type { UploadItem } from "../hooks/use-upload-queue";
 import styles from "./UploadPanel.module.scss";
 
@@ -30,7 +30,7 @@ const UploadPanelItem = ({ item, onCancel, onRetry }: UploadPanelItemProps) => {
       <div className={styles.row_main}>
         <div className={styles.row_name}>{item.name}</div>
         <div className={styles.row_meta}>
-          <span>{formatSize(item.size)}</span>
+          <span>{formatFileSize(item.size)}</span>
           {item.status === "error" && item.error && (
             <span className={styles.error_text}>{item.error}</span>
           )}
