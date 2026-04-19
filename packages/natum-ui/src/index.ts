@@ -31,4 +31,6 @@ export * from "./DropZone";
 export * from "./DropZoneOverlay";
 export * from "./UploadPanel";
 export * from "./FileCard";
+export * from "./ProgressBar";
+export * from "./StorageQuotaBar";
 export * from "./utils";

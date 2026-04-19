@@ -57,7 +57,7 @@
 | Table / DataGrid | Sortable, selectable table with column definitions | P0 | Done | Declarative shell; 11 named exports; three-state sort; compound selection primitives with shift-click range; sticky header; md default; striped+hover defaults; ActionCell stops propagation. DataGrid (array API) deferred to Batch K |
 | DropZone | Drag-and-drop target area with visual feedback on dragover | P0 | Done | In-flow region + paired window-wide `DropZoneOverlay`; shared `useFileDrop` |
 | UploadPanel | Collapsible panel showing upload queue with per-file status | P0 | Done | Portaled bottom-right/left; auto-hide on empty; backed by `useUploadQueue` hook |
-| StorageQuotaBar | Progress bar showing used/total storage with labels | P0 | Planned | Sidebar and settings page |
+| StorageQuotaBar | Progress bar showing used/total storage with labels | P0 | Done | Labels "12.4 GB of 15.0 GB" + percent; default thresholds warnAt=0.9 / errorAt=1.0; semantic color switching on bar + secondary label; composes ProgressBar; size passthrough; aria-label/labelledby group. |
 | FileCard | Card variant showing file icon/thumbnail, name, size, type | P1 | Done | Grid view of files; fixed 4:3 preview; icon or thumbnail slot; controlled selection overlay; onClick/onDoubleClick for Finder-style UX. Planned to migrate to apps/vault. |
 | Badge | Small label/count indicator | P1 | Done | Inline pill; filled/outlined/soft × 7 colors × sm/md; dot mode; leftSection; polymorphic as=span/a/button with auto-derived interactive styling |
 
@@ -71,7 +71,7 @@
 | Component | Description | Priority | Status | Notes |
 |-----------|-------------|:--------:|--------|-------|
 | SearchInput | TextField variant with search icon, debounced `onChange`, clear button | P0 | Planned | Global file search |
-| Progress Bar | Determinate/indeterminate progress indicator | P0 | Planned | Upload progress, storage quota |
+| Progress Bar | Determinate/indeterminate progress indicator | P0 | Done | Primitive progressbar; determinate (0–1) + indeterminate (value=undefined); sm/md/lg (4/6/8 px); 5 semantic colors; reduced-motion fallback for both determinate transition and indeterminate animation. |
 | Tabs | Horizontal tab bar with content switching | P1 | Planned | Settings sections; "My Files" vs "Shared with Me" |
 | Avatar | User avatar with initials fallback | P1 | Planned | Header user menu, sharing UI |
 | Toggle / Switch | On/off toggle input | P2 | Planned | Settings toggles (dark mode, notifications) |
