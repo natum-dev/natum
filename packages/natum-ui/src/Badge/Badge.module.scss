@@ -77,7 +77,7 @@ $badge-colors: neutral, primary, secondary, success, warning, error, info;
 }
 
 // --- Leading icon slot ---
-.leftSection {
+.left_section {
   display: inline-flex;
   align-items: center;
   flex-shrink: 0;
@@ -87,12 +87,12 @@ $badge-colors: neutral, primary, secondary, success, warning, error, info;
   }
 }
 
-.sm .leftSection svg {
+.sm .left_section svg {
   inline-size: 12px;
   block-size: 12px;
 }
 
-.md .leftSection svg {
+.md .left_section svg {
   inline-size: 14px;
   block-size: 14px;
 }
