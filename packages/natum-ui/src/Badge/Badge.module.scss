@@ -1,0 +1,54 @@
+@use "../design-tokens" as *;
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  gap: var(--space-1);
+  border-radius: 999px;
+  font-family: inherit;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+
+// --- Sizes ---
+.sm {
+  block-size: 16px;
+  padding-inline: var(--space-2);
+  font-size: 10px;
+}
+
+.md {
+  block-size: 20px;
+  padding-inline: var(--space-2);
+  font-size: 11px;
+}
+
+// --- Variant × color matrix ---
+// Each semantic color exposes these custom properties in design-tokens/base.scss:
+//   --{color}-bg, --{color}-contrast, --{color}-border,
+//   --{color}-text, --{color}-soft, --{color}-soft-hover
+$badge-colors: neutral, primary, secondary, success, warning, error, info;
+
+@each $c in $badge-colors {
+  .#{$c} {
+    &.filled {
+      background-color: var(--#{$c}-bg);
+      color: var(--#{$c}-contrast);
+    }
+
+    &.outlined {
+      background-color: transparent;
+      color: var(--#{$c}-text);
+      border: 1px solid var(--#{$c}-border);
+    }
+
+    &.soft {
+      background-color: var(--#{$c}-soft);
+      color: var(--#{$c}-text);
+    }
+  }
+}
