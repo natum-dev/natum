@@ -151,6 +151,11 @@ describe("Badge", () => {
     expect(screen.getByTestId("badge")).not.toHaveAttribute("href");
   });
 
+  it("handles disabled <a> rendered without href (no attribute injected)", () => {
+    render(<Badge data-testid="badge" as="a" disabled>L</Badge>);
+    expect(screen.getByTestId("badge")).not.toHaveAttribute("href");
+  });
+
   it("sets aria-disabled=true on disabled interactive badge", () => {
     render(<Badge data-testid="badge" as="button" disabled>B</Badge>);
     expect(screen.getByTestId("badge")).toHaveAttribute("aria-disabled", "true");
@@ -170,6 +175,18 @@ describe("Badge", () => {
       </Badge>
     );
     await user.click(screen.getByText("Click"));
+    expect(onClick).not.toHaveBeenCalled();
+  });
+
+  it("does not invoke onClick when disabled <a> is clicked", async () => {
+    const onClick = vi.fn();
+    const user = userEvent.setup();
+    render(
+      <Badge as="a" href="#" disabled onClick={onClick}>
+        LinkText
+      </Badge>
+    );
+    await user.click(screen.getByText("LinkText"));
     expect(onClick).not.toHaveBeenCalled();
   });
 
