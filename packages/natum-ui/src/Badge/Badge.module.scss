@@ -59,3 +59,19 @@ $badge-colors: neutral, primary, secondary, success, warning, error, info;
     }
   }
 }
+
+// --- Dot mode (collapses to colored circle) ---
+.dot {
+  padding-inline: 0;
+  gap: 0;
+
+  &.sm {
+    block-size: 6px;
+    inline-size: 6px;
+  }
+
+  &.md {
+    block-size: 8px;
+    inline-size: 8px;
+  }
+}

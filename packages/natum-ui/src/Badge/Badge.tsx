@@ -17,6 +17,7 @@ type BadgeBaseProps = {
   color?: BadgeColor;
   variant?: BadgeVariant;
   size?: BadgeSize;
+  dot?: boolean;
   children?: ReactNode;
   className?: string;
 };
@@ -28,6 +29,7 @@ export const Badge = ({
   color = "neutral",
   variant = "soft",
   size = "md",
+  dot = false,
   children,
   className,
   ...rest
@@ -38,11 +40,12 @@ export const Badge = ({
       styles[variant],
       styles[color],
       styles[size],
+      { [styles.dot]: dot },
       className
     )}
     {...rest}
   >
-    {children}
+    {!dot && children}
   </span>
 );
 
