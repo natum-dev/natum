@@ -27,3 +27,6 @@ export * from "./Combobox";
 export * from "./Badge";
 export * from "./Sidebar";
 export * from "./Table";
+export * from "./DropZone";
+export * from "./DropZoneOverlay";
+export * from "./UploadPanel";
