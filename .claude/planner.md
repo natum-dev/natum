@@ -55,8 +55,8 @@
 |-----------|-------------|:--------:|--------|-------|
 | Sidebar / NavRail | Collapsible vertical navigation panel | P0 | Done | Shell-only; compound subcomponents (Header/Body/Footer/Section/Item); polymorphic item `as=ElementType`; controlled/uncontrolled collapse; tooltip auto-wrap in rail mode |
 | Table / DataGrid | Sortable, selectable table with column definitions | P0 | Done | Declarative shell; 11 named exports; three-state sort; compound selection primitives with shift-click range; sticky header; md default; striped+hover defaults; ActionCell stops propagation. DataGrid (array API) deferred to Batch K |
-| DropZone | Drag-and-drop target area with visual feedback on dragover | P0 | Planned | Drag files from desktop to upload |
-| UploadPanel | Collapsible panel showing upload queue with per-file status | P0 | Planned | Gmail-style bottom-right; multi-file upload tracking |
+| DropZone | Drag-and-drop target area with visual feedback on dragover | P0 | Done | In-flow region + paired window-wide `DropZoneOverlay`; shared `useFileDrop` |
+| UploadPanel | Collapsible panel showing upload queue with per-file status | P0 | Done | Portaled bottom-right/left; auto-hide on empty; backed by `useUploadQueue` hook |
 | StorageQuotaBar | Progress bar showing used/total storage with labels | P0 | Planned | Sidebar and settings page |
 | FileCard | Card variant showing file icon/thumbnail, name, size, type | P1 | Planned | Grid view of files |
 | Badge | Small label/count indicator | P1 | Done | Inline pill; filled/outlined/soft × 7 colors × sm/md; dot mode; leftSection; polymorphic as=span/a/button with auto-derived interactive styling |
