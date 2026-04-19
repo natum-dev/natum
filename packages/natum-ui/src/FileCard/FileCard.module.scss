@@ -26,12 +26,10 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
-  padding: var(--space-3);
   min-inline-size: 0;
 }
 
 .name {
-  font-size: 14px;
   font-weight: 600;
   line-height: 1.3;
   color: var(--neutral-text);
@@ -49,5 +47,32 @@
     inline-size: 100%;
     block-size: 100%;
     object-fit: cover;
+  }
+}
+
+.file_card[data-size="sm"] {
+  .body {
+    padding: var(--space-2);
+  }
+  .name {
+    font-size: 13px;
+  }
+}
+
+.file_card[data-size="md"] {
+  .body {
+    padding: var(--space-3);
+  }
+  .name {
+    font-size: 14px;
+  }
+}
+
+.file_card[data-size="lg"] {
+  .body {
+    padding: var(--space-4);
+  }
+  .name {
+    font-size: 16px;
   }
 }

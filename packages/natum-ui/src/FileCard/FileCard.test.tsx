@@ -50,3 +50,38 @@ describe("FileCard — thumbnail vs icon mutual exclusion", () => {
     expect(root.querySelector("svg")).toBeTruthy();
   });
 });
+
+describe("FileCard — sizes", () => {
+  it.each(["sm", "md", "lg"] as const)(
+    "applies data-size='%s'",
+    (size) => {
+      const { container } = render(
+        <FileCard icon={IconFile} name="x.pdf" size={size} />
+      );
+      const root = container.firstElementChild as HTMLElement;
+      expect(root).toHaveAttribute("data-size", size);
+    }
+  );
+
+  it("defaults data-size to 'md'", () => {
+    const { container } = render(<FileCard icon={IconFile} name="x.pdf" />);
+    const root = container.firstElementChild as HTMLElement;
+    expect(root).toHaveAttribute("data-size", "md");
+  });
+
+  it("renders icon at 32px when size='sm'", () => {
+    const { container } = render(
+      <FileCard icon={IconFile} name="x.pdf" size="sm" />
+    );
+    const svg = container.querySelector("svg")!;
+    expect(svg.getAttribute("width")).toBe("32");
+  });
+
+  it("renders icon at 56px when size='lg'", () => {
+    const { container } = render(
+      <FileCard icon={IconFile} name="x.pdf" size="lg" />
+    );
+    const svg = container.querySelector("svg")!;
+    expect(svg.getAttribute("width")).toBe("56");
+  });
+});
