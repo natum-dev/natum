@@ -25,6 +25,7 @@ type BadgeBaseProps<T extends BadgeElementType = "span"> = {
   size?: BadgeSize;
   dot?: boolean;
   leftSection?: ReactNode;
+  disabled?: boolean;
   children?: ReactNode;
   className?: string;
 };
@@ -40,12 +41,20 @@ export const Badge = <T extends BadgeElementType = "span">({
   size = "md",
   dot = false,
   leftSection,
+  disabled = false,
   children,
   className,
+  onClick,
   ...rest
-}: BadgeProps<T>) => {
+}: BadgeProps<T> & { onClick?: (e: unknown) => void }) => {
   const Tag = (as ?? "span") as BadgeElementType;
   const isInteractive = Tag === "a" || Tag === "button";
+
+  // Strip href on disabled <a> (mirrors Card pattern)
+  const spreadProps = { ...rest } as Record<string, unknown>;
+  if (Tag === "a" && disabled) {
+    delete spreadProps.href;
+  }
 
   return (
     <Tag
@@ -57,10 +66,14 @@ export const Badge = <T extends BadgeElementType = "span">({
         {
           [styles.dot]: dot,
           [styles.interactive]: isInteractive,
+          [styles.disabled]: disabled && isInteractive,
         },
         className
       )}
-      {...(rest as ComponentPropsWithoutRef<"span">)}
+      aria-disabled={disabled && isInteractive ? true : undefined}
+      disabled={Tag === "button" && disabled ? true : undefined}
+      onClick={disabled ? undefined : onClick}
+      {...spreadProps}
     >
       {!dot && leftSection && (
         <span className={styles.left_section} aria-hidden="true">
