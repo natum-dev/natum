@@ -30,3 +30,22 @@
 .progress_bar[data-color="warning"] .progress_fill { background-color: var(--warning-bg); }
 .progress_bar[data-color="error"]   .progress_fill { background-color: var(--error-bg); }
 .progress_bar[data-color="info"]    .progress_fill { background-color: var(--info-bg); }
+
+// Indeterminate
+.progress_bar[data-indeterminate="true"] .progress_fill {
+  inline-size: 40%;
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: progress_bar_indeterminate 1.2s infinite linear;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    inline-size: 50%;
+    animation: none;
+  }
+}
+
+@keyframes progress_bar_indeterminate {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(250%); }
+}
