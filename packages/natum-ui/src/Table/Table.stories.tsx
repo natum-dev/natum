@@ -162,7 +162,7 @@ const SortableDemo = () => {
         <TableRow>
           <TableHeaderCell sortKey="name">Name</TableHeaderCell>
           <TableHeaderCell sortKey="size" align="end">Size</TableHeaderCell>
-          <TableHeaderCell sortKey="modified">Modified</TableHeaderCell>
+          <TableHeaderCell>Modified</TableHeaderCell>
         </TableRow>
       </TableHead>
       <TableBody>
