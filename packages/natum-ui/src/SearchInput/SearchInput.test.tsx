@@ -242,3 +242,81 @@ describe("SearchInput — Enter + submit", () => {
     vi.useRealTimers();
   });
 });
+
+describe("SearchInput — blur flush", () => {
+  it("blur flushes the pending onChange", async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    const handleChange = vi.fn();
+    render(
+      <>
+        <SearchInput onChange={handleChange} aria-label="Search" />
+        <button type="button">elsewhere</button>
+      </>
+    );
+    const input = screen.getByRole<HTMLInputElement>("searchbox");
+    await user.type(input, "foo");
+    expect(handleChange).not.toHaveBeenCalled();
+    screen.getByRole("button", { name: "elsewhere" }).focus();
+    expect(handleChange).toHaveBeenCalledTimes(1);
+    expect(handleChange).toHaveBeenCalledWith("foo");
+    // No late emit.
+    vi.advanceTimersByTime(500);
+    expect(handleChange).toHaveBeenCalledTimes(1);
+    vi.useRealTimers();
+  });
+
+  it("consumer onBlur runs before internal flush", async () => {
+    const user = userEvent.setup();
+    const handleChange = vi.fn();
+    const order: string[] = [];
+    render(
+      <>
+        <SearchInput
+          onChange={(v) => {
+            order.push("change");
+            handleChange(v);
+          }}
+          onBlur={() => {
+            order.push("blur");
+          }}
+          aria-label="Search"
+        />
+        <button type="button">elsewhere</button>
+      </>
+    );
+    await user.type(screen.getByRole<HTMLInputElement>("searchbox"), "x");
+    screen.getByRole("button", { name: "elsewhere" }).focus();
+    expect(order).toEqual(["blur", "change"]);
+  });
+});
+
+describe("SearchInput — clear button", () => {
+  it("clearing fires onChange('') immediately and cancels pending", async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    const handleChange = vi.fn();
+    render(
+      <SearchInput defaultValue="seed" onChange={handleChange} aria-label="Search" />
+    );
+    await user.click(screen.getByRole("button", { name: "Clear input" }));
+    // onChange('') emitted synchronously (not scheduled 250ms out).
+    expect(handleChange).toHaveBeenCalledWith("");
+    expect(screen.getByRole<HTMLInputElement>("searchbox").value).toBe("");
+    // Drain timers — nothing further should fire.
+    vi.advanceTimersByTime(500);
+    expect(handleChange).toHaveBeenCalledTimes(1);
+    vi.useRealTimers();
+  });
+
+  it("clearable=false hides the clear button", () => {
+    render(
+      <SearchInput
+        defaultValue="seed"
+        clearable={false}
+        aria-label="Search"
+      />
+    );
+    expect(screen.queryByRole("button", { name: "Clear input" })).toBeNull();
+  });
+});

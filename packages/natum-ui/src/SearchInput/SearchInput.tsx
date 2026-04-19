@@ -56,6 +56,7 @@ const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
       debounceMs = 250,
       clearable = true,
       onKeyDown,
+      onBlur,
       ...rest
     },
     ref
@@ -118,6 +119,15 @@ const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
             flush();
             onSubmit?.(rawValue);
           }
+        }}
+        onBlur={(e) => {
+          onBlur?.(e);
+          flush();
+        }}
+        onClear={() => {
+          cancelPending();
+          setRawValue("");
+          onChange?.("");
         }}
         {...rest}
       />
