@@ -26,3 +26,4 @@ export * from "./Select";
 export * from "./Combobox";
 export * from "./Badge";
 export * from "./Sidebar";
+export * from "./Table";

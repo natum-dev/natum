@@ -54,7 +54,7 @@
 | Component | Description | Priority | Status | Notes |
 |-----------|-------------|:--------:|--------|-------|
 | Sidebar / NavRail | Collapsible vertical navigation panel | P0 | Done | Shell-only; compound subcomponents (Header/Body/Footer/Section/Item); polymorphic item `as=ElementType`; controlled/uncontrolled collapse; tooltip auto-wrap in rail mode |
-| Table / DataGrid | Sortable, selectable table with column definitions | P0 | Planned | File list view (name, size, type, date, actions) |
+| Table / DataGrid | Sortable, selectable table with column definitions | P0 | Done | Declarative shell; 11 named exports; three-state sort; compound selection primitives with shift-click range; sticky header; md default; striped+hover defaults; ActionCell stops propagation. DataGrid (array API) deferred to Batch K |
 | DropZone | Drag-and-drop target area with visual feedback on dragover | P0 | Planned | Drag files from desktop to upload |
 | UploadPanel | Collapsible panel showing upload queue with per-file status | P0 | Planned | Gmail-style bottom-right; multi-file upload tracking |
 | StorageQuotaBar | Progress bar showing used/total storage with labels | P0 | Planned | Sidebar and settings page |
