@@ -90,3 +90,64 @@ describe("StorageQuotaBar — threshold state", () => {
     );
   });
 });
+
+describe("StorageQuotaBar — over quota", () => {
+  it("shows true percent label > 100 while clamping aria-valuenow to 100", () => {
+    const { container } = render(
+      <StorageQuotaBar used={16 * GB} total={15 * GB} />,
+    );
+    expect(screen.getByText("107%")).toBeInTheDocument();
+    expect(container.firstElementChild).toHaveAttribute(
+      "data-state",
+      "error",
+    );
+    expect(screen.getByRole("progressbar")).toHaveAttribute(
+      "aria-valuenow",
+      "100",
+    );
+  });
+
+  it("renders primary label with true bytes even when over quota", () => {
+    render(<StorageQuotaBar used={16 * GB} total={15 * GB} />);
+    expect(screen.getByText("16.0 GB of 15.0 GB")).toBeInTheDocument();
+  });
+});
+
+describe("StorageQuotaBar — invalid inputs", () => {
+  it("warns and renders 0% when total is 0", () => {
+    const spy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    render(<StorageQuotaBar used={5 * GB} total={0} />);
+    expect(spy).toHaveBeenCalledWith(
+      expect.stringContaining("total must be > 0"),
+    );
+    expect(screen.getByRole("progressbar")).toHaveAttribute(
+      "aria-valuenow",
+      "0",
+    );
+    spy.mockRestore();
+  });
+
+  it("silently clamps negative used to 0 without warning", () => {
+    const spy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    render(<StorageQuotaBar used={-1000} total={15 * GB} />);
+    expect(spy).not.toHaveBeenCalled();
+    expect(screen.getByRole("progressbar")).toHaveAttribute(
+      "aria-valuenow",
+      "0",
+    );
+    spy.mockRestore();
+  });
+
+  it("warns and renders 0% when used is NaN", () => {
+    const spy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    render(<StorageQuotaBar used={Number.NaN} total={15 * GB} />);
+    expect(spy).toHaveBeenCalledWith(
+      expect.stringContaining("used must be finite"),
+    );
+    expect(screen.getByRole("progressbar")).toHaveAttribute(
+      "aria-valuenow",
+      "0",
+    );
+    spy.mockRestore();
+  });
+});
