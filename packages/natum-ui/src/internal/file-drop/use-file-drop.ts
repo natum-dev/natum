@@ -81,7 +81,7 @@ export function useFileDrop(options: UseFileDropOptions): UseFileDropReturn {
 
     const enter = (e: Event) => handleEnter(e as unknown as DragEvent);
     const over = (e: Event) => handleOver(e as unknown as DragEvent);
-    const leave = (e: Event) => handleLeave(e as unknown as DragEvent);
+    const leave = () => handleLeave();
     const drop = (e: Event) => handleDrop(e as unknown as DragEvent);
 
     document.addEventListener("dragenter", enter);
