@@ -113,20 +113,22 @@ export const AsLink: Story = {
   ),
 };
 
+function AsButtonDemo() {
+  const [active, setActive] = useState(false);
+  return (
+    <Badge
+      as="button"
+      color={active ? "primary" : "neutral"}
+      variant={active ? "filled" : "soft"}
+      onClick={() => setActive((a) => !a)}
+    >
+      {active ? "Filter: ON" : "Filter: OFF"}
+    </Badge>
+  );
+}
+
 export const AsButton: Story = {
-  render: () => {
-    const [active, setActive] = useState(false);
-    return (
-      <Badge
-        as="button"
-        color={active ? "primary" : "neutral"}
-        variant={active ? "filled" : "soft"}
-        onClick={() => setActive((a) => !a)}
-      >
-        {active ? "Filter: ON" : "Filter: OFF"}
-      </Badge>
-    );
-  },
+  render: () => <AsButtonDemo />,
 };
 
 export const Disabled: Story = {
