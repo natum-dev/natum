@@ -8,6 +8,7 @@ import {
   forwardRef,
 } from "react";
 import type { IconProps } from "@natum/icons";
+import { Checkbox } from "../Checkbox";
 import styles from "./FileCard.module.scss";
 import cx from "classnames";
 
@@ -47,6 +48,8 @@ const FileCard = forwardRef<HTMLDivElement, FileCardProps>(
       name,
       meta,
       action,
+      selected = false,
+      onSelectedChange,
       onClick,
       onDoubleClick,
       size = "md",
@@ -57,6 +60,7 @@ const FileCard = forwardRef<HTMLDivElement, FileCardProps>(
   ) => {
     const hasThumbnail = thumbnail != null;
     const isFocusable = typeof onClick === "function";
+    const isSelectable = typeof onSelectedChange === "function";
 
     const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
       if (!isFocusable) return;
@@ -73,15 +77,29 @@ const FileCard = forwardRef<HTMLDivElement, FileCardProps>(
         ref={ref}
         className={cx(styles.file_card, className)}
         data-has-thumbnail={hasThumbnail ? "true" : "false"}
-        data-selected="false"
+        data-selected={selected ? "true" : "false"}
         data-size={size}
         role={isFocusable ? "button" : undefined}
         tabIndex={isFocusable ? 0 : undefined}
+        aria-pressed={isFocusable && isSelectable ? selected : undefined}
         onClick={onClick}
         onDoubleClick={onDoubleClick}
         onKeyDown={isFocusable ? handleKeyDown : undefined}
         {...rest}
       >
+        {isSelectable && (
+          <div
+            className={styles.checkbox_slot}
+            onClick={(e) => e.stopPropagation()}
+            onDoubleClick={(e) => e.stopPropagation()}
+          >
+            <Checkbox
+              checked={selected}
+              onChange={(e) => onSelectedChange?.(e.target.checked)}
+              aria-label={`Select ${name}`}
+            />
+          </div>
+        )}
         {action != null && (
           <div
             className={styles.action_slot}

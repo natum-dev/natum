@@ -131,3 +131,33 @@
 .file_card[role="button"]:hover {
   box-shadow: var(--shadow-hover);
 }
+
+.checkbox_slot {
+  position: absolute;
+  inset-block-start: var(--space-2);
+  inset-inline-start: var(--space-2);
+  z-index: 1;
+  opacity: 0;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: opacity var(--duration-fast) var(--easing-default);
+  }
+}
+
+.file_card:hover .checkbox_slot,
+.file_card:focus-within .checkbox_slot,
+.file_card[data-selected="true"] .checkbox_slot {
+  opacity: 1;
+}
+
+.file_card[data-selected="true"] {
+  border-color: var(--primary-border);
+  background-color: color-mix(
+    in srgb,
+    var(--primary-soft) 40%,
+    var(--neutral-bg-elevated)
+  );
+  // Supplementary outline makes the border visually 2px without a layout shift.
+  outline: 1px solid var(--primary-border);
+  outline-offset: -1px;
+}
