@@ -74,3 +74,26 @@ describe("ProgressBar — non-finite falls back to indeterminate", () => {
     expect(bar).not.toHaveAttribute("aria-valuenow");
   });
 });
+
+describe("ProgressBar — indeterminate", () => {
+  it("sets data-indeterminate='true' when value is undefined", () => {
+    render(<ProgressBar aria-label="Loading" />);
+    expect(screen.getByRole("progressbar")).toHaveAttribute(
+      "data-indeterminate",
+      "true",
+    );
+  });
+
+  it("omits aria-valuenow when indeterminate", () => {
+    render(<ProgressBar aria-label="Loading" />);
+    expect(screen.getByRole("progressbar")).not.toHaveAttribute(
+      "aria-valuenow",
+    );
+  });
+
+  it("does not apply an inline style on the fill when indeterminate", () => {
+    const { container } = render(<ProgressBar aria-label="Loading" />);
+    const fill = container.querySelector("span") as HTMLElement;
+    expect(fill.getAttribute("style")).toBeNull();
+  });
+});
