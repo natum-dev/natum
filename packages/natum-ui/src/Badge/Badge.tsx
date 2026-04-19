@@ -1,7 +1,10 @@
 import {
   type ComponentPropsWithoutRef,
+  type ForwardedRef,
   type MouseEventHandler,
+  type Ref,
   type ReactNode,
+  forwardRef,
 } from "react";
 import styles from "./Badge.module.scss";
 import cx from "classnames";
@@ -35,23 +38,25 @@ export type BadgeProps<T extends BadgeElementType = "span"> =
   BadgeBaseProps<T> &
     Omit<ComponentPropsWithoutRef<T>, keyof BadgeBaseProps<T>>;
 
-export const Badge = <T extends BadgeElementType = "span">({
-  as,
-  color = "neutral",
-  variant = "soft",
-  size = "md",
-  dot = false,
-  leftSection,
-  disabled = false,
-  children,
-  className,
-  onClick,
-  ...rest
-}: BadgeProps<T> & { onClick?: MouseEventHandler<HTMLElement> }) => {
+const BadgeInner = <T extends BadgeElementType = "span">(
+  {
+    as,
+    color = "neutral",
+    variant = "soft",
+    size = "md",
+    dot = false,
+    leftSection,
+    disabled = false,
+    children,
+    className,
+    onClick,
+    ...rest
+  }: BadgeProps<T> & { onClick?: MouseEventHandler<HTMLElement> },
+  ref: ForwardedRef<Element>
+) => {
   const Tag = (as ?? "span") as BadgeElementType;
   const isInteractive = Tag === "a" || Tag === "button";
 
-  // Strip href on disabled <a> (mirrors Card pattern)
   const spreadProps = { ...rest } as Record<string, unknown>;
   if (Tag === "a" && disabled) {
     delete spreadProps.href;
@@ -59,6 +64,8 @@ export const Badge = <T extends BadgeElementType = "span">({
 
   return (
     <Tag
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ref={ref as any}
       className={cx(
         styles.badge,
         styles[variant],
@@ -73,7 +80,7 @@ export const Badge = <T extends BadgeElementType = "span">({
       )}
       aria-disabled={disabled && isInteractive ? true : undefined}
       disabled={Tag === "button" && disabled ? true : undefined}
-      onClick={disabled ? undefined : onClick}
+      onClick={disabled ? undefined : (onClick as MouseEventHandler<HTMLElement> | undefined)}
       {...spreadProps}
     >
       {!dot && leftSection && (
@@ -86,6 +93,13 @@ export const Badge = <T extends BadgeElementType = "span">({
   );
 };
 
+const Badge = forwardRef(BadgeInner) as <T extends BadgeElementType = "span">(
+  props: BadgeProps<T> & { ref?: Ref<Element> }
+) => JSX.Element;
+
+(Badge as { displayName?: string }).displayName = "Badge";
+
+export { Badge };
 export type {
   BadgeElementType,
   BadgeColor,

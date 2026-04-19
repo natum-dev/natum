@@ -1,3 +1,4 @@
+import { createRef } from "react";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi } from "vitest";
@@ -198,5 +199,69 @@ describe("Badge", () => {
   it("does NOT apply .disabled class on non-interactive span (no-op)", () => {
     render(<Badge data-testid="badge" disabled>S</Badge>);
     expect(screen.getByTestId("badge")).not.toHaveClass("disabled");
+  });
+
+  // --- Ref forwarding ---
+  it("forwards ref to a <span> by default", () => {
+    const ref = createRef<HTMLSpanElement>();
+    render(<Badge ref={ref}>x</Badge>);
+    expect(ref.current?.tagName).toBe("SPAN");
+  });
+
+  it("forwards ref to <a> when as='a'", () => {
+    const ref = createRef<HTMLAnchorElement>();
+    render(<Badge ref={ref} as="a" href="#">L</Badge>);
+    expect(ref.current?.tagName).toBe("A");
+  });
+
+  it("forwards ref to <button> when as='button'", () => {
+    const ref = createRef<HTMLButtonElement>();
+    render(<Badge ref={ref} as="button">B</Badge>);
+    expect(ref.current?.tagName).toBe("BUTTON");
+  });
+
+  // --- Interaction (native button activation) ---
+  it("invokes onClick on native click (as='button')", async () => {
+    const onClick = vi.fn();
+    const user = userEvent.setup();
+    render(<Badge as="button" onClick={onClick}>B</Badge>);
+    await user.click(screen.getByText("B"));
+    expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+  it("invokes onClick on Enter via native button activation", async () => {
+    const onClick = vi.fn();
+    const user = userEvent.setup();
+    render(<Badge as="button" onClick={onClick}>B</Badge>);
+    screen.getByText("B").focus();
+    await user.keyboard("{Enter}");
+    expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+  it("invokes onClick on Space via native button activation", async () => {
+    const onClick = vi.fn();
+    const user = userEvent.setup();
+    render(<Badge as="button" onClick={onClick}>B</Badge>);
+    screen.getByText("B").focus();
+    await user.keyboard(" ");
+    expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+  // --- A11y ---
+  it("accessible name comes from text children when no aria-label", () => {
+    render(<Badge>Shared</Badge>);
+    expect(screen.getByText("Shared")).toBeInTheDocument();
+  });
+
+  // --- RTL ---
+  it("renders correctly under dir=rtl container", () => {
+    render(
+      <div dir="rtl">
+        <Badge data-testid="badge" leftSection={<svg />}>
+          Shared
+        </Badge>
+      </div>
+    );
+    expect(screen.getByTestId("badge")).toHaveClass("badge");
   });
 });
