@@ -212,3 +212,95 @@ describe("FileCard — interaction", () => {
     expect(wasNotPrevented).toBe(false);
   });
 });
+
+describe("FileCard — selection", () => {
+  it("does not render the checkbox when onSelectedChange is absent", () => {
+    render(<FileCard icon={IconFile} name="x.pdf" selected />);
+    expect(
+      screen.queryByRole("checkbox", { name: /select/i })
+    ).not.toBeInTheDocument();
+  });
+
+  it("renders a selection checkbox when onSelectedChange is wired", () => {
+    render(
+      <FileCard
+        icon={IconFile}
+        name="x.pdf"
+        selected={false}
+        onSelectedChange={() => {}}
+      />
+    );
+    expect(
+      screen.getByRole("checkbox", { name: "Select x.pdf" })
+    ).toBeInTheDocument();
+  });
+
+  it("sets data-selected='true' when selected is true", () => {
+    const { container } = render(
+      <FileCard
+        icon={IconFile}
+        name="x.pdf"
+        selected
+        onSelectedChange={() => {}}
+      />
+    );
+    expect(container.firstElementChild).toHaveAttribute(
+      "data-selected",
+      "true"
+    );
+  });
+
+  it("sets aria-pressed when focusable AND selectable", () => {
+    const { container } = render(
+      <FileCard
+        icon={IconFile}
+        name="x.pdf"
+        selected
+        onSelectedChange={() => {}}
+        onClick={() => {}}
+      />
+    );
+    expect(container.firstElementChild).toHaveAttribute(
+      "aria-pressed",
+      "true"
+    );
+  });
+
+  it("does not set aria-pressed when focusable but NOT selectable", () => {
+    const { container } = render(
+      <FileCard icon={IconFile} name="x.pdf" onClick={() => {}} />
+    );
+    expect(container.firstElementChild).not.toHaveAttribute("aria-pressed");
+  });
+
+  it("calling checkbox fires onSelectedChange with the opposite of current selected", async () => {
+    const onSelectedChange = vi.fn();
+    render(
+      <FileCard
+        icon={IconFile}
+        name="x.pdf"
+        selected={false}
+        onSelectedChange={onSelectedChange}
+      />
+    );
+    await userEvent.click(screen.getByRole("checkbox", { name: /select/i }));
+    expect(onSelectedChange).toHaveBeenCalledWith(true);
+  });
+
+  it("clicking the checkbox does not fire card onClick", async () => {
+    const onClick = vi.fn();
+    const onSelectedChange = vi.fn();
+    render(
+      <FileCard
+        icon={IconFile}
+        name="x.pdf"
+        selected={false}
+        onSelectedChange={onSelectedChange}
+        onClick={onClick}
+      />
+    );
+    await userEvent.click(screen.getByRole("checkbox", { name: /select/i }));
+    expect(onSelectedChange).toHaveBeenCalledTimes(1);
+    expect(onClick).not.toHaveBeenCalled();
+  });
+});
