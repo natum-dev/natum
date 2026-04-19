@@ -5,6 +5,7 @@ import {
   IconX,
 } from "@natum/icons";
 import { IconButton } from "../IconButton";
+import { ProgressBar } from "../ProgressBar";
 import { formatFileSize } from "../utils/format-size";
 import type { UploadItem } from "../hooks/use-upload-queue";
 import styles from "./UploadPanel.module.scss";
@@ -18,9 +19,6 @@ export type UploadPanelItemProps = {
 const UploadPanelItem = ({ item, onCancel, onRetry }: UploadPanelItemProps) => {
   const showProgress =
     item.status === "pending" || item.status === "uploading";
-  const isIndeterminate = item.progress === undefined;
-  const progressPercent =
-    item.progress != null ? Math.round(item.progress * 100) : undefined;
   const canCancel = !!onCancel && item.status !== "success";
   const canRetry = !!onRetry && item.status === "error";
 
@@ -36,24 +34,11 @@ const UploadPanelItem = ({ item, onCancel, onRetry }: UploadPanelItemProps) => {
           )}
         </div>
         {showProgress && (
-          <div
-            role="progressbar"
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-valuenow={isIndeterminate ? undefined : progressPercent}
+          <ProgressBar
+            value={item.progress}
+            size="sm"
             aria-label={`Upload progress for ${item.name}`}
-            data-indeterminate={isIndeterminate ? "true" : "false"}
-            className={styles.progress}
-          >
-            <span
-              className={styles.progress_fill}
-              style={
-                !isIndeterminate
-                  ? { inlineSize: `${progressPercent}%` }
-                  : undefined
-              }
-            />
-          </div>
+          />
         )}
       </div>
       <div className={styles.row_status}>
