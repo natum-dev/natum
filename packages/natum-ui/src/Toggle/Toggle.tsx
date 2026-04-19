@@ -26,27 +26,33 @@ const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
       checked,
       defaultChecked = false,
       onChange,
-      label: _label,
-      description: _description,
+      label,
+      description,
       labelPosition = "start",
       size = "md",
       disabled = false,
       id: idProp,
       className,
+      "aria-describedby": ariaDescribedBy,
       ...rest
     },
     ref
   ) => {
-    void _label;
-    void _description;
-
     const autoId = useId();
     const inputId = idProp ?? autoId;
+    const descriptionId = useId();
 
     const isControlled = checked !== undefined;
     const inputProps = isControlled
       ? { checked, onChange }
       : { defaultChecked, onChange };
+
+    const describedBy =
+      [ariaDescribedBy, description != null ? descriptionId : null]
+        .filter(Boolean)
+        .join(" ") || undefined;
+
+    const hasContent = label != null || description != null;
 
     return (
       <label
@@ -54,6 +60,16 @@ const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
         data-size={size}
         data-label-position={labelPosition}
       >
+        {hasContent && (
+          <span className={styles.content}>
+            {label != null && <span className={styles.label}>{label}</span>}
+            {description != null && (
+              <span id={descriptionId} className={styles.description}>
+                {description}
+              </span>
+            )}
+          </span>
+        )}
         <span className={styles.rail}>
           <input
             ref={ref}
@@ -62,6 +78,7 @@ const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
             id={inputId}
             disabled={disabled}
             className={styles.input}
+            aria-describedby={describedBy}
             {...inputProps}
             {...rest}
           />

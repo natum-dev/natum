@@ -93,3 +93,64 @@ describe("Toggle — sizes + labelPosition", () => {
     expect(container.querySelector("label")?.getAttribute("data-label-position")).toBe("end");
   });
 });
+
+describe("Toggle — label + description", () => {
+  it("renders label text", () => {
+    render(<Toggle label="Enable notifications" />);
+    expect(screen.getByText("Enable notifications")).toBeInTheDocument();
+  });
+
+  it("renders description text and wires aria-describedby", () => {
+    render(
+      <Toggle
+        label="Notifications"
+        description="Receive email alerts for new shares."
+      />
+    );
+    const sw = screen.getByRole("switch");
+    const describedBy = sw.getAttribute("aria-describedby");
+    expect(describedBy).toBeTruthy();
+    const desc = document.getElementById(describedBy!);
+    expect(desc).toHaveTextContent("Receive email alerts for new shares.");
+  });
+
+  it("omits aria-describedby when no description and no consumer value", () => {
+    render(<Toggle label="Notifications" />);
+    expect(screen.getByRole("switch").getAttribute("aria-describedby")).toBeNull();
+  });
+
+  it("concatenates consumer aria-describedby with description id", () => {
+    render(
+      <>
+        <div id="helper">Extra helper</div>
+        <Toggle
+          label="Notifications"
+          description="Email alerts."
+          aria-describedby="helper"
+        />
+      </>
+    );
+    const describedBy = screen.getByRole("switch").getAttribute("aria-describedby");
+    expect(describedBy).toContain("helper");
+    const ids = describedBy!.split(" ");
+    expect(ids.length).toBe(2);
+    expect(ids).toContain("helper");
+  });
+
+  it("passes through consumer aria-describedby unchanged when no description", () => {
+    render(
+      <>
+        <div id="helper">Hint</div>
+        <Toggle label="N" aria-describedby="helper" />
+      </>
+    );
+    expect(screen.getByRole("switch").getAttribute("aria-describedby")).toBe("helper");
+  });
+
+  it("no content slot when neither label nor description is supplied", () => {
+    const { container } = render(<Toggle aria-label="N" />);
+    // The first child of <label> is the rail, not a content span.
+    const label = container.querySelector("label")!;
+    expect(label.firstElementChild?.className).toContain("rail");
+  });
+});

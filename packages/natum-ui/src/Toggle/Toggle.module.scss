@@ -80,3 +80,40 @@
 .toggle[data-size="sm"] .rail:has(.input:checked) .thumb {
   transform: translateX(14px);
 }
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-inline-size: 0;
+}
+
+.toggle[data-label-position="start"] .content {
+  order: 0;
+}
+
+.toggle[data-label-position="start"] .rail {
+  order: 1;
+  margin-inline-start: auto;
+}
+
+.toggle[data-label-position="end"] .content {
+  order: 1;
+}
+
+.toggle[data-label-position="end"] .rail {
+  order: 0;
+  margin-inline-end: auto;
+}
+
+.label {
+  color: var(--neutral-text);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.description {
+  color: var(--neutral-text-secondary);
+  font-size: 12px;
+  line-height: 1.4;
+}
