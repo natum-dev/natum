@@ -28,8 +28,8 @@ const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
       onChange,
       label: _label,
       description: _description,
-      labelPosition: _labelPosition = "start",
-      size: _size = "md",
+      labelPosition = "start",
+      size = "md",
       disabled = false,
       id: idProp,
       className,
@@ -39,8 +39,6 @@ const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
   ) => {
     void _label;
     void _description;
-    void _labelPosition;
-    void _size;
 
     const autoId = useId();
     const inputId = idProp ?? autoId;
@@ -51,7 +49,11 @@ const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
       : { defaultChecked, onChange };
 
     return (
-      <label className={cx(styles.toggle, className)}>
+      <label
+        className={cx(styles.toggle, className)}
+        data-size={size}
+        data-label-position={labelPosition}
+      >
         <span className={styles.rail}>
           <input
             ref={ref}
