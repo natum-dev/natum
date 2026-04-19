@@ -26,3 +26,5 @@ export { TableSelectAllCell } from "./TableSelectAllCell";
 export type { TableSelectAllCellProps } from "./TableSelectAllCell";
 export { TableSelectionCell } from "./TableSelectionCell";
 export type { TableSelectionCellProps } from "./TableSelectionCell";
+export { TableActionCell } from "./TableActionCell";
+export type { TableActionCellProps } from "./TableActionCell";

@@ -108,3 +108,88 @@ describe("TableCell", () => {
     expect(screen.getByTestId("c")).toHaveAttribute("colspan", "3");
   });
 });
+
+import { TableActionCell } from "./TableActionCell";
+
+describe("TableActionCell", () => {
+  it("renders as <td>", () => {
+    render(
+      <Table>
+        <TableBody>
+          <TableRow><TableActionCell data-testid="a">x</TableActionCell></TableRow>
+        </TableBody>
+      </Table>
+    );
+    expect(screen.getByTestId("a").tagName).toBe("TD");
+  });
+
+  it("default align is 'end' (text-align: end)", () => {
+    render(
+      <Table>
+        <TableBody>
+          <TableRow><TableActionCell data-testid="a">x</TableActionCell></TableRow>
+        </TableBody>
+      </Table>
+    );
+    expect(screen.getByTestId("a")).toHaveStyle({ textAlign: "end" });
+  });
+
+  it("child button click does NOT bubble to parent row onClick", async () => {
+    const onRowClick = vi.fn();
+    const onBtnClick = vi.fn();
+    const user = userEvent.setup();
+    render(
+      <Table>
+        <TableBody>
+          <TableRow rowId="a" onClick={onRowClick}>
+            <TableActionCell>
+              <button onClick={onBtnClick}>Action</button>
+            </TableActionCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    );
+    await user.click(screen.getByRole("button", { name: "Action" }));
+    expect(onBtnClick).toHaveBeenCalledTimes(1);
+    expect(onRowClick).not.toHaveBeenCalled();
+  });
+
+  it("child mousedown does NOT bubble to parent row", async () => {
+    const onRowMouseDown = vi.fn();
+    const user = userEvent.setup();
+    render(
+      <Table>
+        <TableBody>
+          <TableRow rowId="a" onMouseDown={onRowMouseDown}>
+            <TableActionCell>
+              <button>x</button>
+            </TableActionCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    );
+    // user.click fires mousedown → mouseup → click; TableActionCell stops mousedown bubbling.
+    await user.click(screen.getByRole("button"));
+    expect(onRowMouseDown).not.toHaveBeenCalled();
+  });
+
+  it("consumer-passed onClick on the cell still fires", async () => {
+    const onCellClick = vi.fn();
+    const onRowClick = vi.fn();
+    const user = userEvent.setup();
+    render(
+      <Table>
+        <TableBody>
+          <TableRow rowId="a" onClick={onRowClick}>
+            <TableActionCell data-testid="a" onClick={onCellClick}>
+              <button>x</button>
+            </TableActionCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    );
+    await user.click(screen.getByTestId("a"));
+    expect(onCellClick).toHaveBeenCalledTimes(1);
+    expect(onRowClick).not.toHaveBeenCalled();
+  });
+});
