@@ -70,11 +70,11 @@
 
 | Component | Description | Priority | Status | Notes |
 |-----------|-------------|:--------:|--------|-------|
-| SearchInput | TextField variant with search icon, debounced `onChange`, clear button | P0 | Planned | Global file search |
+| SearchInput | TextField variant with search icon, debounced `onChange`, clear button | P0 | Done | TextField wrapper + IconSearch + type="search". 250ms default debounce; flush on Enter/blur/clear. `onSubmit` fires on Enter after flush. |
 | Progress Bar | Determinate/indeterminate progress indicator | P0 | Done | Primitive progressbar; determinate (0–1) + indeterminate (value=undefined); sm/md/lg (4/6/8 px); 5 semantic colors; reduced-motion fallback for both determinate transition and indeterminate animation. |
 | Tabs | Horizontal tab bar with content switching | P1 | Planned | Settings sections; "My Files" vs "Shared with Me" |
 | Avatar | User avatar with initials fallback | P1 | Planned | Header user menu, sharing UI |
-| Toggle / Switch | On/off toggle input | P2 | Planned | Settings toggles (dark mode, notifications) |
+| Toggle / Switch | On/off toggle input | P2 | Done | Pill+thumb switch over hidden native `<input type="checkbox" role="switch">`. sm/md; labelPosition start (default)/end; optional label + description with auto-wired `aria-describedby`. |
 
 ---
 
