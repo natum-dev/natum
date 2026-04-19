@@ -151,3 +151,118 @@ describe("StorageQuotaBar — invalid inputs", () => {
     spy.mockRestore();
   });
 });
+
+describe("StorageQuotaBar — slot overrides", () => {
+  it("renders a custom primary label when `label` is provided", () => {
+    render(
+      <StorageQuotaBar
+        used={5 * GB}
+        total={15 * GB}
+        label="Media usage"
+      />,
+    );
+    expect(screen.getByText("Media usage")).toBeInTheDocument();
+    // Default primary would be "5.00 GB of 15.0 GB" — assert it is NOT rendered.
+    expect(screen.queryByText("5.00 GB of 15.0 GB")).toBeNull();
+  });
+
+  it("renders a custom secondary label when `valueLabel` is provided", () => {
+    render(
+      <StorageQuotaBar
+        used={12.4 * GB}
+        total={15 * GB}
+        valueLabel="2.6 GB left"
+      />,
+    );
+    expect(screen.getByText("2.6 GB left")).toBeInTheDocument();
+    expect(screen.queryByText("83%")).toBeNull();
+  });
+});
+
+describe("StorageQuotaBar — accessibility", () => {
+  it("applies default aria-label='Storage quota' on the root group", () => {
+    render(<StorageQuotaBar used={5 * GB} total={15 * GB} />);
+    expect(screen.getByRole("group")).toHaveAttribute(
+      "aria-label",
+      "Storage quota",
+    );
+  });
+
+  it("omits the default aria-label when aria-labelledby is supplied", () => {
+    render(
+      <>
+        <span id="external-q">Quota</span>
+        <StorageQuotaBar
+          used={5 * GB}
+          total={15 * GB}
+          aria-labelledby="external-q"
+        />
+      </>,
+    );
+    const group = screen.getByRole("group");
+    expect(group).toHaveAttribute("aria-labelledby", "external-q");
+    expect(group).not.toHaveAttribute("aria-label");
+  });
+
+  it("points the inner progressbar aria-labelledby at the primary label id", () => {
+    render(<StorageQuotaBar used={5 * GB} total={15 * GB} />);
+    const bar = screen.getByRole("progressbar");
+    const labelledByRaw = bar.getAttribute("aria-labelledby");
+    expect(labelledByRaw).toBeTruthy();
+    const labelledBy = labelledByRaw as string;
+    const labelEl = document.getElementById(labelledBy);
+    expect(labelEl).toBeTruthy();
+    // formatFileSize(5*GB) → "5.00 GB" (2 decimals below 10 GB); formatFileSize(15*GB) → "15.0 GB".
+    expect(labelEl?.textContent).toBe("5.00 GB of 15.0 GB");
+  });
+
+  it("generates a unique id per instance via useId", () => {
+    render(
+      <>
+        <StorageQuotaBar used={1 * GB} total={15 * GB} />
+        <StorageQuotaBar used={2 * GB} total={15 * GB} />
+      </>,
+    );
+    const [a, b] = screen.getAllByRole("progressbar");
+    expect(a.getAttribute("aria-labelledby")).not.toBe(
+      b.getAttribute("aria-labelledby"),
+    );
+  });
+});
+
+describe("StorageQuotaBar — size passthrough", () => {
+  it.each(["sm", "md", "lg"] as const)(
+    "forwards size=%s to the inner ProgressBar",
+    (size) => {
+      render(
+        <StorageQuotaBar used={5 * GB} total={15 * GB} size={size} />,
+      );
+      expect(screen.getByRole("progressbar")).toHaveAttribute(
+        "data-size",
+        size,
+      );
+    },
+  );
+});
+
+describe("StorageQuotaBar — rest-spread + ref", () => {
+  it("forwards ref to the root div", () => {
+    const ref = createRef<HTMLDivElement>();
+    render(
+      <StorageQuotaBar ref={ref} used={5 * GB} total={15 * GB} />,
+    );
+    expect(ref.current).toBeInstanceOf(HTMLDivElement);
+    expect(ref.current).toHaveAttribute("role", "group");
+  });
+
+  it("passes through arbitrary data attributes", () => {
+    render(
+      <StorageQuotaBar
+        used={5 * GB}
+        total={15 * GB}
+        data-testid="quota"
+      />,
+    );
+    expect(screen.getByTestId("quota")).toHaveAttribute("role", "group");
+  });
+});
