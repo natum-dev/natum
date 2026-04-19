@@ -10,3 +10,5 @@ export { SidebarSection } from "./SidebarSection";
 export type { SidebarSectionProps } from "./SidebarSection";
 export { useSidebarCollapsed } from "./context";
 export type { SidebarContextValue } from "./context";
+export { SidebarItem } from "./SidebarItem";
+export type { SidebarItemProps } from "./SidebarItem";
