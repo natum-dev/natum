@@ -59,6 +59,8 @@ const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
     },
     ref
   ) => {
+    void _onSubmit;
+    void _debounceMs;
     // Internal raw state — DOM input always reflects the latest keystroke
     // immediately. External `value` changes sync back via effect.
     const [rawValue, setRawValue] = useState<string>(value ?? defaultValue);
