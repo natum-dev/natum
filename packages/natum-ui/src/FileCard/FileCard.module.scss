@@ -76,3 +76,20 @@
     font-size: 16px;
   }
 }
+
+.meta_line {
+  color: var(--neutral-text-secondary);
+  font-size: 12px;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file_card[data-size="sm"] .meta_line {
+  font-size: 11px;
+}
+
+.file_card[data-size="lg"] .meta_line {
+  font-size: 13px;
+}
