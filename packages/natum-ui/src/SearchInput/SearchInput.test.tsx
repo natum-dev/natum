@@ -320,3 +320,32 @@ describe("SearchInput — clear button", () => {
     expect(screen.queryByRole("button", { name: "Clear input" })).toBeNull();
   });
 });
+
+describe("SearchInput — dev warning", () => {
+  it("warns when no accessible name is supplied", () => {
+    const spy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    render(<SearchInput />);
+    expect(spy).toHaveBeenCalled();
+    expect(spy.mock.calls[0][0]).toMatch(/accessible name|aria-label/i);
+    spy.mockRestore();
+  });
+
+  it("does not warn when aria-label is provided", () => {
+    const spy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    render(<SearchInput aria-label="Search files" />);
+    expect(spy).not.toHaveBeenCalled();
+    spy.mockRestore();
+  });
+
+  it("does not warn when aria-labelledby is provided", () => {
+    const spy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    render(
+      <>
+        <span id="lbl">Search</span>
+        <SearchInput aria-labelledby="lbl" />
+      </>
+    );
+    expect(spy).not.toHaveBeenCalled();
+    spy.mockRestore();
+  });
+});
