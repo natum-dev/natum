@@ -1,5 +1,13 @@
 export { Table } from "./Table";
 export type { TableProps } from "./Table";
+export { TableHead } from "./TableHead";
+export type { TableHeadProps } from "./TableHead";
+export { TableBody } from "./TableBody";
+export type { TableBodyProps } from "./TableBody";
+export { TableFoot } from "./TableFoot";
+export type { TableFootProps } from "./TableFoot";
+export { TableCaption } from "./TableCaption";
+export type { TableCaptionProps } from "./TableCaption";
 export type {
   SortSpec,
   SortDirection,
