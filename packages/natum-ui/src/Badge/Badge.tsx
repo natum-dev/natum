@@ -1,6 +1,11 @@
-import type { ComponentPropsWithoutRef, ReactNode } from "react";
+import {
+  type ComponentPropsWithoutRef,
+  type ReactNode,
+} from "react";
 import styles from "./Badge.module.scss";
 import cx from "classnames";
+
+type BadgeElementType = "span" | "a" | "button";
 
 type BadgeColor =
   | "neutral"
@@ -13,7 +18,8 @@ type BadgeColor =
 type BadgeVariant = "filled" | "outlined" | "soft";
 type BadgeSize = "sm" | "md";
 
-type BadgeBaseProps = {
+type BadgeBaseProps<T extends BadgeElementType = "span"> = {
+  as?: T;
   color?: BadgeColor;
   variant?: BadgeVariant;
   size?: BadgeSize;
@@ -23,10 +29,12 @@ type BadgeBaseProps = {
   className?: string;
 };
 
-export type BadgeProps = BadgeBaseProps &
-  Omit<ComponentPropsWithoutRef<"span">, keyof BadgeBaseProps>;
+export type BadgeProps<T extends BadgeElementType = "span"> =
+  BadgeBaseProps<T> &
+    Omit<ComponentPropsWithoutRef<T>, keyof BadgeBaseProps<T>>;
 
-export const Badge = ({
+export const Badge = <T extends BadgeElementType = "span">({
+  as,
   color = "neutral",
   variant = "soft",
   size = "md",
@@ -35,25 +43,38 @@ export const Badge = ({
   children,
   className,
   ...rest
-}: BadgeProps) => (
-  <span
-    className={cx(
-      styles.badge,
-      styles[variant],
-      styles[color],
-      styles[size],
-      { [styles.dot]: dot },
-      className
-    )}
-    {...rest}
-  >
-    {!dot && leftSection && (
-      <span className={styles.left_section} aria-hidden="true">
-        {leftSection}
-      </span>
-    )}
-    {!dot && children}
-  </span>
-);
+}: BadgeProps<T>) => {
+  const Tag = (as ?? "span") as BadgeElementType;
+  const isInteractive = Tag === "a" || Tag === "button";
 
-export type { BadgeColor, BadgeVariant, BadgeSize };
+  return (
+    <Tag
+      className={cx(
+        styles.badge,
+        styles[variant],
+        styles[color],
+        styles[size],
+        {
+          [styles.dot]: dot,
+          [styles.interactive]: isInteractive,
+        },
+        className
+      )}
+      {...(rest as ComponentPropsWithoutRef<"span">)}
+    >
+      {!dot && leftSection && (
+        <span className={styles.left_section} aria-hidden="true">
+          {leftSection}
+        </span>
+      )}
+      {!dot && children}
+    </Tag>
+  );
+};
+
+export type {
+  BadgeElementType,
+  BadgeColor,
+  BadgeVariant,
+  BadgeSize,
+};

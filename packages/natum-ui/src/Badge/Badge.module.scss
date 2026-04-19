@@ -96,3 +96,38 @@ $badge-colors: neutral, primary, secondary, success, warning, error, info;
   inline-size: 14px;
   block-size: 14px;
 }
+
+// --- Interactive states (auto-derived when as='a' | 'button') ---
+.interactive {
+  cursor: pointer;
+  text-decoration: none;
+  border: none;
+  appearance: none;
+  font: inherit;
+
+  &:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+  }
+}
+
+// Per-variant hover/active when interactive
+@each $c in $badge-colors {
+  .interactive.#{$c} {
+    &.soft:hover {
+      background-color: var(--#{$c}-soft-hover);
+    }
+
+    &.outlined:hover {
+      background-color: var(--#{$c}-soft);
+    }
+
+    &.filled:hover {
+      background-color: color-mix(in srgb, var(--#{$c}-bg) 90%, black);
+    }
+
+    &:active {
+      background-color: color-mix(in srgb, var(--#{$c}-bg) 80%, black);
+    }
+  }
+}

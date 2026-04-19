@@ -90,4 +90,43 @@ describe("Badge", () => {
     render(<Badge aria-label="Status" leftSection={<svg data-testid="icon" />} />);
     expect(screen.getByTestId("icon")).toBeInTheDocument();
   });
+
+  // --- Polymorphism ---
+  it("renders as <a> when as='a' and preserves href", () => {
+    render(
+      <Badge data-testid="badge" as="a" href="https://example.com">
+        Link
+      </Badge>
+    );
+    const el = screen.getByTestId("badge");
+    expect(el.tagName).toBe("A");
+    expect(el).toHaveAttribute("href", "https://example.com");
+  });
+
+  it("renders as <button> when as='button' and accepts type", () => {
+    render(
+      <Badge data-testid="badge" as="button" type="button">
+        Click
+      </Badge>
+    );
+    const el = screen.getByTestId("badge");
+    expect(el.tagName).toBe("BUTTON");
+    expect(el).toHaveAttribute("type", "button");
+  });
+
+  // --- Interactive class gating ---
+  it("applies .interactive class when as='a'", () => {
+    render(<Badge data-testid="badge" as="a" href="#">L</Badge>);
+    expect(screen.getByTestId("badge")).toHaveClass("interactive");
+  });
+
+  it("applies .interactive class when as='button'", () => {
+    render(<Badge data-testid="badge" as="button">B</Badge>);
+    expect(screen.getByTestId("badge")).toHaveClass("interactive");
+  });
+
+  it("does not apply .interactive class when as='span' (default)", () => {
+    render(<Badge data-testid="badge">S</Badge>);
+    expect(screen.getByTestId("badge")).not.toHaveClass("interactive");
+  });
 });
