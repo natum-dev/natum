@@ -322,3 +322,29 @@ describe("FileCard — selection", () => {
     );
   });
 });
+
+describe("FileCard — aria-label", () => {
+  it("falls back to name when no aria-label is supplied", () => {
+    const { container } = render(
+      <FileCard icon={IconFile} name="report.pdf" />
+    );
+    expect(container.firstElementChild).toHaveAttribute(
+      "aria-label",
+      "report.pdf"
+    );
+  });
+
+  it("consumer-supplied aria-label wins over name fallback", () => {
+    const { container } = render(
+      <FileCard
+        icon={IconFile}
+        name="report.pdf"
+        aria-label="Annual Report Q4 2026"
+      />
+    );
+    expect(container.firstElementChild).toHaveAttribute(
+      "aria-label",
+      "Annual Report Q4 2026"
+    );
+  });
+});
