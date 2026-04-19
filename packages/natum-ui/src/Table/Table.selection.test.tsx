@@ -119,3 +119,124 @@ describe("TableSelectAllCell", () => {
     expect(screen.getByRole("checkbox", { name: "Select all files" })).toBeInTheDocument();
   });
 });
+
+import { TableSelectionCell } from "./TableSelectionCell";
+
+const renderWithSelectionCells = (props: RenderOpts = {}) =>
+  render(
+    <Table rowIds={files.map((f) => f.id)} {...props}>
+      <TableHead>
+        <tr>
+          <TableSelectAllCell />
+          <th scope="col">Name</th>
+        </tr>
+      </TableHead>
+      <TableBody>
+        {files.map((f) => (
+          <TableRow key={f.id} rowId={f.id} data-testid={`row-${f.id}`}>
+            <TableSelectionCell />
+            <TableCell>{f.name}</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+
+describe("TableSelectionCell", () => {
+  it("renders one checkbox per row", () => {
+    renderWithSelectionCells();
+    // Plus 1 select-all
+    expect(screen.getAllByRole("checkbox")).toHaveLength(4);
+  });
+
+  it("clicking a row checkbox selects that row", async () => {
+    const onChange = vi.fn();
+    const user = userEvent.setup();
+    renderWithSelectionCells({ onSelectedRowIdsChange: onChange });
+    const rowCbs = screen.getAllByRole("checkbox", { name: "Select row" });
+    await user.click(rowCbs[0]);
+    expect(onChange).toHaveBeenCalledWith(["a"]);
+  });
+
+  it("aria-selected reflects selection state", () => {
+    renderWithSelectionCells({ defaultSelectedRowIds: ["b"] });
+    expect(screen.getByTestId("row-a")).toHaveAttribute("aria-selected", "false");
+    expect(screen.getByTestId("row-b")).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByTestId("row-c")).toHaveAttribute("aria-selected", "false");
+  });
+
+  it("toggling checkbox off removes from selection", async () => {
+    const onChange = vi.fn();
+    const user = userEvent.setup();
+    renderWithSelectionCells({
+      defaultSelectedRowIds: ["a", "b"],
+      onSelectedRowIdsChange: onChange,
+    });
+    const rowCbs = screen.getAllByRole("checkbox", { name: "Select row" });
+    await user.click(rowCbs[0]); // uncheck "a"
+    expect(onChange).toHaveBeenCalledWith(["b"]);
+  });
+
+  it("checkbox click does not trigger parent row onClick", async () => {
+    const onRowClick = vi.fn();
+    const user = userEvent.setup();
+    render(
+      <Table rowIds={["a"]}>
+        <TableBody>
+          <TableRow rowId="a" onClick={onRowClick}>
+            <TableSelectionCell />
+            <TableCell>x</TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    );
+    await user.click(screen.getByRole("checkbox", { name: "Select row" }));
+    expect(onRowClick).not.toHaveBeenCalled();
+  });
+
+  it("consumer aria-label override for individual row", () => {
+    render(
+      <Table rowIds={["a"]}>
+        <TableBody>
+          <TableRow rowId="a">
+            <TableSelectionCell aria-label="Select alpha" />
+            <TableCell>x</TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    );
+    expect(screen.getByRole("checkbox", { name: "Select alpha" })).toBeInTheDocument();
+  });
+
+  it("throws when rendered without a TableRow parent (no rowId context)", () => {
+    const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+    expect(() =>
+      render(
+        <Table>
+          <TableBody>
+            <tr>
+              <TableSelectionCell />
+            </tr>
+          </TableBody>
+        </Table>
+      )
+    ).toThrow(/useTableRowContext must be used within <TableRow>/);
+    spy.mockRestore();
+  });
+
+  it("throws when rendered inside TableRow with no rowId", () => {
+    const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+    expect(() =>
+      render(
+        <Table>
+          <TableBody>
+            <TableRow>
+              <TableSelectionCell />
+            </TableRow>
+          </TableBody>
+        </Table>
+      )
+    ).toThrow(/TableSelectionCell requires rowId on its <TableRow>/);
+    spy.mockRestore();
+  });
+});
