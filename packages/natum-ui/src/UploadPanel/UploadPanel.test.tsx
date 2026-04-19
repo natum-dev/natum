@@ -52,18 +52,21 @@ describe("UploadPanel — auto-hide + portal", () => {
 });
 
 describe("UploadPanel — title derivation", () => {
+  const getTitleDiv = () =>
+    document.body.querySelector("aside[role='region'] > header > div");
+
   it("renders 'Uploading N files' when any uploading/pending", () => {
     render(
       <UploadPanel
         items={[mk("1", "uploading"), mk("2", "pending")]}
       />
     );
-    expect(screen.getByText(/uploading 2 files/i)).toBeInTheDocument();
+    expect(getTitleDiv()?.textContent).toMatch(/uploading 2 files/i);
   });
 
   it("renders singular 'file' for 1 active", () => {
     render(<UploadPanel items={[mk("1", "uploading")]} />);
-    expect(screen.getByText(/uploading 1 file$/i)).toBeInTheDocument();
+    expect(getTitleDiv()?.textContent).toMatch(/uploading 1 file/i);
   });
 
   it("renders 'N complete, M failed' when mixed terminal", () => {
@@ -76,17 +79,17 @@ describe("UploadPanel — title derivation", () => {
         ]}
       />
     );
-    expect(screen.getByText(/2 complete, 1 failed/i)).toBeInTheDocument();
+    expect(getTitleDiv()?.textContent).toMatch(/2 complete, 1 failed/i);
   });
 
   it("renders 'N uploads failed' when only errors", () => {
     render(<UploadPanel items={[mk("1", "error"), mk("2", "error")]} />);
-    expect(screen.getByText(/2 uploads failed/i)).toBeInTheDocument();
+    expect(getTitleDiv()?.textContent).toMatch(/2 uploads failed/i);
   });
 
   it("renders 'N uploads complete' when only successes", () => {
     render(<UploadPanel items={[mk("1", "success")]} />);
-    expect(screen.getByText(/1 upload complete/i)).toBeInTheDocument();
+    expect(getTitleDiv()?.textContent).toMatch(/1 upload complete/i);
   });
 
   it("consumer-supplied title overrides derived", () => {
@@ -97,7 +100,11 @@ describe("UploadPanel — title derivation", () => {
       />
     );
     expect(screen.getByText("My custom title")).toBeInTheDocument();
-    expect(screen.queryByText(/uploading/i)).toBeNull();
+    const titleDiv = document.body.querySelector(
+      "aside[role='region'] > header > div"
+    );
+    expect(titleDiv?.textContent).toBe("My custom title");
+    expect(titleDiv?.textContent).not.toMatch(/uploading/i);
   });
 });
 
@@ -172,5 +179,67 @@ describe("UploadPanel — row rendering", () => {
       screen.getByRole("button", { name: /cancel xyz\.txt/i })
     );
     expect(onCancel).toHaveBeenCalledWith("xyz");
+  });
+});
+
+describe("UploadPanel — collapse", () => {
+  it("uncontrolled collapse toggles via chevron", async () => {
+    render(<UploadPanel items={[mk("1", "uploading")]} />);
+    const panel = document.body.querySelector(
+      "aside[role='region']"
+    ) as HTMLElement;
+    expect(panel.getAttribute("data-collapsed")).toBe("false");
+
+    await userEvent.click(
+      screen.getByRole("button", { name: /collapse uploads/i })
+    );
+    expect(panel.getAttribute("data-collapsed")).toBe("true");
+  });
+
+  it("defaultCollapsed=true starts collapsed", () => {
+    render(
+      <UploadPanel items={[mk("1", "uploading")]} defaultCollapsed />
+    );
+    expect(
+      document.body
+        .querySelector("aside[role='region']")
+        ?.getAttribute("data-collapsed")
+    ).toBe("true");
+  });
+
+  it("controlled collapsed ignores internal clicks but fires onCollapseChange", async () => {
+    const onCollapseChange = vi.fn();
+    render(
+      <UploadPanel
+        items={[mk("1", "uploading")]}
+        collapsed={false}
+        onCollapseChange={onCollapseChange}
+      />
+    );
+    const panel = document.body.querySelector(
+      "aside[role='region']"
+    ) as HTMLElement;
+    expect(panel.getAttribute("data-collapsed")).toBe("false");
+
+    await userEvent.click(
+      screen.getByRole("button", { name: /collapse uploads/i })
+    );
+    expect(panel.getAttribute("data-collapsed")).toBe("false"); // parent owns state
+    expect(onCollapseChange).toHaveBeenCalledWith(true);
+  });
+});
+
+describe("UploadPanel — live region", () => {
+  it("renders a polite live region mirroring derived title", () => {
+    render(<UploadPanel items={[mk("1", "uploading")]} />);
+    const live = document.body.querySelector("[aria-live='polite']");
+    expect(live).not.toBeNull();
+    expect(live!.textContent).toMatch(/uploading 1 file/i);
+  });
+
+  it("live region is a status role", () => {
+    render(<UploadPanel items={[mk("1", "uploading")]} />);
+    const statusNodes = document.body.querySelectorAll("[role='status']");
+    expect(statusNodes.length).toBeGreaterThan(0);
   });
 });
