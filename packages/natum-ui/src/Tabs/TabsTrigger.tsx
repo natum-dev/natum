@@ -7,6 +7,7 @@ import {
   useRef,
   type ElementType,
   type HTMLAttributes,
+  type KeyboardEvent,
   type MouseEvent,
   type ReactNode,
 } from "react";
@@ -26,7 +27,7 @@ export type TabsTriggerProps = {
 >;
 
 const TabsTrigger = forwardRef<HTMLElement, TabsTriggerProps>(function TabsTrigger(
-  { value, disabled = false, as, className, children, onClick, ...rest },
+  { value, disabled = false, as, className, children, onClick, onKeyDown, ...rest },
   forwardedRef
 ) {
   const ctx = useTabsContext();
@@ -58,6 +59,18 @@ const TabsTrigger = forwardRef<HTMLElement, TabsTriggerProps>(function TabsTrigg
     [disabled, ctx, value, onClick]
   );
 
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent<HTMLElement>) => {
+      if (disabled) return;
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        if (ctx.value !== value) ctx.setValue(value);
+      }
+      onKeyDown?.(e);
+    },
+    [disabled, ctx, value, onKeyDown]
+  );
+
   const Component = (as ?? "button") as ElementType;
   const isNativeButton = Component === "button";
 
@@ -73,6 +86,7 @@ const TabsTrigger = forwardRef<HTMLElement, TabsTriggerProps>(function TabsTrigg
       {...(isNativeButton ? { type: "button" } : null)}
       {...rest}
       onClick={handleClick}
+      onKeyDown={handleKeyDown}
       data-value={value}
       className={cx(styles.tabs_trigger, className)}
     >
