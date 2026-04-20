@@ -76,7 +76,7 @@ const AvatarGroup = forwardRef<HTMLSpanElement, AvatarGroupProps>(
           {hiddenCount > 0 && (
             <span className={styles.slot} style={{ zIndex: 0 }}>
               <Avatar
-                initials={clampedChip}
+                fallback={clampedChip}
                 color="neutral"
                 aria-label={`${hiddenCount} more`}
               />
