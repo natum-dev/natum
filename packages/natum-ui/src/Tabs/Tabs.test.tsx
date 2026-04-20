@@ -117,3 +117,67 @@ describe("TabsList — scaffold", () => {
     expect(screen.getByRole("tablist")).toHaveClass("mine");
   });
 });
+
+import { TabsTrigger } from "./TabsTrigger";
+
+describe("TabsTrigger — scaffold", () => {
+  it("throws orphan error outside <Tabs>", () => {
+    const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+    expect(() => render(<TabsTrigger value="a">x</TabsTrigger>)).toThrow(
+      /must be rendered inside <Tabs>/
+    );
+    spy.mockRestore();
+  });
+
+  it("renders button with role=tab and aria attributes", () => {
+    render(
+      <Tabs defaultValue="files">
+        <TabsList aria-label="m">
+          <TabsTrigger value="files">Files</TabsTrigger>
+          <TabsTrigger value="shared">Shared</TabsTrigger>
+        </TabsList>
+      </Tabs>
+    );
+    const files = screen.getByRole("tab", { name: "Files" });
+    const shared = screen.getByRole("tab", { name: "Shared" });
+    expect(files.tagName).toBe("BUTTON");
+    expect(files).toHaveAttribute("type", "button");
+    expect(files).toHaveAttribute("aria-selected", "true");
+    expect(shared).toHaveAttribute("aria-selected", "false");
+    expect(files).toHaveAttribute("tabIndex", "0");
+    expect(shared).toHaveAttribute("tabIndex", "-1");
+    expect(files.getAttribute("aria-controls")).toMatch(/panel-files$/);
+  });
+
+  it("click activates a tab (uncontrolled)", async () => {
+    const user = userEvent.setup();
+    render(
+      <Tabs defaultValue="a">
+        <TabsList aria-label="m">
+          <TabsTrigger value="a">A</TabsTrigger>
+          <TabsTrigger value="b">B</TabsTrigger>
+        </TabsList>
+      </Tabs>
+    );
+    await user.click(screen.getByRole("tab", { name: "B" }));
+    expect(screen.getByRole("tab", { name: "B" })).toHaveAttribute(
+      "aria-selected",
+      "true"
+    );
+  });
+
+  it("click calls onValueChange (controlled)", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    render(
+      <Tabs value="a" onValueChange={onChange}>
+        <TabsList aria-label="m">
+          <TabsTrigger value="a">A</TabsTrigger>
+          <TabsTrigger value="b">B</TabsTrigger>
+        </TabsList>
+      </Tabs>
+    );
+    await user.click(screen.getByRole("tab", { name: "B" }));
+    expect(onChange).toHaveBeenCalledWith("b");
+  });
+});

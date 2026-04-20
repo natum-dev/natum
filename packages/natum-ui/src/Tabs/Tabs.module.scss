@@ -15,3 +15,36 @@
     display: none;
   }
 }
+
+.tabs_trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  color: var(--neutral-text-secondary);
+  cursor: pointer;
+  font: inherit;
+  white-space: nowrap;
+  position: relative;
+  outline: none;
+
+  &:focus-visible {
+    outline: 2px solid var(--primary-border);
+    outline-offset: -2px;
+    border-radius: var(--radius-sm);
+  }
+
+  &[aria-selected="true"] {
+    color: var(--primary-text);
+  }
+
+  &[aria-disabled="true"] {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  &:hover:not([aria-disabled="true"]) {
+    color: var(--primary-text);
+  }
+}
