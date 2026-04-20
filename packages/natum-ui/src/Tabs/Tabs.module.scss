@@ -48,3 +48,19 @@
     color: var(--primary-text);
   }
 }
+
+.tabs_panel {
+  display: block;
+  outline: none;
+  padding-block-start: var(--space-3);
+
+  &:focus-visible {
+    outline: 2px solid var(--primary-border);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+}
+
+.tabs_panel[hidden] {
+  display: none;
+}
