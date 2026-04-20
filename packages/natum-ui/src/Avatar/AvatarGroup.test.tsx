@@ -140,3 +140,61 @@ describe("AvatarGroup — total + overflow clamp", () => {
     expect(screen.queryByText(/^\+/)).not.toBeInTheDocument();
   });
 });
+
+describe("AvatarGroup — context propagation + spacing", () => {
+  it("children inherit size from group", () => {
+    render(
+      <AvatarGroup size="lg">
+        <Avatar name="Alice" data-testid="a" />
+      </AvatarGroup>
+    );
+    expect(screen.getByTestId("a")).toHaveAttribute("data-size", "lg");
+  });
+
+  it("children inherit shape from group", () => {
+    render(
+      <AvatarGroup shape="square">
+        <Avatar name="Alice" data-testid="a" />
+      </AvatarGroup>
+    );
+    expect(screen.getByTestId("a")).toHaveAttribute("data-shape", "square");
+  });
+
+  it("per-avatar size wins over group context", () => {
+    render(
+      <AvatarGroup size="lg">
+        <Avatar name="Alice" size="sm" data-testid="a" />
+      </AvatarGroup>
+    );
+    expect(screen.getByTestId("a")).toHaveAttribute("data-size", "sm");
+  });
+
+  it("per-avatar shape wins over group context", () => {
+    render(
+      <AvatarGroup shape="square">
+        <Avatar name="Alice" shape="circle" data-testid="a" />
+      </AvatarGroup>
+    );
+    expect(screen.getByTestId("a")).toHaveAttribute("data-shape", "circle");
+  });
+
+  it("data-spacing attribute applied", () => {
+    render(
+      <AvatarGroup spacing="tight">
+        <Avatar name="A" />
+      </AvatarGroup>
+    );
+    expect(screen.getByRole("group")).toHaveAttribute("data-spacing", "tight");
+  });
+
+  it("overflow chip inherits group size (via context)", () => {
+    render(
+      <AvatarGroup max={1} size="lg">
+        <Avatar name="A" />
+        <Avatar name="B" />
+      </AvatarGroup>
+    );
+    const chip = screen.getByText("+1").closest("[data-size]") as HTMLElement;
+    expect(chip).toHaveAttribute("data-size", "lg");
+  });
+});
