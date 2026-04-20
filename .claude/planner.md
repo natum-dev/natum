@@ -72,8 +72,8 @@
 |-----------|-------------|:--------:|--------|-------|
 | SearchInput | TextField variant with search icon, debounced `onChange`, clear button | P0 | Done | TextField wrapper + IconSearch + type="search". 250ms default debounce; flush on Enter/blur/clear. `onSubmit` fires on Enter after flush. |
 | Progress Bar | Determinate/indeterminate progress indicator | P0 | Done | Primitive progressbar; determinate (0–1) + indeterminate (value=undefined); sm/md/lg (4/6/8 px); 5 semantic colors; reduced-motion fallback for both determinate transition and indeterminate animation. |
-| Tabs | Horizontal tab bar with content switching | P1 | Planned | Settings sections; "My Files" vs "Shared with Me" |
-| Avatar | User avatar with initials fallback | P1 | Planned | Header user menu, sharing UI |
+| Tabs | Horizontal tab bar with content switching | P1 | Done | Compound API (Tabs/List/Trigger/Panel); underline + pill variants; sliding indicator; lazy-mount panels; activationMode auto/manual; polymorphic TabsTrigger via `as`; sm/md; horizontal scroll overflow. |
+| Avatar | User avatar with initials fallback | P1 | Done | src/initials/icon fallback chain; 4 sizes (24/32/40/56 px); circle+square; auto-hash color from name + semantic override; `AvatarGroup` with max/total + clamped +99 chip + size/shape context propagation + ring via `--avatar-ring` outline. |
 | Toggle / Switch | On/off toggle input | P2 | Done | Pill+thumb switch over hidden native `<input type="checkbox" role="switch">`. sm/md; labelPosition start (default)/end; optional label + description with auto-wired `aria-describedby`. |
 
 ---
