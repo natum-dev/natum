@@ -36,3 +36,28 @@ export * from "./StorageQuotaBar";
 export * from "./SearchInput";
 export * from "./Toggle";
 export * from "./utils";
+
+export {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsPanel,
+} from "./Tabs";
+export type {
+  TabsProps,
+  TabsListProps,
+  TabsTriggerProps,
+  TabsPanelProps,
+  TabsVariant,
+  TabsSize,
+  TabsActivationMode,
+} from "./Tabs";
+
+export { Avatar, AvatarGroup } from "./Avatar";
+export type {
+  AvatarProps,
+  AvatarGroupProps,
+  AvatarSize,
+  AvatarShape,
+  AvatarColor,
+} from "./Avatar";

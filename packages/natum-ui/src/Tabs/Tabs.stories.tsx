@@ -116,24 +116,25 @@ const MockLink = forwardRef<HTMLAnchorElement, MockLinkProps>(function MockLink(
   return <a ref={ref} {...props} />;
 });
 
+const AsLinksDemo = () => {
+  const [value, setValue] = useState("files");
+  return (
+    <Tabs value={value} onValueChange={setValue}>
+      <TabsList aria-label="Routed">
+        <TabsTrigger as={MockLink} href="#/files" value="files">
+          Files
+        </TabsTrigger>
+        <TabsTrigger as={MockLink} href="#/shared" value="shared">
+          Shared
+        </TabsTrigger>
+      </TabsList>
+      <TabsPanel value="files">/files panel</TabsPanel>
+      <TabsPanel value="shared">/shared panel</TabsPanel>
+    </Tabs>
+  );
+};
 export const AsLinks: Story = {
-  render: () => {
-    const [value, setValue] = useState("files");
-    return (
-      <Tabs value={value} onValueChange={setValue}>
-        <TabsList aria-label="Routed">
-          <TabsTrigger as={MockLink} href="#/files" value="files">
-            Files
-          </TabsTrigger>
-          <TabsTrigger as={MockLink} href="#/shared" value="shared">
-            Shared
-          </TabsTrigger>
-        </TabsList>
-        <TabsPanel value="files">/files panel</TabsPanel>
-        <TabsPanel value="shared">/shared panel</TabsPanel>
-      </Tabs>
-    );
-  },
+  render: () => <AsLinksDemo />,
 };
 
 export const Overflow: Story = {
