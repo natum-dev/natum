@@ -1,2 +1,2 @@
-// Populated in later tasks.
-export {};
+export { Avatar } from "./Avatar";
+export type { AvatarProps, AvatarSize, AvatarShape, AvatarColor } from "./Avatar";
