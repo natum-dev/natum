@@ -64,3 +64,31 @@
 .tabs_panel[hidden] {
   display: none;
 }
+
+.tabs_list::after {
+  content: "";
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline-start: 0;
+  block-size: 2px;
+  inline-size: var(--tabs-indicator-width, 0);
+  transform: translateX(var(--tabs-indicator-x, 0));
+  background: var(--primary-bg);
+  pointer-events: none;
+  opacity: var(--tabs-indicator-opacity, 0);
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      transform 200ms var(--easing-default),
+      inline-size 200ms var(--easing-default),
+      opacity 150ms linear;
+  }
+}
+
+.tabs[data-variant="pill"] .tabs_list::after {
+  display: none;
+}
+
+.tabs[data-variant="underline"] .tabs_list {
+  border-block-end: 1px solid var(--border-color);
+}

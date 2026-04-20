@@ -62,7 +62,15 @@ const TabsList = forwardRef<HTMLDivElement, TabsListProps>(function TabsList(
   }
 
   useLayoutEffect(() => {
-    // Indicator measurement lives here after Task 10.
+    const list = internalRef.current;
+    if (!list) return;
+    const hide = () => list.style.setProperty("--tabs-indicator-opacity", "0");
+    if (!ctx.value) return hide();
+    const active = ctx.triggerRefs.current.get(ctx.value);
+    if (!active) return hide();
+    list.style.setProperty("--tabs-indicator-x", `${active.offsetLeft}px`);
+    list.style.setProperty("--tabs-indicator-width", `${active.offsetWidth}px`);
+    list.style.setProperty("--tabs-indicator-opacity", "1");
   }, [ctx.value, ctx.measureTick, ctx.variant]);
 
   useEffect(() => {
