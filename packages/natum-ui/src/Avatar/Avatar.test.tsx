@@ -199,3 +199,36 @@ describe("Avatar — size / shape / color", () => {
     expect(first).toBe(second);
   });
 });
+
+describe("Avatar — accessibility", () => {
+  it("image case: <img alt> is the accessible name; wrapper has no role", () => {
+    render(<Avatar src="/x.png" name="Alice" data-testid="av" />);
+    expect(screen.getByTestId("av")).not.toHaveAttribute("role");
+    expect(screen.getByRole("img", { name: "Alice" }).tagName).toBe("IMG");
+  });
+
+  it("initials case: wrapper has role=img + aria-label from name", () => {
+    render(<Avatar name="Bob Kim" data-testid="av" />);
+    const root = screen.getByTestId("av");
+    expect(root).toHaveAttribute("role", "img");
+    expect(root).toHaveAccessibleName("Bob Kim");
+  });
+
+  it("icon case: wrapper has role=img + default aria-label", () => {
+    render(<Avatar data-testid="av" />);
+    const root = screen.getByTestId("av");
+    expect(root).toHaveAttribute("role", "img");
+    expect(root).toHaveAccessibleName("User avatar");
+  });
+
+  it("aria-label prop overrides default", () => {
+    render(<Avatar name="Alice" aria-label="Profile photo" data-testid="av" />);
+    expect(screen.getByTestId("av")).toHaveAccessibleName("Profile photo");
+  });
+
+  it("initials element is aria-hidden inside a role=img wrapper", () => {
+    render(<Avatar name="Alice Zhang" />);
+    const initialsEl = screen.getByText("AZ");
+    expect(initialsEl).toHaveAttribute("aria-hidden", "true");
+  });
+});
