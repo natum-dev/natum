@@ -62,3 +62,58 @@ describe("Tabs root — scaffold", () => {
     expect(container.firstChild).toHaveAttribute("data-variant", "underline");
   });
 });
+
+import { TabsList } from "./TabsList";
+
+describe("TabsList — scaffold", () => {
+  it("throws orphan error outside <Tabs>", () => {
+    const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+    expect(() => render(<TabsList aria-label="x" />)).toThrow(
+      /must be rendered inside <Tabs>/
+    );
+    spy.mockRestore();
+  });
+
+  it("renders div with role=tablist and aria-orientation=horizontal", () => {
+    render(
+      <Tabs defaultValue="a">
+        <TabsList aria-label="Main">list</TabsList>
+      </Tabs>
+    );
+    const list = screen.getByRole("tablist");
+    expect(list).toHaveAttribute("aria-orientation", "horizontal");
+    expect(list).toHaveAccessibleName("Main");
+  });
+
+  it("warns in dev when neither aria-label nor aria-labelledby is supplied", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    render(
+      <Tabs defaultValue="a">
+        <TabsList>list</TabsList>
+      </Tabs>
+    );
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining("TabsList")
+    );
+    warn.mockRestore();
+  });
+
+  it("forwards ref to the list div", () => {
+    const ref = createRef<HTMLDivElement>();
+    render(
+      <Tabs defaultValue="a">
+        <TabsList ref={ref} aria-label="m">x</TabsList>
+      </Tabs>
+    );
+    expect(ref.current).toBeInstanceOf(HTMLDivElement);
+  });
+
+  it("merges className", () => {
+    render(
+      <Tabs defaultValue="a">
+        <TabsList aria-label="m" className="mine">x</TabsList>
+      </Tabs>
+    );
+    expect(screen.getByRole("tablist")).toHaveClass("mine");
+  });
+});
