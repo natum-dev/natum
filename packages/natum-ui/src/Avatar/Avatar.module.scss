@@ -50,3 +50,21 @@
   object-fit: cover;
   display: block;
 }
+
+/* Semantic colors (explicit color prop) */
+.avatar[data-color="neutral"] { background: var(--neutral-soft); color: var(--neutral-text); }
+.avatar[data-color="primary"] { background: var(--primary-soft); color: var(--primary-text); }
+.avatar[data-color="success"] { background: var(--success-soft); color: var(--success-text); }
+.avatar[data-color="warning"] { background: var(--warning-soft); color: var(--warning-text); }
+.avatar[data-color="error"]   { background: var(--error-soft);   color: var(--error-text); }
+.avatar[data-color="info"]    { background: var(--info-soft);    color: var(--info-text); }
+
+/* Auto-hashed palette colors */
+.avatar[data-color="red"]    { background: var(--red-200);    color: var(--red-800); }
+.avatar[data-color="orange"] { background: var(--orange-200); color: var(--orange-800); }
+.avatar[data-color="yellow"] { background: var(--yellow-200); color: var(--yellow-800); }
+.avatar[data-color="green"]  { background: var(--green-200);  color: var(--green-800); }
+.avatar[data-color="teal"]   { background: var(--teal-200);   color: var(--teal-800); }
+.avatar[data-color="blue"]   { background: var(--blue-200);   color: var(--blue-800); }
+.avatar[data-color="purple"] { background: var(--purple-200); color: var(--purple-800); }
+.avatar[data-color="pink"]   { background: var(--pink-200);   color: var(--pink-800); }

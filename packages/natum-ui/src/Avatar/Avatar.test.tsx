@@ -156,3 +156,46 @@ describe("Avatar — fallback chain", () => {
     expect(img).toBeInTheDocument();
   });
 });
+
+describe("Avatar — size / shape / color", () => {
+  it("default size=md + shape=circle data-attrs", () => {
+    render(<Avatar name="Alice" data-testid="av" />);
+    const root = screen.getByTestId("av");
+    expect(root).toHaveAttribute("data-size", "md");
+    expect(root).toHaveAttribute("data-shape", "circle");
+  });
+
+  it("explicit size and shape", () => {
+    render(<Avatar name="Alice" size="xl" shape="square" data-testid="av" />);
+    const root = screen.getByTestId("av");
+    expect(root).toHaveAttribute("data-size", "xl");
+    expect(root).toHaveAttribute("data-shape", "square");
+  });
+
+  it("color='auto' with name → hashed palette color", () => {
+    render(<Avatar name="Alice" data-testid="av" />);
+    const palette = ["red", "orange", "yellow", "green", "teal", "blue", "purple", "pink"];
+    expect(palette).toContain(
+      screen.getByTestId("av").getAttribute("data-color")
+    );
+  });
+
+  it("color='auto' without name → neutral", () => {
+    render(<Avatar data-testid="av" />);
+    expect(screen.getByTestId("av")).toHaveAttribute("data-color", "neutral");
+  });
+
+  it("explicit color prop wins", () => {
+    render(<Avatar name="Alice" color="primary" data-testid="av" />);
+    expect(screen.getByTestId("av")).toHaveAttribute("data-color", "primary");
+  });
+
+  it("hash is deterministic — same name renders same data-color across mounts", () => {
+    const { unmount } = render(<Avatar name="Alice" data-testid="av" />);
+    const first = screen.getByTestId("av").getAttribute("data-color");
+    unmount();
+    render(<Avatar name="Alice" data-testid="av2" />);
+    const second = screen.getByTestId("av2").getAttribute("data-color");
+    expect(first).toBe(second);
+  });
+});
