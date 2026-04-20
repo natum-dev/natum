@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeAll, beforeEach, afterEach, describe, it, expect } from "vitest";
+import { beforeAll, beforeEach, afterEach, describe, it, expect, vi } from "vitest";
 import { Tabs } from "./Tabs";
 import { TabsList } from "./TabsList";
 import { TabsTrigger } from "./TabsTrigger";
@@ -100,5 +100,54 @@ describe("Tabs indicator — measurement", () => {
     const list = screen.getByRole("tablist") as HTMLElement;
     const root = list.closest("[data-variant]") as HTMLElement;
     expect(root).toHaveAttribute("data-variant", "pill");
+  });
+
+  it("calls scrollIntoView on active trigger after activation", async () => {
+    const user = userEvent.setup();
+    const scrollSpy = vi.fn();
+    Element.prototype.scrollIntoView = scrollSpy;
+    render(
+      <Tabs defaultValue="a">
+        <TabsList aria-label="m">
+          <TabsTrigger value="a">A</TabsTrigger>
+          <TabsTrigger value="b">B</TabsTrigger>
+        </TabsList>
+      </Tabs>
+    );
+    scrollSpy.mockClear();
+    await user.click(screen.getByRole("tab", { name: "B" }));
+    expect(scrollSpy).toHaveBeenCalled();
+  });
+
+  it("reduced-motion flips scrollIntoView behavior to auto", async () => {
+    const user = userEvent.setup();
+    const scrollSpy = vi.fn();
+    Element.prototype.scrollIntoView = scrollSpy;
+    const matchSpy = vi
+      .spyOn(window, "matchMedia")
+      .mockImplementation((q: string) => ({
+        matches: q.includes("reduce"),
+        media: q,
+        addEventListener: () => {},
+        removeEventListener: () => {},
+        addListener: () => {},
+        removeListener: () => {},
+        onchange: null,
+        dispatchEvent: () => true,
+      } as MediaQueryList));
+    render(
+      <Tabs defaultValue="a">
+        <TabsList aria-label="m">
+          <TabsTrigger value="a">A</TabsTrigger>
+          <TabsTrigger value="b">B</TabsTrigger>
+        </TabsList>
+      </Tabs>
+    );
+    scrollSpy.mockClear();
+    await user.click(screen.getByRole("tab", { name: "B" }));
+    expect(scrollSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ behavior: "auto" })
+    );
+    matchSpy.mockRestore();
   });
 });
