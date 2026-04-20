@@ -68,3 +68,28 @@
 .avatar[data-color="blue"]   { background: var(--blue-200);   color: var(--blue-800); }
 .avatar[data-color="purple"] { background: var(--purple-200); color: var(--purple-800); }
 .avatar[data-color="pink"]   { background: var(--pink-200);   color: var(--pink-800); }
+
+.avatar_group {
+  display: inline-flex;
+  align-items: center;
+  isolation: isolate;
+  --avatar-ring: 2px solid var(--neutral-bg-elevated);
+}
+
+.slot {
+  display: inline-flex;
+}
+
+.slot + .slot {
+  margin-inline-start: var(--avatar-group-overlap, -8px);
+}
+
+.avatar_group[data-spacing="normal"][data-size="sm"] { --avatar-group-overlap: -6px; }
+.avatar_group[data-spacing="normal"][data-size="md"] { --avatar-group-overlap: -8px; }
+.avatar_group[data-spacing="normal"][data-size="lg"] { --avatar-group-overlap: -10px; }
+.avatar_group[data-spacing="normal"][data-size="xl"] { --avatar-group-overlap: -14px; }
+
+.avatar_group[data-spacing="tight"][data-size="sm"] { --avatar-group-overlap: -10px; }
+.avatar_group[data-spacing="tight"][data-size="md"] { --avatar-group-overlap: -14px; }
+.avatar_group[data-spacing="tight"][data-size="lg"] { --avatar-group-overlap: -18px; }
+.avatar_group[data-spacing="tight"][data-size="xl"] { --avatar-group-overlap: -24px; }
