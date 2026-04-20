@@ -71,6 +71,19 @@ const TabsList = forwardRef<HTMLDivElement, TabsListProps>(function TabsList(
     list.style.setProperty("--tabs-indicator-x", `${active.offsetLeft}px`);
     list.style.setProperty("--tabs-indicator-width", `${active.offsetWidth}px`);
     list.style.setProperty("--tabs-indicator-opacity", "1");
+
+    const reducedMotion = window.matchMedia?.(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+    try {
+      active.scrollIntoView({
+        behavior: reducedMotion ? "auto" : "smooth",
+        block: "nearest",
+        inline: "nearest",
+      });
+    } catch {
+      // ignore — JSDOM doesn't implement scrollIntoView.
+    }
   }, [ctx.value, ctx.measureTick, ctx.variant]);
 
   useEffect(() => {
