@@ -92,3 +92,36 @@
 .tabs[data-variant="underline"] .tabs_list {
   border-block-end: 1px solid var(--border-color);
 }
+
+/* sizes */
+.tabs[data-size="sm"] .tabs_trigger {
+  padding-block: var(--space-1);
+  padding-inline: var(--space-3);
+  font-size: 13px;
+}
+
+.tabs[data-size="md"] .tabs_trigger {
+  padding-block: var(--space-2);
+  padding-inline: var(--space-4);
+  font-size: 14px;
+}
+
+/* pill variant: list is a rounded container */
+.tabs[data-variant="pill"] .tabs_list {
+  background: var(--neutral-soft);
+  padding: var(--space-1);
+  border-radius: var(--radius-md);
+  display: inline-flex;
+  overflow-x: auto;
+}
+
+.tabs[data-variant="pill"] .tabs_trigger {
+  border-radius: var(--radius-sm);
+  color: var(--neutral-text-secondary);
+}
+
+.tabs[data-variant="pill"] .tabs_trigger[aria-selected="true"] {
+  background: var(--neutral-bg-elevated);
+  box-shadow: var(--shadow-low);
+  color: var(--neutral-text);
+}
