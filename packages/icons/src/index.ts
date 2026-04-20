@@ -29,3 +29,4 @@ export { IconFolder } from "./IconFolder";
 export { IconEye } from "./IconEye";
 export { IconEyeOff } from "./IconEyeOff";
 export { IconLoader } from "./IconLoader";
+export { IconUser } from "./IconUser";
