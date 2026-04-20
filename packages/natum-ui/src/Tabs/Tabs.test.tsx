@@ -181,3 +181,33 @@ describe("TabsTrigger — scaffold", () => {
     expect(onChange).toHaveBeenCalledWith("b");
   });
 });
+
+describe("TabsTrigger — disabled", () => {
+  it("click on disabled trigger does not activate", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    render(
+      <Tabs value="a" onValueChange={onChange}>
+        <TabsList aria-label="m">
+          <TabsTrigger value="a">A</TabsTrigger>
+          <TabsTrigger value="b" disabled>B</TabsTrigger>
+        </TabsList>
+      </Tabs>
+    );
+    await user.click(screen.getByRole("tab", { name: "B" }));
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it("disabled trigger has aria-disabled='true' and NOT aria-disabled attr when enabled", () => {
+    render(
+      <Tabs defaultValue="a">
+        <TabsList aria-label="m">
+          <TabsTrigger value="a">A</TabsTrigger>
+          <TabsTrigger value="b" disabled>B</TabsTrigger>
+        </TabsList>
+      </Tabs>
+    );
+    expect(screen.getByRole("tab", { name: "A" })).not.toHaveAttribute("aria-disabled");
+    expect(screen.getByRole("tab", { name: "B" })).toHaveAttribute("aria-disabled", "true");
+  });
+});
