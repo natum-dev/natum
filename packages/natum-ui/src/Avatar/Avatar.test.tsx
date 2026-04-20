@@ -98,3 +98,61 @@ describe("Avatar — image render", () => {
     expect(root.tagName).toBe("SPAN");
   });
 });
+
+describe("Avatar — fallback chain", () => {
+  it("falls back to initials when image errors", () => {
+    render(<Avatar src="/broken.png" name="Alice Zhang" />);
+    const img = screen.getByRole("img", { name: "Alice Zhang" });
+    fireEvent.error(img);
+    expect(
+      screen.getByRole("img", { name: "Alice Zhang" })
+    ).toBeInTheDocument();
+    expect(screen.getByText("AZ")).toBeInTheDocument();
+  });
+
+  it("renders initials when src is absent", () => {
+    render(<Avatar name="Bob Kim" />);
+    expect(screen.getByText("BK")).toBeInTheDocument();
+  });
+
+  it("explicit initials prop wins over name derivation", () => {
+    render(<Avatar name="Alice Zhang" initials="DR" />);
+    expect(screen.getByText("DR")).toBeInTheDocument();
+  });
+
+  it("truncates initials override to 2 chars + uppercases", () => {
+    render(<Avatar initials="abcdef" />);
+    expect(screen.getByText("AB")).toBeInTheDocument();
+  });
+
+  it("renders fallback ReactNode when no src and no initials", () => {
+    render(<Avatar fallback={<span data-testid="team">Team</span>} />);
+    expect(screen.getByTestId("team")).toBeInTheDocument();
+  });
+
+  it("renders IconUser when nothing else provided", () => {
+    const { container } = render(<Avatar />);
+    expect(container.querySelector("svg")).toBeInTheDocument();
+  });
+
+  it("data-fallback attribute reflects which fallback rendered", () => {
+    const { rerender } = render(<Avatar src="/x.png" data-testid="av" />);
+    expect(screen.getByTestId("av")).toHaveAttribute("data-fallback", "image");
+    rerender(<Avatar name="Alice" data-testid="av" />);
+    expect(screen.getByTestId("av")).toHaveAttribute("data-fallback", "initials");
+    rerender(<Avatar fallback={<i />} data-testid="av" />);
+    expect(screen.getByTestId("av")).toHaveAttribute("data-fallback", "custom");
+    rerender(<Avatar data-testid="av" />);
+    expect(screen.getByTestId("av")).toHaveAttribute("data-fallback", "icon");
+  });
+
+  it("isBroken resets when src changes", () => {
+    const { rerender } = render(<Avatar src="/broken.png" name="Alice" />);
+    const img1 = screen.getByRole("img", { name: "Alice" });
+    fireEvent.error(img1);
+    expect(screen.queryByRole("img")?.tagName).toBe("SPAN");
+    rerender(<Avatar src="/new.png" name="Alice" />);
+    const img = document.querySelector("img");
+    expect(img).toBeInTheDocument();
+  });
+});
