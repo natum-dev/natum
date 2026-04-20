@@ -53,3 +53,48 @@ describe("Avatar utils — pickColor", () => {
     expect(colors.size).toBeGreaterThan(1);
   });
 });
+
+import { render, screen, fireEvent } from "@testing-library/react";
+import { createRef } from "react";
+import { Avatar } from "./Avatar";
+
+describe("Avatar — image render", () => {
+  it("renders <img> when src is present", () => {
+    render(<Avatar src="/x.png" name="Alice" />);
+    const img = screen.getByRole("img", { name: "Alice" });
+    expect(img.tagName).toBe("IMG");
+    expect(img).toHaveAttribute("src", "/x.png");
+    expect(img).toHaveAttribute("loading", "lazy");
+  });
+
+  it("uses name as alt when alt not provided", () => {
+    render(<Avatar src="/x.png" name="Alice Zhang" />);
+    expect(screen.getByRole("img", { name: "Alice Zhang" })).toBeInTheDocument();
+  });
+
+  it("uses empty alt when no name and no alt", () => {
+    const { container } = render(<Avatar src="/x.png" />);
+    const img = container.querySelector("img");
+    expect(img?.getAttribute("alt")).toBe("");
+  });
+
+  it("explicit alt overrides name", () => {
+    render(<Avatar src="/x.png" name="Alice" alt="Alice's avatar" />);
+    expect(
+      screen.getByRole("img", { name: "Alice's avatar" })
+    ).toBeInTheDocument();
+  });
+
+  it("forwards ref to the root span", () => {
+    const ref = createRef<HTMLSpanElement>();
+    render(<Avatar ref={ref} src="/x.png" />);
+    expect(ref.current).toBeInstanceOf(HTMLSpanElement);
+  });
+
+  it("merges className + spreads rest props on root", () => {
+    render(<Avatar src="/x.png" className="mine" data-testid="av" />);
+    const root = screen.getByTestId("av");
+    expect(root).toHaveClass("mine");
+    expect(root.tagName).toBe("SPAN");
+  });
+});
