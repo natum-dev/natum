@@ -75,7 +75,7 @@ describe("useAnimationState", () => {
   });
 
   it("cleans up timers on unmount", () => {
-    const { result, unmount, rerender } = renderHook(
+    const { unmount } = renderHook(
       ({ isOpen }) =>
         useAnimationState({ isOpen, enterDuration: 200, exitDuration: 150 }),
       { initialProps: { isOpen: true } }

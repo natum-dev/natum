@@ -54,7 +54,6 @@ const TabsList = forwardRef<HTMLDivElement, TabsListProps>(function TabsList(
       typeof rest["aria-label"] === "string" ||
       typeof rest["aria-labelledby"] === "string";
     if (!hasLabel) {
-      // eslint-disable-next-line no-console
       console.warn(
         "TabsList should have an aria-label or aria-labelledby to describe the tab list."
       );
@@ -84,6 +83,8 @@ const TabsList = forwardRef<HTMLDivElement, TabsListProps>(function TabsList(
     } catch {
       // ignore — JSDOM doesn't implement scrollIntoView.
     }
+    // ctx.triggerRefs is a stable ref object — intentionally omitted.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ctx.value, ctx.measureTick, ctx.variant]);
 
   useEffect(() => {
