@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NAVIGATION_FINISHED timing POC</title>
+  <script>
+    // Head-level blocking script. Runs synchronously during HTML parsing,
+    // BEFORE any <body> content is parsed or rendered. If Chrome Custom Tabs
+    // fires onNavigationEvent(NAVIGATION_FINISHED) while this is busy-waiting,
+    // the callback is tied to HTML commit / response received. If it fires
+    // only after this releases, it's tied to page load / DidFinishLoad.
+    (function () {
+      var params = new URLSearchParams(location.search);
+      var blockMs = parseInt(params.get('block') || '10000', 10);
+      if (!isFinite(blockMs) || blockMs < 0) blockMs = 10000;
+
+      var buf = [];
+      function flush(el) {
+        while (buf.length) {
+          var d = document.createElement('div');
+          d.textContent = buf.shift();
+          el.appendChild(d);
+        }
+      }
+      function stamp(msg) {
+        var t = performance.now().toFixed(0);
+        while (t.length < 7) t = ' ' + t;
+        var line = '[' + t + 'ms | ' + new Date().toISOString() + '] ' + msg;
+        try { console.log('[NAV-FINISH]', line); } catch (e) {}
+        buf.push(line);
+        var el = document.getElementById('log');
+        if (el) flush(el);
+      }
+      window.__navFinishStamp = stamp;
+      window.__navFinishFlush = function () {
+        var el = document.getElementById('log');
+        if (el) flush(el);
+      };
+
+      stamp('HEAD script START — busy-blocking for ' + blockMs + 'ms');
+      var t0 = performance.now();
+      while (performance.now() - t0 < blockMs) { /* busy-wait */ }
+      stamp('HEAD script END — actual=' + (performance.now() - t0).toFixed(0) + 'ms');
+    })();
+  </script>
+</head>
+<body style="font:14px/1.4 system-ui,sans-serif;padding:16px;margin:0">
+  <h1 style="margin:0 0 8px">NAVIGATION_FINISHED timing POC</h1>
+  <p id="meta" style="color:#666;margin:0 0 12px"></p>
+  <p style="margin:0 0 12px">
+    Query params: <code>?block=&lt;ms&gt;</code> (default 10000). Open this URL
+    via Chrome Custom Tabs from the Android playground and compare the
+    <code>Navigation: FINISHED</code> entry in logcat against
+    <code>HEAD script END</code> below.
+  </p>
+  <h3 style="margin:12px 0 4px">Client timeline</h3>
+  <pre id="log" style="background:#111;color:#0f0;padding:8px;min-height:140px;margin:0;font:12px/1.4 ui-monospace,monospace;white-space:pre-wrap;word-break:break-word"></pre>
+
+  <script>
+    (function () {
+      var stamp = window.__navFinishStamp;
+      var flush = window.__navFinishFlush;
+      stamp('BODY inline script ran (parser resumed)');
+      flush();
+
+      var params = new URLSearchParams(location.search);
+      var meta = document.getElementById('meta');
+      if (meta) {
+        meta.textContent =
+          'block=' + (params.get('block') || '10000') + 'ms · ' +
+          new Date().toISOString() + ' · ' + navigator.userAgent;
+      }
+
+      document.addEventListener('DOMContentLoaded', function () {
+        stamp('event: DOMContentLoaded');
+      });
+      window.addEventListener('load', function () {
+        stamp('event: window.load');
+      });
+      window.addEventListener('pageshow', function (e) {
+        stamp('event: pageshow (persisted=' + e.persisted + ')');
+      });
+      // Chrome delivers the CCT MessagePort via window.postMessage after the
+      // Android side calls requestPostMessageChannel. Observing this tells us
+      // when Chrome considered the page ready enough to wire the channel.
+      window.addEventListener('message', function (e) {
+        var src = e.origin || '(none)';
+        var data;
+        try { data = typeof e.data === 'string' ? e.data : JSON.stringify(e.data); }
+        catch (err) { data = '(unserializable)'; }
+        var ports = (e.ports && e.ports.length) ? (' ports=' + e.ports.length) : '';
+        stamp('event: message from ' + src + ports + ' — ' + String(data).slice(0, 160));
+      });
+    })();
+  </script>
+</body>
+</html>
