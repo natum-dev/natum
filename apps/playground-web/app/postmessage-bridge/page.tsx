@@ -31,6 +31,7 @@ interface PostMessageBridge {
   port: MessagePort | null;
   queue: QueuedMessage[];
   ready: boolean;
+  observedOrigin: string | null;
 }
 
 declare global {
@@ -110,6 +111,7 @@ export default function PostMessageBridge() {
             type: "ack",
             replyTo: data.id,
             payload: "Acknowledged by web",
+            observedOrigin: window.__postMessageBridge?.observedOrigin ?? null,
             timestamp: Date.now(),
           })
         );
@@ -193,6 +195,7 @@ export default function PostMessageBridge() {
         if (bridge) {
           bridge.port = port;
           bridge.ready = true;
+          bridge.observedOrigin = event.origin;
         }
 
         if (event.data) {

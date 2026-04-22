@@ -12,7 +12,8 @@ export default function PostMessageBridgeLayout({
   var bridge = window.__postMessageBridge = {
     port: null,
     queue: [],
-    ready: false
+    ready: false,
+    observedOrigin: null
   };
 
   window.addEventListener("message", function handler(event) {
@@ -20,6 +21,7 @@ export default function PostMessageBridgeLayout({
     if (port) {
       bridge.port = port;
       bridge.ready = true;
+      bridge.observedOrigin = event.origin;
 
       // Queue any initial message data
       if (event.data) {
