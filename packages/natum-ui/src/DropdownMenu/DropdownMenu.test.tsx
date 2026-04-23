@@ -103,3 +103,63 @@ describe("DropdownMenu root", () => {
     expect(screen.getByTestId("modal").textContent).toBe("false");
   });
 });
+
+import { DropdownMenuSeparator } from "./DropdownMenuSeparator";
+import { DropdownMenuLabel } from "./DropdownMenuLabel";
+
+describe("DropdownMenuSeparator", () => {
+  it("renders role=separator", () => {
+    render(
+      <DropdownMenu>
+        <DropdownMenuSeparator />
+      </DropdownMenu>
+    );
+    expect(screen.getByRole("separator")).toBeInTheDocument();
+  });
+
+  it("accepts className and passes through data-testid", () => {
+    render(
+      <DropdownMenu>
+        <DropdownMenuSeparator className="x" data-testid="sep" />
+      </DropdownMenu>
+    );
+    const sep = screen.getByTestId("sep");
+    expect(sep).toHaveClass("x");
+  });
+
+  it("consumer-supplied role via rest does NOT override library role=separator", () => {
+    render(
+      <DropdownMenu>
+        <DropdownMenuSeparator
+          data-testid="sep"
+          // @ts-expect-error testing rest-spread ordering
+          role="presentation"
+        />
+      </DropdownMenu>
+    );
+    expect(screen.getByTestId("sep")).toHaveAttribute("role", "separator");
+  });
+});
+
+describe("DropdownMenuLabel", () => {
+  it("renders role=presentation with children", () => {
+    render(
+      <DropdownMenu>
+        <DropdownMenuLabel>Danger zone</DropdownMenuLabel>
+      </DropdownMenu>
+    );
+    const label = screen.getByText("Danger zone");
+    expect(label).toHaveAttribute("role", "presentation");
+  });
+
+  it("accepts className", () => {
+    render(
+      <DropdownMenu>
+        <DropdownMenuLabel className="x" data-testid="label">
+          hi
+        </DropdownMenuLabel>
+      </DropdownMenu>
+    );
+    expect(screen.getByTestId("label")).toHaveClass("x");
+  });
+});
