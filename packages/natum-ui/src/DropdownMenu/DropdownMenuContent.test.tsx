@@ -196,3 +196,111 @@ describe("DropdownMenuContent positioning", () => {
     expect(parseFloat(menu.style.top)).toBe(94);
   });
 });
+
+describe("Close — Escape / Tab / focus return", () => {
+  it("Escape closes and fires onEscapeKeyDown", async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    const onEscapeKeyDown = vi.fn();
+    render(
+      <DropdownMenu>
+        <DropdownMenuTrigger>
+          <button>open</button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent onEscapeKeyDown={onEscapeKeyDown}>
+          <DropdownMenuItem>A</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+    await user.click(screen.getByRole("button", { name: "open" }));
+    await act(async () => { vi.advanceTimersByTime(160); });
+    expect(screen.getByRole("menu")).toBeInTheDocument();
+    await user.keyboard("{Escape}");
+    await act(async () => { vi.advanceTimersByTime(100); });
+    expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+    expect(onEscapeKeyDown).toHaveBeenCalled();
+  });
+
+  it("onEscapeKeyDown.preventDefault() keeps menu open", async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    render(
+      <DropdownMenu>
+        <DropdownMenuTrigger>
+          <button>open</button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          onEscapeKeyDown={(e) => e.preventDefault()}
+        >
+          <DropdownMenuItem>A</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+    await user.click(screen.getByRole("button", { name: "open" }));
+    await act(async () => { vi.advanceTimersByTime(160); });
+    await user.keyboard("{Escape}");
+    expect(screen.getByRole("menu")).toBeInTheDocument();
+  });
+
+  it("Tab closes without preventing native focus advance", async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    render(
+      <>
+        <DropdownMenu>
+          <DropdownMenuTrigger>
+            <button>open</button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem>A</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <button>after</button>
+      </>
+    );
+    await user.click(screen.getByRole("button", { name: "open" }));
+    await act(async () => { vi.advanceTimersByTime(160); });
+    await user.keyboard("{ArrowDown}");
+    expect(document.activeElement?.textContent).toBe("A");
+    await user.keyboard("{Tab}");
+    await act(async () => { vi.advanceTimersByTime(100); });
+    expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+  });
+
+  it("on Escape close, focus returns to trigger", async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    render(
+      <DropdownMenu>
+        <DropdownMenuTrigger>
+          <button>open</button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem>A</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+    const trigger = screen.getByRole("button", { name: "open" });
+    await user.click(trigger);
+    await act(async () => { vi.advanceTimersByTime(160); });
+    await user.keyboard("{Escape}");
+    await act(async () => { vi.advanceTimersByTime(100); });
+    expect(document.activeElement).toBe(trigger);
+  });
+
+  it("on item select, focus returns to trigger", async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    render(
+      <DropdownMenu>
+        <DropdownMenuTrigger>
+          <button>open</button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem>A</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+    const trigger = screen.getByRole("button", { name: "open" });
+    await user.click(trigger);
+    await act(async () => { vi.advanceTimersByTime(160); });
+    await user.click(screen.getByRole("menuitem"));
+    await act(async () => { vi.advanceTimersByTime(100); });
+    expect(document.activeElement).toBe(trigger);
+  });
+});
