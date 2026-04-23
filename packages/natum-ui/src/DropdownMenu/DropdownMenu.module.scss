@@ -8,9 +8,92 @@
   max-inline-size: min(320px, calc(100vw - var(--space-4) * 2));
   outline: none;
   z-index: 1000;
+  opacity: 0;
+  transform: translateY(-2px) scale(0.98);
+  transform-origin: top left;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      opacity 120ms var(--easing-default),
+      transform 120ms var(--easing-default);
+  }
+
+  &[data-state="entered"] {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  &[data-state="exiting"] {
+    opacity: 0;
+    transform: translateY(-2px) scale(0.98);
+    @media (prefers-reduced-motion: no-preference) {
+      transition:
+        opacity 80ms var(--easing-default),
+        transform 80ms var(--easing-default);
+    }
+  }
 }
 
-.separator {}
-.label {}
-.item {}
-.item_left_section {}
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  block-size: 36px;
+  padding-inline: var(--space-2);
+  border-radius: var(--radius-sm);
+  color: var(--neutral-text);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  user-select: none;
+
+  &[data-highlighted="true"] {
+    background: var(--neutral-soft);
+  }
+
+  &[data-destructive="true"] {
+    color: var(--error-text);
+
+    &[data-highlighted="true"] {
+      background: var(--error-soft);
+    }
+  }
+
+  &[aria-disabled="true"] {
+    opacity: 0.5;
+    pointer-events: none;
+    cursor: not-allowed;
+  }
+}
+
+.item_left_section {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 16px;
+  block-size: 16px;
+  flex-shrink: 0;
+}
+
+.separator {
+  block-size: 1px;
+  background: var(--border-color);
+  margin-block: var(--space-1);
+  margin-inline: calc(-1 * var(--space-1));
+}
+
+.label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--neutral-text-secondary);
+  padding: var(--space-2) var(--space-2) var(--space-1);
+}
+
+.scrim {
+  position: fixed;
+  inset: 0;
+  pointer-events: auto;
+  background: transparent;
+  z-index: 999;
+}
