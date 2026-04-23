@@ -5,6 +5,7 @@ import {
   cloneElement,
   isValidElement,
   useCallback,
+  type KeyboardEvent,
   type MouseEvent,
   type ReactElement,
 } from "react";
@@ -63,6 +64,24 @@ export const DropdownMenuTrigger = ({
         if (!e.defaultPrevented) toggle();
       };
 
+  const consumerOnKeyDown = childProps.onKeyDown as
+    | ((e: KeyboardEvent<HTMLElement>) => void)
+    | undefined;
+
+  const composedOnKeyDown = disabled
+    ? undefined
+    : (e: KeyboardEvent<HTMLElement>) => {
+        consumerOnKeyDown?.(e);
+        if (e.defaultPrevented) return;
+        if (e.key === "ArrowDown" || e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          setOpen(true, { focusTarget: "first" });
+        } else if (e.key === "ArrowUp") {
+          e.preventDefault();
+          setOpen(true, { focusTarget: "last" });
+        }
+      };
+
   const isButton =
     (children.type as unknown as string) === "button" ||
     (typeof children.type !== "string" &&
@@ -74,6 +93,7 @@ export const DropdownMenuTrigger = ({
       triggerRef.current = node;
     }),
     onClick: composedOnClick,
+    onKeyDown: composedOnKeyDown,
     "aria-haspopup": "menu",
     "aria-expanded": open,
     "aria-controls": contentId,
