@@ -6,6 +6,7 @@ import { DropdownMenu } from "./DropdownMenu";
 import { DropdownMenuTrigger } from "./DropdownMenuTrigger";
 import { useDropdownMenuContext } from "./context";
 
+
 function OpenStateProbe() {
   const ctx = useDropdownMenuContext();
   return <span data-testid="open">{String(ctx.open)}</span>;
@@ -100,5 +101,73 @@ describe("DropdownMenuTrigger", () => {
     );
     expect(spy).toHaveBeenCalled();
     spy.mockRestore();
+  });
+});
+
+describe("DropdownMenuTrigger keyboard", () => {
+  it("ArrowDown opens with focusTarget=first", async () => {
+    const user = userEvent.setup();
+    render(
+      <DropdownMenu>
+        <OpenStateProbe />
+        <DropdownMenuTrigger>
+          <button>open</button>
+        </DropdownMenuTrigger>
+      </DropdownMenu>
+    );
+    screen.getByRole("button").focus();
+    await user.keyboard("{ArrowDown}");
+    expect(screen.getByTestId("open").textContent).toBe("true");
+  });
+
+  it("Enter opens with focusTarget=first", async () => {
+    const user = userEvent.setup();
+    render(
+      <DropdownMenu>
+        <OpenStateProbe />
+        <DropdownMenuTrigger>
+          <button>open</button>
+        </DropdownMenuTrigger>
+      </DropdownMenu>
+    );
+    screen.getByRole("button").focus();
+    await user.keyboard("{Enter}");
+    expect(screen.getByTestId("open").textContent).toBe("true");
+  });
+
+  it("ArrowUp opens with focusTarget=last", async () => {
+    const user = userEvent.setup();
+    function LastProbe() {
+      const ctx = useDropdownMenuContext();
+      return <span data-testid="target">{String(ctx.focusTargetOnOpen)}</span>;
+    }
+    render(
+      <DropdownMenu>
+        <LastProbe />
+        <DropdownMenuTrigger>
+          <button>open</button>
+        </DropdownMenuTrigger>
+      </DropdownMenu>
+    );
+    screen.getByRole("button").focus();
+    await user.keyboard("{ArrowUp}");
+    expect(screen.getByTestId("target").textContent).toBe("last");
+  });
+
+  it("consumer onKeyDown fires before library handler (both run)", async () => {
+    const user = userEvent.setup();
+    const consumer = vi.fn();
+    render(
+      <DropdownMenu>
+        <OpenStateProbe />
+        <DropdownMenuTrigger>
+          <button onKeyDown={consumer}>open</button>
+        </DropdownMenuTrigger>
+      </DropdownMenu>
+    );
+    screen.getByRole("button").focus();
+    await user.keyboard("{ArrowDown}");
+    expect(consumer).toHaveBeenCalledTimes(1);
+    expect(screen.getByTestId("open").textContent).toBe("true");
   });
 });
