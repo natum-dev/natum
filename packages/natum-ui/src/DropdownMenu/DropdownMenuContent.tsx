@@ -2,6 +2,7 @@
 
 import {
   forwardRef,
+  useEffect,
   useLayoutEffect,
   useMemo,
   useRef,
@@ -49,8 +50,6 @@ export const DropdownMenuContent = forwardRef<
     },
     ref
   ) => {
-    void onInteractOutside;
-
     const {
       open,
       setOpen,
@@ -97,6 +96,55 @@ export const DropdownMenuContent = forwardRef<
         }
       },
     });
+
+    // Outside pointer-down (mousedown on document)
+    useEffect(() => {
+      if (!open) return;
+      const handler = (event: MouseEvent) => {
+        const content = localRef.current;
+        const trigger = triggerRef.current;
+        if (!content || !trigger) return;
+        const target = event.target as Node | null;
+        if (!target) return;
+        if (content.contains(target) || trigger.contains(target)) return;
+
+        // Pass the MouseEvent as the union-typed event to consumer.
+        const fakeEvent = event as unknown as PointerEvent;
+        onInteractOutside?.(fakeEvent);
+        if (!fakeEvent.defaultPrevented) {
+          setOpen(false, { returnFocus: false });
+        }
+      };
+      document.addEventListener("mousedown", handler);
+      return () => document.removeEventListener("mousedown", handler);
+    }, [open, onInteractOutside, setOpen, triggerRef]);
+
+    // Focus moves outside — detect via focusin on document.
+    // When any element gains focus, check if it's outside our content.
+    // We prefer this over listening for focusout on content because:
+    // - In tests (JSDOM/fake timers), the menu may not be the active element
+    //   even after defaultOpen, so focusout may never fire.
+    // - focusin on document fires reliably whenever ANY element gains focus.
+    // Note: relatedTarget on focusin = previously focused element (source).
+    useEffect(() => {
+      if (!open) return;
+      const handler = (event: FocusEvent) => {
+        const content = localRef.current;
+        if (!content) return;
+        const target = event.target as Node | null;
+        if (!target) return;
+        const trigger = triggerRef.current;
+        // Ignore: focus stayed inside content or moved to the trigger.
+        if (content.contains(target)) return;
+        if (trigger?.contains(target)) return;
+        onInteractOutside?.(event);
+        if (!event.defaultPrevented) {
+          setOpen(false, { returnFocus: false });
+        }
+      };
+      document.addEventListener("focusin", handler);
+      return () => document.removeEventListener("focusin", handler);
+    }, [open, onInteractOutside, setOpen, triggerRef]);
 
     // Focus-return on close — synchronous DOM focus before paint.
     useLayoutEffect(() => {
