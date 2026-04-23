@@ -15,6 +15,7 @@ import { useAnchorPosition } from "../hooks/use-anchor-position";
 import { useAnimationState } from "../hooks/use-animation-state";
 import { useMergedRefs } from "../hooks/use-merge-refs";
 import { useTypeahead } from "../hooks/use-typeahead";
+import { useEscapeKey } from "../hooks/use-escape-key";
 import styles from "./DropdownMenu.module.scss";
 import cx from "classnames";
 
@@ -48,11 +49,19 @@ export const DropdownMenuContent = forwardRef<
     },
     ref
   ) => {
-    void onEscapeKeyDown;
     void onInteractOutside;
 
-    const { open, contentRef, triggerRef, triggerId, contentId, focusTargetOnOpen, clearFocusTarget } =
-      useDropdownMenuContext();
+    const {
+      open,
+      setOpen,
+      contentRef,
+      triggerRef,
+      triggerId,
+      contentId,
+      focusTargetOnOpen,
+      clearFocusTarget,
+      pendingReturnFocusRef,
+    } = useDropdownMenuContext();
 
     const localRef = useRef<HTMLDivElement>(null);
     const mergedRef = useMergedRefs(ref, contentRef, localRef);
@@ -76,6 +85,26 @@ export const DropdownMenuContent = forwardRef<
     useLayoutEffect(() => {
       setMounted(true);
     }, []);
+
+    // Escape key — fires onEscapeKeyDown callback; close unless prevented.
+    useEscapeKey({
+      enabled: open,
+      onEscape: () => {
+        const event = new KeyboardEvent("keydown", { key: "Escape" });
+        onEscapeKeyDown?.(event);
+        if (!event.defaultPrevented) {
+          setOpen(false, { returnFocus: true });
+        }
+      },
+    });
+
+    // Focus-return on close — synchronous DOM focus before paint.
+    useLayoutEffect(() => {
+      if (open) return;
+      if (!pendingReturnFocusRef.current) return;
+      pendingReturnFocusRef.current = false;
+      triggerRef.current?.focus();
+    }, [open, pendingReturnFocusRef, triggerRef]);
 
     // Align override — useAnchorPosition centers horizontally; we re-align.
     // We also compute top here so that the value is available synchronously
@@ -216,6 +245,11 @@ export const DropdownMenuContent = forwardRef<
       if (event.key === "End") {
         event.preventDefault();
         focusLast();
+        return;
+      }
+      if (event.key === "Tab") {
+        // Do NOT preventDefault — allow native focus advance.
+        setOpen(false, { returnFocus: false });
         return;
       }
       // Delegate printable chars to typeahead (Enter/Space/Arrows filtered by hook).
