@@ -1,2 +1,1 @@
-// Filled out in subsequent tasks.
-export {};
+export { DropdownMenu, type DropdownMenuProps } from "./DropdownMenu";
