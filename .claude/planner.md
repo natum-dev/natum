@@ -85,7 +85,7 @@
 
 | Component | Description | Priority | Status | Notes |
 |-----------|-------------|:--------:|--------|-------|
-| Dropdown / Menu | Trigger + positioned menu with items; supports nested menus | P0 | Planned | Context menu on files (rename, move, share, delete) |
+| Dropdown / Menu | Compound action menu (Trigger/Content/Item/Separator/Label); WAI-ARIA menu pattern with real focus moves, arrow/Home/End/typeahead nav, 4 close reasons under `onInteractOutside` umbrella; modal scroll lock + scrim; portaled via useAnchorPosition + align override; single canonical size; zero new tokens | P0 | Done | Shell only: no submenus, no checkbox/radio items, no hover-to-open (deferred). |
 | FilePreviewPanel | Side panel rendering file previews (image, text, PDF) | P0 | Planned | In-browser file viewing; 400px desktop, full-screen mobile |
 | ShareDialog | Specialized dialog: user search, permission picker, share list | P0 | Planned | File sharing flow |
 | PermissionBadge | Badge variant showing permission level (owner, read, write) | P1 | Planned | Shared file indicators |

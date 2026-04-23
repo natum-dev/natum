@@ -35,6 +35,7 @@ export * from "./ProgressBar";
 export * from "./StorageQuotaBar";
 export * from "./SearchInput";
 export * from "./Toggle";
+export * from "./DropdownMenu";
 export * from "./utils";
 
 export {
