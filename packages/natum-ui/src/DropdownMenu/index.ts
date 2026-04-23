@@ -1,1 +1,9 @@
 export { DropdownMenu, type DropdownMenuProps } from "./DropdownMenu";
+export {
+  DropdownMenuSeparator,
+  type DropdownMenuSeparatorProps,
+} from "./DropdownMenuSeparator";
+export {
+  DropdownMenuLabel,
+  type DropdownMenuLabelProps,
+} from "./DropdownMenuLabel";
