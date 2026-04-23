@@ -1,4 +1,15 @@
-// Styles — filled out in a later task.
+.dropdown_menu_content {
+  background: var(--neutral-bg-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-low), var(--shadow-medium);
+  padding: var(--space-1);
+  min-inline-size: 200px;
+  max-inline-size: min(320px, calc(100vw - var(--space-4) * 2));
+  outline: none;
+  z-index: 1000;
+}
+
 .separator {}
 .label {}
 .item {}
