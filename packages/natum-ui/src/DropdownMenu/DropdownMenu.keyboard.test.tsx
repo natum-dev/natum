@@ -130,3 +130,46 @@ describe("DropdownMenu keyboard nav", () => {
     expect(document.activeElement?.textContent).toBe("C");
   });
 });
+
+describe("DropdownMenu typeahead", () => {
+  it("typing 'c' focuses first item starting with C", async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    render(
+      <DropdownMenu>
+        <DropdownMenuTrigger>
+          <button>open</button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem>Apple</DropdownMenuItem>
+          <DropdownMenuItem>Banana</DropdownMenuItem>
+          <DropdownMenuItem>Cherry</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+    await openMenu(user);
+    await user.keyboard("c");
+    expect(document.activeElement?.textContent).toBe("Cherry");
+  });
+
+  it("respects textValue override for ReactNode children", async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    render(
+      <DropdownMenu>
+        <DropdownMenuTrigger>
+          <button>open</button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem textValue="Zulu">
+            <svg /> Z item
+          </DropdownMenuItem>
+          <DropdownMenuItem textValue="Alpha">
+            <svg /> A item
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+    await openMenu(user);
+    await user.keyboard("z");
+    expect(document.activeElement).toHaveAttribute("data-text-value", "Zulu");
+  });
+});

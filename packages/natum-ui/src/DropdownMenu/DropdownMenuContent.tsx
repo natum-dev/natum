@@ -14,6 +14,7 @@ import { useDropdownMenuContext } from "./context";
 import { useAnchorPosition } from "../hooks/use-anchor-position";
 import { useAnimationState } from "../hooks/use-animation-state";
 import { useMergedRefs } from "../hooks/use-merge-refs";
+import { useTypeahead } from "../hooks/use-typeahead";
 import styles from "./DropdownMenu.module.scss";
 import cx from "classnames";
 
@@ -146,6 +147,17 @@ export const DropdownMenuContent = forwardRef<
     const focusFirst = () => focusItemAt(0);
     const focusLast = () => focusItemAt(-1);
 
+    // Typeahead — items list rebuilt via ref at each keystroke.
+    const typeaheadItemsRef = useRef<HTMLElement[]>([]);
+    typeaheadItemsRef.current = getItemElements();
+
+    const { onKeyDown: typeaheadOnKeyDown } = useTypeahead<HTMLElement>({
+      items: typeaheadItemsRef.current,
+      getKey: (el) =>
+        (el.dataset.textValue ?? el.textContent?.trim() ?? "").toLowerCase(),
+      onMatch: (index) => typeaheadItemsRef.current[index]?.focus(),
+    });
+
     // Consume focusTargetOnOpen after entering → entered transition.
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useLayoutEffect(() => {
@@ -188,17 +200,26 @@ export const DropdownMenuContent = forwardRef<
       if (event.key === "ArrowDown") {
         event.preventDefault();
         focusItemAt(currentIndex + 1);
-      } else if (event.key === "ArrowUp") {
+        return;
+      }
+      if (event.key === "ArrowUp") {
         event.preventDefault();
         if (currentIndex === -1) focusLast();
         else focusItemAt(currentIndex - 1);
-      } else if (event.key === "Home") {
+        return;
+      }
+      if (event.key === "Home") {
         event.preventDefault();
         focusFirst();
-      } else if (event.key === "End") {
+        return;
+      }
+      if (event.key === "End") {
         event.preventDefault();
         focusLast();
+        return;
       }
+      // Delegate printable chars to typeahead (Enter/Space/Arrows filtered by hook).
+      typeaheadOnKeyDown(event);
     };
 
     if (!mounted) return null;
