@@ -1,5 +1,5 @@
-import { render } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { render, act } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { useDropdownMenuContext } from "./context";
 
 describe("DropdownMenu context", () => {
@@ -104,6 +104,9 @@ describe("DropdownMenu root", () => {
   });
 });
 
+import { DropdownMenuContent } from "./DropdownMenuContent";
+import { DropdownMenuTrigger } from "./DropdownMenuTrigger";
+import { DropdownMenuItem } from "./DropdownMenuItem";
 import { DropdownMenuSeparator } from "./DropdownMenuSeparator";
 import { DropdownMenuLabel } from "./DropdownMenuLabel";
 
@@ -161,5 +164,69 @@ describe("DropdownMenuLabel", () => {
       </DropdownMenu>
     );
     expect(screen.getByTestId("label")).toHaveClass("x");
+  });
+});
+
+describe("DropdownMenu modal behavior", () => {
+  beforeEach(() => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+  });
+  afterEach(() => {
+    vi.runAllTimers();
+    vi.useRealTimers();
+    document.body.style.overflow = "";
+    document.body.style.paddingRight = "";
+  });
+
+  it("modal=true locks body scroll when open", async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    render(
+      <DropdownMenu>
+        <DropdownMenuTrigger>
+          <button>open</button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem>A</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+    expect(document.body.style.overflow).not.toBe("hidden");
+    await user.click(screen.getByRole("button", { name: "open" }));
+    await act(async () => { vi.advanceTimersByTime(160); });
+    expect(document.body.style.overflow).toBe("hidden");
+  });
+
+  it("modal=false does NOT lock body scroll", async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    render(
+      <DropdownMenu modal={false}>
+        <DropdownMenuTrigger>
+          <button>open</button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem>A</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+    await user.click(screen.getByRole("button", { name: "open" }));
+    await act(async () => { vi.advanceTimersByTime(160); });
+    expect(document.body.style.overflow).not.toBe("hidden");
+  });
+
+  it("modal=true renders a scrim element", async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    render(
+      <DropdownMenu>
+        <DropdownMenuTrigger>
+          <button>open</button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem>A</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+    await user.click(screen.getByRole("button", { name: "open" }));
+    await act(async () => { vi.advanceTimersByTime(160); });
+    expect(document.querySelector("[data-dropdown-menu-scrim]")).toBeInTheDocument();
   });
 });

@@ -17,6 +17,7 @@ import { useAnimationState } from "../hooks/use-animation-state";
 import { useMergedRefs } from "../hooks/use-merge-refs";
 import { useTypeahead } from "../hooks/use-typeahead";
 import { useEscapeKey } from "../hooks/use-escape-key";
+import { useScrollLock } from "../hooks/use-scroll-lock";
 import styles from "./DropdownMenu.module.scss";
 import cx from "classnames";
 
@@ -60,10 +61,13 @@ export const DropdownMenuContent = forwardRef<
       focusTargetOnOpen,
       clearFocusTarget,
       pendingReturnFocusRef,
+      modal,
     } = useDropdownMenuContext();
 
     const localRef = useRef<HTMLDivElement>(null);
     const mergedRef = useMergedRefs(ref, contentRef, localRef);
+
+    useScrollLock({ enabled: open && modal });
 
     const { state, shouldRender } = useAnimationState({
       isOpen: open,
@@ -310,21 +314,30 @@ export const DropdownMenuContent = forwardRef<
     const { style: consumerStyle, ...restWithoutStyle } = rest as HTMLAttributes<HTMLDivElement>;
 
     return createPortal(
-      <div
-        ref={mergedRef}
-        {...restWithoutStyle}
-        role="menu"
-        tabIndex={-1}
-        id={contentId}
-        aria-labelledby={triggerId}
-        data-state={state}
-        data-placement={actualPlacement}
-        style={{ ...combinedStyles, ...consumerStyle }}
-        onKeyDown={handleKeyDown}
-        className={cx(styles.dropdown_menu_content, className)}
-      >
-        {children}
-      </div>,
+      <>
+        {modal && (
+          <div
+            data-dropdown-menu-scrim
+            className={styles.scrim}
+            aria-hidden="true"
+          />
+        )}
+        <div
+          ref={mergedRef}
+          {...restWithoutStyle}
+          role="menu"
+          tabIndex={-1}
+          id={contentId}
+          aria-labelledby={triggerId}
+          data-state={state}
+          data-placement={actualPlacement}
+          style={{ ...combinedStyles, ...consumerStyle }}
+          onKeyDown={handleKeyDown}
+          className={cx(styles.dropdown_menu_content, className)}
+        >
+          {children}
+        </div>
+      </>,
       document.body
     );
   }
