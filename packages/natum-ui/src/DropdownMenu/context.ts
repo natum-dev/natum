@@ -15,7 +15,7 @@ export type DropdownMenuContextValue = {
   modal: boolean;
   focusTargetOnOpen: "first" | "last" | null;
   clearFocusTarget: () => void;
-  pendingReturnFocusRef: RefObject<boolean>;
+  pendingReturnFocusRef: MutableRefObject<boolean>;
 };
 
 export const DropdownMenuContext =
