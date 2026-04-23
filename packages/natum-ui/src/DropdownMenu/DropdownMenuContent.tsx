@@ -47,11 +47,10 @@ export const DropdownMenuContent = forwardRef<
     },
     ref
   ) => {
-    void loop;
     void onEscapeKeyDown;
     void onInteractOutside;
 
-    const { open, contentRef, triggerRef, triggerId, contentId, focusTargetOnOpen } =
+    const { open, contentRef, triggerRef, triggerId, contentId, focusTargetOnOpen, clearFocusTarget } =
       useDropdownMenuContext();
 
     const localRef = useRef<HTMLDivElement>(null);
@@ -121,13 +120,86 @@ export const DropdownMenuContent = forwardRef<
       [anchorStyles, alignedPos]
     );
 
+    // --- Item discovery + navigation helpers ---
+    const getItemElements = (): HTMLElement[] => {
+      const content = localRef.current;
+      if (!content) return [];
+      return Array.from(
+        content.querySelectorAll<HTMLElement>(
+          '[data-dropdown-menu-item]:not([aria-disabled="true"])'
+        )
+      );
+    };
+
+    const focusItemAt = (index: number) => {
+      const items = getItemElements();
+      if (items.length === 0) return;
+      let i = index;
+      if (loop) {
+        i = ((i % items.length) + items.length) % items.length;
+      } else {
+        i = Math.max(0, Math.min(i, items.length - 1));
+      }
+      items[i]?.focus();
+    };
+
+    const focusFirst = () => focusItemAt(0);
+    const focusLast = () => focusItemAt(-1);
+
+    // Consume focusTargetOnOpen after entering → entered transition.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    useLayoutEffect(() => {
+      if (!open || state === "exited" || state === "exiting") return;
+      if (focusTargetOnOpen === "first") {
+        const id = requestAnimationFrame(() => {
+          focusFirst();
+          clearFocusTarget();
+        });
+        return () => cancelAnimationFrame(id);
+      }
+      if (focusTargetOnOpen === "last") {
+        const id = requestAnimationFrame(() => {
+          focusLast();
+          clearFocusTarget();
+        });
+        return () => cancelAnimationFrame(id);
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [open, state, focusTargetOnOpen]);
+
     // Focus menu root on open (unless Trigger requested a specific item).
+    // Use a ref snapshot so clearFocusTarget() firing after item-focus does not
+    // re-trigger this effect and steal focus back from the focused item.
+    const focusTargetOnOpenRef = useRef<"first" | "last" | null>(null);
+    focusTargetOnOpenRef.current = focusTargetOnOpen;
     useLayoutEffect(() => {
       if (!open) return;
-      if (focusTargetOnOpen !== null) return;
+      if (focusTargetOnOpenRef.current !== null) return;
       const node = contentRef.current;
       if (node) node.focus();
-    }, [open, focusTargetOnOpen, contentRef, shouldRender]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [open, shouldRender]);
+
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+      const items = getItemElements();
+      const active = document.activeElement as HTMLElement | null;
+      const currentIndex = active ? items.indexOf(active) : -1;
+
+      if (event.key === "ArrowDown") {
+        event.preventDefault();
+        focusItemAt(currentIndex + 1);
+      } else if (event.key === "ArrowUp") {
+        event.preventDefault();
+        if (currentIndex === -1) focusLast();
+        else focusItemAt(currentIndex - 1);
+      } else if (event.key === "Home") {
+        event.preventDefault();
+        focusFirst();
+      } else if (event.key === "End") {
+        event.preventDefault();
+        focusLast();
+      }
+    };
 
     if (!mounted) return null;
     if (!shouldRender) return null;
@@ -145,6 +217,7 @@ export const DropdownMenuContent = forwardRef<
         data-state={state}
         data-placement={actualPlacement}
         style={{ ...combinedStyles, ...consumerStyle }}
+        onKeyDown={handleKeyDown}
         className={cx(styles.dropdown_menu_content, className)}
       >
         {children}
