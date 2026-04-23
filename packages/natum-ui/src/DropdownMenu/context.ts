@@ -1,4 +1,4 @@
-import { createContext, useContext, type RefObject } from "react";
+import { createContext, useContext, type MutableRefObject, type RefObject } from "react";
 
 export type DropdownMenuSetOpenOptions = {
   returnFocus?: boolean;
@@ -8,7 +8,7 @@ export type DropdownMenuSetOpenOptions = {
 export type DropdownMenuContextValue = {
   open: boolean;
   setOpen: (next: boolean, opts?: DropdownMenuSetOpenOptions) => void;
-  triggerRef: RefObject<HTMLElement | null>;
+  triggerRef: MutableRefObject<HTMLElement | null>;
   contentRef: RefObject<HTMLDivElement | null>;
   triggerId: string;
   contentId: string;
