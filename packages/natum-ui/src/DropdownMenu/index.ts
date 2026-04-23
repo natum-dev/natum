@@ -7,3 +7,7 @@ export {
   DropdownMenuLabel,
   type DropdownMenuLabelProps,
 } from "./DropdownMenuLabel";
+export {
+  DropdownMenuItem,
+  type DropdownMenuItemProps,
+} from "./DropdownMenuItem";
