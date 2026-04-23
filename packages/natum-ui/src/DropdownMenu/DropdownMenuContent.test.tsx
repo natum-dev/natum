@@ -304,3 +304,114 @@ describe("Close — Escape / Tab / focus return", () => {
     expect(document.activeElement).toBe(trigger);
   });
 });
+
+describe("Close — onInteractOutside umbrella", () => {
+  it("outside mousedown closes; fires onInteractOutside with PointerEvent", async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    const onInteractOutside = vi.fn();
+    render(
+      <>
+        <button>outside</button>
+        <DropdownMenu>
+          <DropdownMenuTrigger>
+            <button>open</button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent onInteractOutside={onInteractOutside}>
+            <DropdownMenuItem>A</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </>
+    );
+    await user.click(screen.getByRole("button", { name: "open" }));
+    await act(async () => { vi.advanceTimersByTime(160); });
+    await user.click(screen.getByRole("button", { name: "outside" }));
+    await act(async () => { vi.advanceTimersByTime(100); });
+    expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+    expect(onInteractOutside).toHaveBeenCalledTimes(1);
+  });
+
+  it("click INSIDE menu does not fire onInteractOutside", async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    const onInteractOutside = vi.fn();
+    render(
+      <DropdownMenu defaultOpen>
+        <DropdownMenuTrigger>
+          <button>open</button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent onInteractOutside={onInteractOutside}>
+          <DropdownMenuItem>A</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+    await act(async () => { vi.advanceTimersByTime(160); });
+    await user.click(screen.getByRole("menu"));
+    expect(onInteractOutside).not.toHaveBeenCalled();
+  });
+
+  it("focusout to outside element closes; fires onInteractOutside with FocusEvent", async () => {
+    const onInteractOutside = vi.fn();
+    render(
+      <>
+        <button>outside</button>
+        <DropdownMenu defaultOpen>
+          <DropdownMenuTrigger>
+            <button>open</button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent onInteractOutside={onInteractOutside}>
+            <DropdownMenuItem>A</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </>
+    );
+    await act(async () => { vi.advanceTimersByTime(160); });
+    act(() => {
+      screen.getByRole("button", { name: "outside" }).focus();
+    });
+    await act(async () => { vi.advanceTimersByTime(100); });
+    expect(onInteractOutside).toHaveBeenCalledTimes(1);
+    expect(onInteractOutside.mock.calls[0][0]).toBeInstanceOf(FocusEvent);
+  });
+
+  it("onInteractOutside.preventDefault() keeps menu open", async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    render(
+      <>
+        <button>outside</button>
+        <DropdownMenu>
+          <DropdownMenuTrigger>
+            <button>open</button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            onInteractOutside={(e) => e.preventDefault()}
+          >
+            <DropdownMenuItem>A</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </>
+    );
+    await user.click(screen.getByRole("button", { name: "open" }));
+    await act(async () => { vi.advanceTimersByTime(160); });
+    await user.click(screen.getByRole("button", { name: "outside" }));
+    expect(screen.getByRole("menu")).toBeInTheDocument();
+  });
+
+  it("focus moving between items does NOT fire onInteractOutside", async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    const onInteractOutside = vi.fn();
+    render(
+      <DropdownMenu defaultOpen>
+        <DropdownMenuTrigger>
+          <button>open</button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent onInteractOutside={onInteractOutside}>
+          <DropdownMenuItem>A</DropdownMenuItem>
+          <DropdownMenuItem>B</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+    await act(async () => { vi.advanceTimersByTime(160); });
+    await user.keyboard("{ArrowDown}");
+    await user.keyboard("{ArrowDown}");
+    expect(onInteractOutside).not.toHaveBeenCalled();
+  });
+});
