@@ -73,3 +73,126 @@ describe("DropdownMenuContent scaffold", () => {
     expect(document.activeElement).toBe(screen.getByRole("menu"));
   });
 });
+
+describe("DropdownMenuContent positioning", () => {
+  // Stub rect measurements so useAnchorPosition + align math are deterministic.
+  const originalGetBoundingClientRect =
+    HTMLElement.prototype.getBoundingClientRect;
+
+  beforeEach(() => {
+    Object.defineProperty(HTMLElement.prototype, "getBoundingClientRect", {
+      configurable: true,
+      value: function () {
+        const role = this.getAttribute("role");
+        if (role === "menu") {
+          return {
+            top: 0,
+            left: 0,
+            right: 200,
+            bottom: 100,
+            width: 200,
+            height: 100,
+            x: 0,
+            y: 0,
+            toJSON() { return {}; },
+          } as DOMRect;
+        }
+        // Trigger button
+        return {
+          top: 50,
+          left: 500,
+          right: 540,
+          bottom: 90,
+          width: 40,
+          height: 40,
+          x: 500,
+          y: 50,
+          toJSON() { return {}; },
+        } as DOMRect;
+      },
+    });
+  });
+
+  afterEach(() => {
+    Object.defineProperty(HTMLElement.prototype, "getBoundingClientRect", {
+      configurable: true,
+      value: originalGetBoundingClientRect,
+    });
+  });
+
+  it("align='start' anchors menu left edge to trigger left edge", async () => {
+    render(
+      <DropdownMenu defaultOpen>
+        <DropdownMenuTrigger>
+          <button>open</button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start">
+          <DropdownMenuItem>A</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+    await act(async () => {
+      vi.advanceTimersByTime(160);
+    });
+    const menu = screen.getByRole("menu");
+    expect(menu.style.position).toBe("fixed");
+    expect(parseFloat(menu.style.left)).toBe(500);
+  });
+
+  it("align='end' anchors menu right edge to trigger right edge", async () => {
+    render(
+      <DropdownMenu defaultOpen>
+        <DropdownMenuTrigger>
+          <button>open</button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem>A</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+    await act(async () => {
+      vi.advanceTimersByTime(160);
+    });
+    const menu = screen.getByRole("menu");
+    // trigger.right (540) - content.width (200) = 340
+    expect(parseFloat(menu.style.left)).toBe(340);
+  });
+
+  it("align='center' anchors menu center on trigger center", async () => {
+    render(
+      <DropdownMenu defaultOpen>
+        <DropdownMenuTrigger>
+          <button>open</button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="center">
+          <DropdownMenuItem>A</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+    await act(async () => {
+      vi.advanceTimersByTime(160);
+    });
+    const menu = screen.getByRole("menu");
+    // trigger.left (500) + (trigger.width 40 - content.width 200) / 2 = 500 + (-80) = 420
+    expect(parseFloat(menu.style.left)).toBe(420);
+  });
+
+  it("sideOffset applies to top offset (default 4)", async () => {
+    render(
+      <DropdownMenu defaultOpen>
+        <DropdownMenuTrigger>
+          <button>open</button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem>A</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+    await act(async () => {
+      vi.advanceTimersByTime(160);
+    });
+    const menu = screen.getByRole("menu");
+    // trigger.bottom (90) + 4 = 94
+    expect(parseFloat(menu.style.top)).toBe(94);
+  });
+});
