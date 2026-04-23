@@ -91,3 +91,89 @@ describe("DropdownMenuItem base", () => {
     expect(onSelect).toHaveBeenCalledTimes(1);
   });
 });
+
+describe("DropdownMenuItem states", () => {
+  it("disabled sets aria-disabled and suppresses onSelect", async () => {
+    const user = userEvent.setup();
+    const onSelect = vi.fn();
+    render(
+      <DropdownMenu defaultOpen>
+        <DropdownMenuItem disabled onSelect={onSelect}>
+          Nope
+        </DropdownMenuItem>
+      </DropdownMenu>
+    );
+    const item = screen.getByRole("menuitem");
+    expect(item).toHaveAttribute("aria-disabled", "true");
+    await user.click(item);
+    expect(onSelect).not.toHaveBeenCalled();
+  });
+
+  it("destructive sets data-destructive=true", () => {
+    render(
+      <DropdownMenu defaultOpen>
+        <DropdownMenuItem destructive>Delete</DropdownMenuItem>
+      </DropdownMenu>
+    );
+    expect(screen.getByRole("menuitem")).toHaveAttribute(
+      "data-destructive",
+      "true"
+    );
+  });
+
+  it("leftSection renders as aria-hidden sibling before children", () => {
+    render(
+      <DropdownMenu defaultOpen>
+        <DropdownMenuItem leftSection={<svg data-testid="icon" />}>
+          Label
+        </DropdownMenuItem>
+      </DropdownMenu>
+    );
+    const section = screen.getByTestId("icon").parentElement!;
+    expect(section).toHaveAttribute("aria-hidden", "true");
+  });
+
+  it("hover (mouseEnter) moves focus onto the item", async () => {
+    const user = userEvent.setup();
+    render(
+      <DropdownMenu defaultOpen>
+        <DropdownMenuItem>A</DropdownMenuItem>
+        <DropdownMenuItem>B</DropdownMenuItem>
+      </DropdownMenu>
+    );
+    const [a, b] = screen.getAllByRole("menuitem");
+    expect(document.activeElement).not.toBe(a);
+    await user.hover(a);
+    expect(document.activeElement).toBe(a);
+    await user.hover(b);
+    expect(document.activeElement).toBe(b);
+  });
+
+  it("focus sets data-highlighted=true; blur removes it", async () => {
+    render(
+      <DropdownMenu defaultOpen>
+        <DropdownMenuItem>A</DropdownMenuItem>
+      </DropdownMenu>
+    );
+    const item = screen.getByRole("menuitem");
+    item.focus();
+    expect(item).toHaveAttribute("data-highlighted", "true");
+    item.blur();
+    expect(item).not.toHaveAttribute("data-highlighted");
+  });
+
+  it("library-managed role wins over a consumer-supplied role via rest", () => {
+    render(
+      <DropdownMenu defaultOpen>
+        <DropdownMenuItem
+          data-testid="item"
+          // @ts-expect-error testing rest-spread ordering
+          role="button"
+        >
+          x
+        </DropdownMenuItem>
+      </DropdownMenu>
+    );
+    expect(screen.getByTestId("item")).toHaveAttribute("role", "menuitem");
+  });
+});
