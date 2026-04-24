@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi } from "vitest";
 import { ShareDialog } from "./ShareDialog";
-import type { ShareDialogProps } from "./ShareDialog";
+import type { ShareDialogProps, ShareUser } from "./ShareDialog";
 
 const mockShares: ShareDialogProps["shares"] = [];
 
@@ -26,6 +26,11 @@ const viewerEntry: ShareDialogProps["shares"][number] = {
   email: "bob@example.com",
   level: "viewer",
 };
+
+const searchResults: ShareUser[] = [
+  { id: "u1", name: "Carol Davis", email: "carol@example.com" },
+  { id: "u2", name: "Dave Wilson", email: "dave@example.com" },
+];
 
 const defaultProps: ShareDialogProps = {
   open: true,
@@ -167,6 +172,136 @@ describe("ShareDialog", () => {
       });
       await userEvent.click(viewerItem);
       expect(onPermissionChange).toHaveBeenCalledWith("editor-1", "viewer");
+    });
+  });
+
+  describe("search flow", () => {
+    it("fires onSearch after typing", async () => {
+      const onSearch = vi.fn().mockResolvedValue([]);
+      render(<ShareDialog {...defaultProps} onSearch={onSearch} />);
+      const input = screen.getByPlaceholderText("Search by name or email...");
+      await userEvent.type(input, "carol");
+      await vi.waitFor(() => {
+        expect(onSearch).toHaveBeenCalledWith("carol");
+      });
+    });
+
+    it("shows spinner while searching", async () => {
+      let resolveSearch!: (value: ShareUser[]) => void;
+      const onSearch = vi.fn(
+        () => new Promise<ShareUser[]>((r) => { resolveSearch = r; })
+      );
+      render(<ShareDialog {...defaultProps} onSearch={onSearch} />);
+      await userEvent.type(
+        screen.getByPlaceholderText("Search by name or email..."),
+        "carol"
+      );
+      await vi.waitFor(() => {
+        expect(onSearch).toHaveBeenCalled();
+      });
+      expect(screen.getByRole("status")).toBeInTheDocument();
+      resolveSearch([]);
+    });
+
+    it("shows results after search resolves", async () => {
+      const onSearch = vi.fn().mockResolvedValue(searchResults);
+      render(<ShareDialog {...defaultProps} onSearch={onSearch} />);
+      await userEvent.type(
+        screen.getByPlaceholderText("Search by name or email..."),
+        "carol"
+      );
+      await vi.waitFor(() => {
+        expect(screen.getByText("Carol Davis")).toBeInTheDocument();
+      });
+      expect(screen.getByText("Dave Wilson")).toBeInTheDocument();
+    });
+
+    it("shows No users found when results empty", async () => {
+      const onSearch = vi.fn().mockResolvedValue([]);
+      render(<ShareDialog {...defaultProps} onSearch={onSearch} />);
+      await userEvent.type(
+        screen.getByPlaceholderText("Search by name or email..."),
+        "zzz"
+      );
+      await vi.waitFor(() => {
+        expect(screen.getByText("No users found")).toBeInTheDocument();
+      });
+    });
+
+    it("filters already-shared users from results", async () => {
+      const onSearch = vi.fn().mockResolvedValue([
+        { id: "editor-1", name: "Alice Smith", email: "alice@example.com" },
+        { id: "u1", name: "Carol Davis", email: "carol@example.com" },
+      ]);
+      render(
+        <ShareDialog
+          {...defaultProps}
+          shares={[ownerEntry, editorEntry]}
+          onSearch={onSearch}
+        />
+      );
+      await userEvent.type(
+        screen.getByPlaceholderText("Search by name or email..."),
+        "a"
+      );
+      await vi.waitFor(() => {
+        expect(screen.getByRole("option")).toBeInTheDocument();
+      });
+      const options = screen.getAllByRole("option");
+      expect(options).toHaveLength(1);
+      expect(options[0]).toHaveTextContent("Carol Davis");
+    });
+  });
+
+  describe("add flow", () => {
+    it("clicking a result stages the user and enables Share", async () => {
+      const onSearch = vi.fn().mockResolvedValue(searchResults);
+      render(<ShareDialog {...defaultProps} onSearch={onSearch} />);
+      await userEvent.type(
+        screen.getByPlaceholderText("Search by name or email..."),
+        "carol"
+      );
+      await vi.waitFor(() => {
+        expect(screen.getByText("Carol Davis")).toBeInTheDocument();
+      });
+      await userEvent.click(screen.getByText("Carol Davis"));
+      expect(screen.getByRole("button", { name: "Share" })).not.toBeDisabled();
+    });
+
+    it("fires onAdd with staged user and selected level", async () => {
+      const onSearch = vi.fn().mockResolvedValue(searchResults);
+      const onAdd = vi.fn();
+      render(
+        <ShareDialog {...defaultProps} onSearch={onSearch} onAdd={onAdd} />
+      );
+      await userEvent.type(
+        screen.getByPlaceholderText("Search by name or email..."),
+        "carol"
+      );
+      await vi.waitFor(() => {
+        expect(screen.getByText("Carol Davis")).toBeInTheDocument();
+      });
+      await userEvent.click(screen.getByText("Carol Davis"));
+      await userEvent.click(screen.getByRole("button", { name: "Share" }));
+      expect(onAdd).toHaveBeenCalledWith(
+        searchResults[0],
+        "viewer"
+      );
+    });
+
+    it("clears staged user and disables Share after adding", async () => {
+      const onSearch = vi.fn().mockResolvedValue(searchResults);
+      render(<ShareDialog {...defaultProps} onSearch={onSearch} />);
+      await userEvent.type(
+        screen.getByPlaceholderText("Search by name or email..."),
+        "carol"
+      );
+      await vi.waitFor(() => {
+        expect(screen.getByText("Carol Davis")).toBeInTheDocument();
+      });
+      await userEvent.click(screen.getByText("Carol Davis"));
+      await userEvent.click(screen.getByRole("button", { name: "Share" }));
+      expect(screen.getByRole("button", { name: "Share" })).toBeDisabled();
     });
   });
 });
