@@ -38,6 +38,8 @@ export * from "./Toggle";
 export * from "./DropdownMenu";
 export * from "./FilePreviewPanel";
 export * from "./ImagePreview";
+export * from "./PermissionBadge";
+export * from "./ShareDialog";
 export * from "./utils";
 
 export {
