@@ -1,5 +1,3 @@
-"use client";
-
 import { forwardRef, type HTMLAttributes } from "react";
 import { IconStar, IconPencil, IconEye } from "@natum/icons";
 import type { IconProps } from "@natum/icons";
@@ -24,9 +22,9 @@ type LevelConfig = {
 };
 
 const LEVEL_CONFIG: Record<PermissionLevel, LevelConfig> = {
-  owner: { color: "primary", icon: IconStar, label: "Owner" } as LevelConfig,
-  editor: { color: "secondary", icon: IconPencil, label: "Editor" } as LevelConfig,
-  viewer: { color: "neutral", icon: IconEye, label: "Viewer" } as LevelConfig,
+  owner: { color: "primary", icon: IconStar, label: "Owner" },
+  editor: { color: "secondary", icon: IconPencil, label: "Editor" },
+  viewer: { color: "neutral", icon: IconEye, label: "Viewer" },
 };
 
 const ICON_SIZE: Record<BadgeSize, "xs" | "sm"> = {
@@ -41,13 +39,13 @@ const PermissionBadge = forwardRef<HTMLSpanElement, PermissionBadgeProps>(
 
     return (
       <Badge
+        {...rest}
         ref={ref}
-        color={config.color as any}
+        color={config.color}
         variant="soft"
         size={size}
         leftSection={<Icon size={ICON_SIZE[size]} color="currentColor" />}
         className={className}
-        {...rest}
       >
         {config.label}
       </Badge>
