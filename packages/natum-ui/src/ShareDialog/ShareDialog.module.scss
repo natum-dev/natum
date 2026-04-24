@@ -1,0 +1,130 @@
+@use "../design-tokens" as *;
+
+.add_row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding-block-end: var(--space-3);
+  border-block-end: 1px solid var(--border-color);
+}
+
+.search_container {
+  flex: 1;
+  position: relative;
+  min-inline-size: 0;
+}
+
+.search_dropdown {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-start: 100%;
+  z-index: 10;
+  margin-block-start: var(--space-1);
+  background: var(--neutral-bg-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-medium);
+  max-block-size: 200px;
+  overflow-y: auto;
+}
+
+.search_status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-3);
+}
+
+.search_result {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  cursor: pointer;
+
+  &:hover,
+  &_active {
+    background: var(--neutral-soft);
+  }
+}
+
+.user_info {
+  flex: 1;
+  min-inline-size: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.user_name {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--neutral-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user_email {
+  font-size: var(--font-size-xs);
+  color: var(--neutral-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.permission_trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background: var(--neutral-bg-elevated);
+  color: var(--neutral-text);
+  font-size: var(--font-size-xs);
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  appearance: none;
+
+  &:hover {
+    background: var(--neutral-soft);
+  }
+
+  &:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+  }
+}
+
+.share_list {
+  padding-block-start: var(--space-3);
+  max-block-size: 300px;
+  overflow-y: auto;
+}
+
+.share_list_label {
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--neutral-text-secondary);
+  margin-block-end: var(--space-2);
+}
+
+.share_row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) 0;
+
+  & + & {
+    border-block-start: 1px solid var(--border-color);
+  }
+}
+
+.share_actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  flex-shrink: 0;
+}
