@@ -148,4 +148,65 @@ describe("FilePreviewPanel", () => {
       expect(onNext).toHaveBeenCalledOnce();
     });
   });
+
+  describe("close behavior", () => {
+    it("close button fires onClose", async () => {
+      const onClose = vi.fn();
+      render(
+        <FilePreviewPanel open onClose={onClose} fileName="test.jpg" />
+      );
+      await userEvent.click(
+        screen.getByRole("button", { name: "Close preview" })
+      );
+      expect(onClose).toHaveBeenCalledOnce();
+    });
+
+    it("Escape fires onClose", async () => {
+      const onClose = vi.fn();
+      render(
+        <FilePreviewPanel open onClose={onClose} fileName="test.jpg" />
+      );
+      await userEvent.keyboard("{Escape}");
+      expect(onClose).toHaveBeenCalledOnce();
+    });
+
+    it("scrim click fires onClose", () => {
+      const onClose = vi.fn();
+      render(
+        <FilePreviewPanel open onClose={onClose} fileName="test.jpg" />
+      );
+      const scrim = document.querySelector("[aria-hidden='true']") as HTMLElement;
+      fireEvent.click(scrim);
+      expect(onClose).toHaveBeenCalledOnce();
+    });
+
+    it("closeOnEsc={false} disables Escape close", async () => {
+      const onClose = vi.fn();
+      render(
+        <FilePreviewPanel
+          open
+          onClose={onClose}
+          fileName="test.jpg"
+          closeOnEsc={false}
+        />
+      );
+      await userEvent.keyboard("{Escape}");
+      expect(onClose).not.toHaveBeenCalled();
+    });
+
+    it("closeOnOverlayClick={false} disables scrim click close", () => {
+      const onClose = vi.fn();
+      render(
+        <FilePreviewPanel
+          open
+          onClose={onClose}
+          fileName="test.jpg"
+          closeOnOverlayClick={false}
+        />
+      );
+      const scrim = document.querySelector("[aria-hidden='true']") as HTMLElement;
+      fireEvent.click(scrim);
+      expect(onClose).not.toHaveBeenCalled();
+    });
+  });
 });
