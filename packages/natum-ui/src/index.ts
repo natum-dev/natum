@@ -36,6 +36,8 @@ export * from "./StorageQuotaBar";
 export * from "./SearchInput";
 export * from "./Toggle";
 export * from "./DropdownMenu";
+export * from "./FilePreviewPanel";
+export * from "./ImagePreview";
 export * from "./utils";
 
 export {
