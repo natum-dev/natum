@@ -86,7 +86,7 @@
 | Component | Description | Priority | Status | Notes |
 |-----------|-------------|:--------:|--------|-------|
 | Dropdown / Menu | Compound action menu (Trigger/Content/Item/Separator/Label); WAI-ARIA menu pattern with real focus moves, arrow/Home/End/typeahead nav, 4 close reasons under `onInteractOutside` umbrella; modal scroll lock + scrim; portaled via useAnchorPosition + align override; single canonical size; zero new tokens | P0 | Done | Shell only: no submenus, no checkbox/radio items, no hover-to-open (deferred). |
-| FilePreviewPanel | Side panel rendering file previews (image, text, PDF) | P0 | Planned | In-browser file viewing; 400px desktop, full-screen mobile |
+| FilePreviewPanel | Side panel rendering file previews (image, text, PDF) | P0 | Done | Overlay drawer, 400px desktop / full-screen mobile, children-based composition. Ships with ImagePreview companion (loading/error states, object-fit contain). |
 | ShareDialog | Specialized dialog: user search, permission picker, share list | P0 | Planned | File sharing flow |
 | PermissionBadge | Badge variant showing permission level (owner, read, write) | P1 | Planned | Shared file indicators |
 
