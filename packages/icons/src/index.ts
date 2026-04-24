@@ -30,3 +30,6 @@ export { IconEye } from "./IconEye";
 export { IconEyeOff } from "./IconEyeOff";
 export { IconLoader } from "./IconLoader";
 export { IconUser } from "./IconUser";
+export { IconPencil } from "./IconPencil";
+export { IconShare } from "./IconShare";
+export { IconUserPlus } from "./IconUserPlus";
