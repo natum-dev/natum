@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi } from "vitest";
 import { ShareDialog } from "./ShareDialog";
@@ -302,6 +302,172 @@ describe("ShareDialog", () => {
       await userEvent.click(screen.getByText("Carol Davis"));
       await userEvent.click(screen.getByRole("button", { name: "Share" }));
       expect(screen.getByRole("button", { name: "Share" })).toBeDisabled();
+    });
+  });
+
+  describe("keyboard navigation", () => {
+    it("ArrowDown moves active index through results", async () => {
+      const onSearch = vi.fn().mockResolvedValue(searchResults);
+      render(<ShareDialog {...defaultProps} onSearch={onSearch} />);
+      const input = screen.getByPlaceholderText("Search by name or email...");
+      await userEvent.type(input, "carol");
+      await vi.waitFor(() => {
+        expect(screen.getAllByRole("option")).toHaveLength(2);
+      });
+      fireEvent.keyDown(input, { key: "ArrowDown" });
+      expect(screen.getAllByRole("option")[0]).toHaveAttribute(
+        "aria-selected",
+        "true"
+      );
+      fireEvent.keyDown(input, { key: "ArrowDown" });
+      expect(screen.getAllByRole("option")[1]).toHaveAttribute(
+        "aria-selected",
+        "true"
+      );
+    });
+
+    it("ArrowUp wraps to last result", async () => {
+      const onSearch = vi.fn().mockResolvedValue(searchResults);
+      render(<ShareDialog {...defaultProps} onSearch={onSearch} />);
+      const input = screen.getByPlaceholderText("Search by name or email...");
+      await userEvent.type(input, "carol");
+      await vi.waitFor(() => {
+        expect(screen.getAllByRole("option")).toHaveLength(2);
+      });
+      fireEvent.keyDown(input, { key: "ArrowUp" });
+      expect(screen.getAllByRole("option")[1]).toHaveAttribute(
+        "aria-selected",
+        "true"
+      );
+    });
+
+    it("Enter selects the highlighted result", async () => {
+      const onSearch = vi.fn().mockResolvedValue(searchResults);
+      render(<ShareDialog {...defaultProps} onSearch={onSearch} />);
+      const input = screen.getByPlaceholderText("Search by name or email...");
+      await userEvent.type(input, "carol");
+      await vi.waitFor(() => {
+        expect(screen.getAllByRole("option")).toHaveLength(2);
+      });
+      fireEvent.keyDown(input, { key: "ArrowDown" });
+      fireEvent.keyDown(input, { key: "Enter" });
+      expect(screen.getByRole("button", { name: "Share" })).not.toBeDisabled();
+    });
+
+    it("Escape closes search dropdown", async () => {
+      const onSearch = vi.fn().mockResolvedValue(searchResults);
+      render(<ShareDialog {...defaultProps} onSearch={onSearch} />);
+      const input = screen.getByPlaceholderText("Search by name or email...");
+      await userEvent.type(input, "carol");
+      await vi.waitFor(() => {
+        expect(screen.getByRole("listbox")).toBeInTheDocument();
+      });
+      fireEvent.keyDown(input, { key: "Escape" });
+      expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
+    });
+  });
+
+  describe("edge cases", () => {
+    it("typing while staged clears staged user", async () => {
+      const onSearch = vi.fn().mockResolvedValue(searchResults);
+      render(<ShareDialog {...defaultProps} onSearch={onSearch} />);
+      const input = screen.getByPlaceholderText("Search by name or email...");
+      await userEvent.type(input, "carol");
+      await vi.waitFor(() => {
+        expect(screen.getByText("Carol Davis")).toBeInTheDocument();
+      });
+      await userEvent.click(screen.getByText("Carol Davis"));
+      expect(
+        screen.getByRole("button", { name: "Share" })
+      ).not.toBeDisabled();
+      fireEvent.keyDown(input, { key: "a" });
+      expect(screen.getByRole("button", { name: "Share" })).toBeDisabled();
+    });
+
+    it("resets state when dialog closes", async () => {
+      const onSearch = vi.fn().mockResolvedValue(searchResults);
+      const { rerender } = render(
+        <ShareDialog {...defaultProps} onSearch={onSearch} />
+      );
+      await userEvent.type(
+        screen.getByPlaceholderText("Search by name or email..."),
+        "carol"
+      );
+      await vi.waitFor(() => {
+        expect(screen.getByText("Carol Davis")).toBeInTheDocument();
+      });
+      rerender(<ShareDialog {...defaultProps} onSearch={onSearch} open={false} />);
+      rerender(<ShareDialog {...defaultProps} onSearch={onSearch} open={true} />);
+      expect(
+        screen.getByPlaceholderText("Search by name or email...")
+      ).toHaveValue("");
+    });
+  });
+
+  describe("accessibility", () => {
+    it("search input has role=combobox", () => {
+      render(<ShareDialog {...defaultProps} />);
+      const input = screen.getByPlaceholderText("Search by name or email...");
+      expect(input).toHaveAttribute("role", "combobox");
+    });
+
+    it("search input has aria-label", () => {
+      render(<ShareDialog {...defaultProps} />);
+      const input = screen.getByPlaceholderText("Search by name or email...");
+      expect(input).toHaveAttribute("aria-label", "Search users");
+    });
+
+    it("search results have role=listbox", async () => {
+      const onSearch = vi.fn().mockResolvedValue(searchResults);
+      render(<ShareDialog {...defaultProps} onSearch={onSearch} />);
+      await userEvent.type(
+        screen.getByPlaceholderText("Search by name or email..."),
+        "carol"
+      );
+      await vi.waitFor(() => {
+        expect(screen.getByRole("listbox")).toBeInTheDocument();
+      });
+    });
+
+    it("each result has role=option", async () => {
+      const onSearch = vi.fn().mockResolvedValue(searchResults);
+      render(<ShareDialog {...defaultProps} onSearch={onSearch} />);
+      await userEvent.type(
+        screen.getByPlaceholderText("Search by name or email..."),
+        "carol"
+      );
+      await vi.waitFor(() => {
+        expect(screen.getAllByRole("option")).toHaveLength(2);
+      });
+    });
+
+    it("aria-activedescendant updates on ArrowDown", async () => {
+      const onSearch = vi.fn().mockResolvedValue(searchResults);
+      render(<ShareDialog {...defaultProps} onSearch={onSearch} />);
+      const input = screen.getByPlaceholderText("Search by name or email...");
+      await userEvent.type(input, "carol");
+      await vi.waitFor(() => {
+        expect(screen.getAllByRole("option")).toHaveLength(2);
+      });
+      expect(input).not.toHaveAttribute("aria-activedescendant");
+      fireEvent.keyDown(input, { key: "ArrowDown" });
+      const firstOption = screen.getAllByRole("option")[0];
+      expect(input).toHaveAttribute(
+        "aria-activedescendant",
+        firstOption.getAttribute("id")
+      );
+    });
+
+    it("remove button has aria-label with user name", () => {
+      render(
+        <ShareDialog
+          {...defaultProps}
+          shares={[ownerEntry, editorEntry]}
+        />
+      );
+      expect(
+        screen.getByLabelText("Remove access for Alice Smith")
+      ).toBeInTheDocument();
     });
   });
 });
