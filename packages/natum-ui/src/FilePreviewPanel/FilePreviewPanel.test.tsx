@@ -68,4 +68,84 @@ describe("FilePreviewPanel", () => {
       expect(screen.getByTestId("preview-content")).toBeInTheDocument();
     });
   });
+
+  describe("navigation", () => {
+    it("hides previous button when onPrevious not provided", () => {
+      render(
+        <FilePreviewPanel open onClose={() => {}} fileName="test.jpg" />
+      );
+      expect(
+        screen.queryByRole("button", { name: "Previous file" })
+      ).not.toBeInTheDocument();
+    });
+
+    it("hides next button when onNext not provided", () => {
+      render(
+        <FilePreviewPanel open onClose={() => {}} fileName="test.jpg" />
+      );
+      expect(
+        screen.queryByRole("button", { name: "Next file" })
+      ).not.toBeInTheDocument();
+    });
+
+    it("shows and fires onPrevious when provided", async () => {
+      const onPrevious = vi.fn();
+      render(
+        <FilePreviewPanel
+          open
+          onClose={() => {}}
+          fileName="test.jpg"
+          onPrevious={onPrevious}
+        />
+      );
+      const btn = screen.getByRole("button", { name: "Previous file" });
+      await userEvent.click(btn);
+      expect(onPrevious).toHaveBeenCalledOnce();
+    });
+
+    it("shows and fires onNext when provided", async () => {
+      const onNext = vi.fn();
+      render(
+        <FilePreviewPanel
+          open
+          onClose={() => {}}
+          fileName="test.jpg"
+          onNext={onNext}
+        />
+      );
+      const btn = screen.getByRole("button", { name: "Next file" });
+      await userEvent.click(btn);
+      expect(onNext).toHaveBeenCalledOnce();
+    });
+
+    it("ArrowLeft fires onPrevious", () => {
+      const onPrevious = vi.fn();
+      render(
+        <FilePreviewPanel
+          open
+          onClose={() => {}}
+          fileName="test.jpg"
+          onPrevious={onPrevious}
+        />
+      );
+      const panel = screen.getByRole("dialog");
+      fireEvent.keyDown(panel, { key: "ArrowLeft" });
+      expect(onPrevious).toHaveBeenCalledOnce();
+    });
+
+    it("ArrowRight fires onNext", () => {
+      const onNext = vi.fn();
+      render(
+        <FilePreviewPanel
+          open
+          onClose={() => {}}
+          fileName="test.jpg"
+          onNext={onNext}
+        />
+      );
+      const panel = screen.getByRole("dialog");
+      fireEvent.keyDown(panel, { key: "ArrowRight" });
+      expect(onNext).toHaveBeenCalledOnce();
+    });
+  });
 });
