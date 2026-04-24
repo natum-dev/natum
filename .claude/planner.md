@@ -87,8 +87,8 @@
 |-----------|-------------|:--------:|--------|-------|
 | Dropdown / Menu | Compound action menu (Trigger/Content/Item/Separator/Label); WAI-ARIA menu pattern with real focus moves, arrow/Home/End/typeahead nav, 4 close reasons under `onInteractOutside` umbrella; modal scroll lock + scrim; portaled via useAnchorPosition + align override; single canonical size; zero new tokens | P0 | Done | Shell only: no submenus, no checkbox/radio items, no hover-to-open (deferred). |
 | FilePreviewPanel | Side panel rendering file previews (image, text, PDF) | P0 | Done | Overlay drawer, 400px desktop / full-screen mobile, children-based composition. Ships with ImagePreview companion (loading/error states, object-fit contain). |
-| ShareDialog | Specialized dialog: user search, permission picker, share list | P0 | Planned | File sharing flow |
-| PermissionBadge | Badge variant showing permission level (owner, read, write) | P1 | Planned | Shared file indicators |
+| ShareDialog | Specialized dialog: user search, permission picker, share list | P0 | Done | Wraps Modal (md); SearchInput with async onSearch + debounced autocomplete dropdown; fully controlled shares list with inline DropdownMenu permission pickers + remove buttons; owner rows non-editable; composes Avatar, PermissionBadge, DropdownMenu. |
+| PermissionBadge | Badge variant showing permission level (owner, read, write) | P1 | Done | Wraps Badge with preset level→color/icon/label mappings. owner=primary/star, editor=secondary/pencil, viewer=neutral/eye. sm/md sizes. Display-only, not polymorphic. |
 
 ---
 
