@@ -62,6 +62,10 @@ next-env.d.ts
 .next
 out
 
+# Package build output
+dist/
+storybook-static/
+
 # Vercel
 .vercel
 
