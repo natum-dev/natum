@@ -142,6 +142,31 @@ const ShareDialog = forwardRef<HTMLDivElement, ShareDialogProps>(
       setResults([]);
     }, [stagedUser, selectedLevel, onAdd]);
 
+    const showDropdownRef = useRef(false);
+    showDropdownRef.current = showDropdown;
+    const filteredResultsRef = useRef<ShareUser[]>([]);
+    filteredResultsRef.current = filteredResults;
+
+    // Capture-phase native listener on document so Escape fires BEFORE
+    // useFocusTrap's bubble-phase listener (which calls stopPropagation + onClose).
+    // Only intercepts Escape when the search dropdown is open.
+    useEffect(() => {
+      if (!open) return;
+      const handleCapture = (e: globalThis.KeyboardEvent) => {
+        if (e.key !== "Escape") return;
+        if (!showDropdownRef.current || filteredResultsRef.current.length === 0)
+          return;
+        // Dropdown is open — close it and prevent focus trap from closing the modal.
+        e.stopPropagation();
+        e.preventDefault();
+        setResults([]);
+        setQuery("");
+        setActiveIndex(-1);
+      };
+      document.addEventListener("keydown", handleCapture, true);
+      return () => document.removeEventListener("keydown", handleCapture, true);
+    }, [open]);
+
     const handleSearchKeyDown = useCallback(
       (e: KeyboardEvent<HTMLInputElement>) => {
         if (stagedUser && e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
@@ -166,6 +191,7 @@ const ShareDialog = forwardRef<HTMLDivElement, ShareDialogProps>(
         } else if (e.key === "Escape") {
           e.preventDefault();
           setResults([]);
+          setQuery("");
           setActiveIndex(-1);
         }
       },
