@@ -7,10 +7,7 @@
   background: none;
   border: none;
   margin: 0;
-  padding: var(--space-3) var(--space-4);
-  @include hit-target-min;
   font: inherit;
-  font-size: 16px;
   font-weight: 500;
   text-decoration: none;
   -webkit-appearance: none;
@@ -21,6 +18,7 @@
   align-items: center;
   justify-content: center;
   border-radius: var(--radius-md);
+  color: var(--button-color, var(--neutral-text));
 
   &:focus-visible {
     outline: var(--focus-ring-width) solid var(--focus-ring-color);
@@ -33,10 +31,52 @@
   }
 }
 
-// Variants
+// Slot wrappers — keep icons/spinner aligned to the text baseline.
+.section {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.label {
+  display: inline-flex;
+  align-items: center;
+}
+
+// --- Sizes -------------------------------------------------------------------
+// Sizes drive padding, font-size, slot gap, and minimum height.
+.sm {
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+  font-size: 14px;
+  min-block-size: 32px;
+  @include hit-target-extend;
+}
+
+.md {
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  font-size: 16px;
+  min-block-size: 40px;
+  @include hit-target-extend;
+}
+
+.lg {
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-6);
+  font-size: 16px;
+  // 48px already exceeds the 44px hit-target minimum.
+  min-block-size: 48px;
+}
+
+// --- Variants ---------------------------------------------------------------
+// Variants consume the per-color CSS custom properties set in the color blocks
+// below. This keeps the variant rules color-agnostic and allows colors to layer
+// cleanly on top.
 .filled {
-  background-color: var(--primary-bg);
-  color: var(--primary-contrast);
+  background-color: var(--button-main-color);
+  color: var(--button-contrast-color, var(--neutral-text-inverse));
 
   &:hover {
     filter: brightness(1.1);
@@ -44,24 +84,112 @@
 }
 
 .soft {
-  background-color: var(--primary-soft);
-  color: var(--primary-text);
+  background-color: var(--button-soft-color);
+  color: var(--button-main-color);
 
   &:hover {
-    background-color: var(--primary-soft-hover);
+    background-color: var(--button-soft-hover-color);
   }
 }
 
 .text {
   background: none;
-  color: var(--primary-text);
+  color: var(--button-main-color);
 
   &:hover {
-    background-color: var(--primary-surface);
+    background-color: var(--button-soft-color);
   }
 }
 
-// Disabled
+// --- Colors -----------------------------------------------------------------
+// Each semantic color sets the same set of CSS custom properties; the variant
+// block above renders them. This is the same composition pattern IconButton
+// uses.
+.primary {
+  --button-main-color: var(--primary-bg);
+  --button-contrast-color: var(--primary-contrast);
+  --button-soft-color: var(--primary-soft);
+  --button-soft-hover-color: var(--primary-soft-hover);
+
+  &.soft,
+  &.text {
+    --button-main-color: var(--primary-text);
+  }
+}
+
+.secondary {
+  --button-main-color: var(--secondary-bg);
+  --button-contrast-color: var(--secondary-contrast);
+  --button-soft-color: var(--secondary-soft);
+  --button-soft-hover-color: var(--secondary-soft-hover);
+
+  &.soft,
+  &.text {
+    --button-main-color: var(--secondary-text);
+  }
+}
+
+.error {
+  --button-main-color: var(--error-bg);
+  --button-contrast-color: var(--error-contrast);
+  --button-soft-color: var(--error-soft);
+  --button-soft-hover-color: var(--error-soft-hover);
+
+  &.soft,
+  &.text {
+    --button-main-color: var(--error-text);
+  }
+}
+
+.success {
+  --button-main-color: var(--success-bg);
+  --button-contrast-color: var(--success-contrast);
+  --button-soft-color: var(--success-soft);
+  --button-soft-hover-color: var(--success-soft-hover);
+
+  &.soft,
+  &.text {
+    --button-main-color: var(--success-text);
+  }
+}
+
+.warning {
+  --button-main-color: var(--warning-bg);
+  --button-contrast-color: var(--warning-contrast);
+  --button-soft-color: var(--warning-soft);
+  --button-soft-hover-color: var(--warning-soft-hover);
+
+  &.soft,
+  &.text {
+    --button-main-color: var(--warning-text);
+  }
+}
+
+.info {
+  --button-main-color: var(--info-bg);
+  --button-contrast-color: var(--info-contrast);
+  --button-soft-color: var(--info-soft);
+  --button-soft-hover-color: var(--info-soft-hover);
+
+  &.soft,
+  &.text {
+    --button-main-color: var(--info-text);
+  }
+}
+
+.neutral {
+  --button-main-color: var(--neutral-text);
+  --button-contrast-color: var(--neutral-contrast);
+  --button-soft-color: var(--neutral-soft);
+  --button-soft-hover-color: var(--neutral-soft-hover);
+
+  &.soft,
+  &.text {
+    --button-main-color: var(--neutral-text);
+  }
+}
+
+// --- Disabled ---------------------------------------------------------------
 .disabled {
   color: var(--disabled-text);
   cursor: not-allowed;
@@ -69,6 +197,7 @@
 
   &.filled {
     background-color: var(--disabled-bg);
+    color: var(--disabled-text);
   }
 
   &.soft {
@@ -78,5 +207,23 @@
 
   &.text {
     background: none;
+    color: var(--disabled-text);
   }
+}
+
+// --- Loading ----------------------------------------------------------------
+// While loading the button stays focusable (no native `disabled` attribute) so
+// screen readers announce a busy interactive element. Pointer interaction is
+// suppressed at the children level so the focus ring stays usable.
+.loading {
+  cursor: progress;
+
+  > * {
+    pointer-events: none;
+  }
+}
+
+// Spinner inherits color via `currentColor` from the parent variant.
+.spinner {
+  display: inline-flex;
 }
