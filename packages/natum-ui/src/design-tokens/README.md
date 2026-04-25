@@ -261,20 +261,23 @@ Under `@media (prefers-reduced-motion: reduce)`, all `--duration-*` tokens are o
 
 ## Disabled
 
-Shared disabled tokens using explicit muted colors (not opacity). Theme-aware — values switch between light and dark mode.
+Shared disabled tokens layer two mechanisms: muted color tokens (theme-aware) plus a subtle opacity for visual cohesion. See `DESIGN_PHILOSOPHY.md` "Disabled State Convention" for the rationale.
 
 | Token | Light | Dark | Usage |
 |-------|-------|------|-------|
 | `--disabled-text` | grey-400 | grey-500 | Labels, icons |
 | `--disabled-bg` | grey-100 | grey-800 | Container fills |
 | `--disabled-border` | grey-300 | grey-600 | Outlines |
+| `--disabled-opacity` | 0.85 | 0.85 | Supplemental fade |
 
-Components use shared tokens by default. Override with grey palette values when component anatomy demands different treatment.
+Components apply both tokens and opacity together. Use color tokens that match the component's anatomy (text-only elements need only `--disabled-text`; surfaces add `--disabled-bg` and `--disabled-border`).
 
 ```scss
 .button.disabled {
   color: var(--disabled-text);
   background-color: var(--disabled-bg);
+  border-color: var(--disabled-border);
+  opacity: var(--disabled-opacity);
   cursor: not-allowed;
   pointer-events: none;
 }

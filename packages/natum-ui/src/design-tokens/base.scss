@@ -102,6 +102,7 @@
   --disabled-text: #{get-color(grey, 400)};
   --disabled-bg: #{get-color(grey, 100)};
   --disabled-border: #{get-color(grey, 300)};
+  --disabled-opacity: 0.85;
 }
 
 @mixin dark-scheme {
@@ -203,6 +204,7 @@
   --disabled-text: #{get-color(grey, 500)};
   --disabled-bg: #{get-color(grey, 800)};
   --disabled-border: #{get-color(grey, 600)};
+  --disabled-opacity: 0.85;
 }
 
 :root {

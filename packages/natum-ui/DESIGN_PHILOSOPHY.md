@@ -125,19 +125,40 @@ This ensures colorblind, low-vision, and screen reader users all receive state i
 
 ## Disabled State Convention
 
-- Use shared disabled tokens — **not opacity**:
+Disabled components communicate inactivity through **two mechanisms layered together**:
+
+1. **Color tokens** drive the foreground, background, and border via `--disabled-text`, `--disabled-bg`, `--disabled-border`. These guarantee adequate contrast across light and dark mode and prevent backdrop interference (translucent elements over tinted surfaces become unpredictable; opaque tokens stay readable).
+2. **Subtle opacity** via `--disabled-opacity` (default `0.85`) adds the universally-understood "faded = inactive" visual signal. It compounds with the token-driven color shift rather than replacing it.
+
+Both are required. Tokens alone can be too subtle on small elements (badges, switches) to register at a glance. Opacity alone fails on tinted backdrops, in dark mode, and for color-blind users (a "less red" disabled error button is hard to distinguish from its enabled state).
 
 | Token | Light | Dark | Usage |
 |-------|-------|------|-------|
 | `--disabled-text` | grey-400 | grey-500 | Labels, icons |
 | `--disabled-bg` | grey-100 | grey-800 | Container fills |
 | `--disabled-border` | grey-300 | grey-600 | Outlines |
+| `--disabled-opacity` | 0.85 | 0.85 | Supplemental fade |
+
+**Required pattern:**
+
+```scss
+&[data-disabled="true"], // or :disabled, &.disabled — match component anatomy
+&:disabled {
+  color: var(--disabled-text);
+  background-color: var(--disabled-bg);
+  border-color: var(--disabled-border);
+  opacity: var(--disabled-opacity);
+  cursor: not-allowed;
+}
+```
 
 - Components use shared tokens by default; may override with grey palette values when component anatomy demands it
 - `cursor: not-allowed`
 - `pointer-events: none` on interactive children
 - Keep in DOM — screen readers should find it via `aria-disabled="true"`
 - Removed from tab order (`tabIndex: -1` for non-native elements), matching native `<button disabled>` behavior. Screen readers discover disabled elements via browse mode regardless of tabIndex.
+
+**Note on WCAG:** WCAG 2.1 SC 1.4.3 / 1.4.11 explicitly exempt "components in an inactive state" from contrast requirements, so neither tokens-only nor opacity-only is technically a WCAG violation. The two-mechanism rule above is a UX-quality choice (theme consistency, backdrop predictability, color-blind affordance), not a legal one.
 
 ---
 
