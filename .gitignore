@@ -73,7 +73,3 @@ storybook-static/
 .DS_Store
 *.pem
 .vscode/
-
-
-# Superpowers brainstorming sessions
-.superpowers/
