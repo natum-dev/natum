@@ -16,8 +16,6 @@ const meta: Meta<typeof Modal> = {
       control: "select",
       options: ["sm", "md", "lg"],
     },
-    closeOnOverlayClick: { control: "boolean" },
-    closeOnEsc: { control: "boolean" },
     hideCloseButton: { control: "boolean" },
   },
 };
@@ -42,7 +40,7 @@ export const Default: Story = {
       <>
         <Button onClick={() => setIsOpen(true)}>Open Modal</Button>
         <Modal
-          isOpen={isOpen}
+          open={isOpen}
           onClose={() => setIsOpen(false)}
           title="Confirm Action"
           footer={
@@ -73,7 +71,7 @@ export const Sizes: Story = {
               {size.toUpperCase()}
             </Button>
             <Modal
-              isOpen={open === size}
+              open={open === size}
               onClose={() => setOpen(null)}
               title={`Size: ${size}`}
               size={size}
@@ -99,7 +97,7 @@ export const ScrollableContent: Story = {
       <>
         <Button onClick={() => setIsOpen(true)}>Open Scrollable</Button>
         <Modal
-          isOpen={isOpen}
+          open={isOpen}
           onClose={() => setIsOpen(false)}
           title="Scrollable Content"
           footer={<Button onClick={() => setIsOpen(false)}>Done</Button>}
@@ -124,7 +122,7 @@ export const NoFooter: Story = {
       <>
         <Button onClick={() => setIsOpen(true)}>Open Info Modal</Button>
         <Modal
-          isOpen={isOpen}
+          open={isOpen}
           onClose={() => setIsOpen(false)}
           title="Information"
         >
@@ -145,12 +143,12 @@ export const NoCloseButton: Story = {
       <>
         <Button onClick={() => setIsOpen(true)}>Open Forced Action</Button>
         <Modal
-          isOpen={isOpen}
+          open={isOpen}
           onClose={() => setIsOpen(false)}
           title="Required Action"
           hideCloseButton
-          closeOnOverlayClick={false}
-          closeOnEsc={false}
+          onInteractOutside={(e) => e.preventDefault()}
+          onEscapeKeyDown={(e) => e.preventDefault()}
           footer={<Button onClick={() => setIsOpen(false)}>I Understand</Button>}
         >
           <Typography variant="body1">
@@ -171,7 +169,7 @@ export const DarkMode: Story = {
       <>
         <Button onClick={() => setIsOpen(true)}>Open Modal</Button>
         <Modal
-          isOpen={isOpen}
+          open={isOpen}
           onClose={() => setIsOpen(false)}
           title="Dark Mode"
           footer={<Button onClick={() => setIsOpen(false)}>Close</Button>}
@@ -194,7 +192,7 @@ export const RTL: Story = {
       <div dir="rtl">
         <Button onClick={() => setIsOpen(true)}>افتح النافذة</Button>
         <Modal
-          isOpen={isOpen}
+          open={isOpen}
           onClose={() => setIsOpen(false)}
           title="تأكيد الحذف"
           footer={
@@ -222,7 +220,7 @@ export const DeleteConfirmation: Story = {
       <>
         <Button onClick={() => setIsOpen(true)}>Delete File</Button>
         <Modal
-          isOpen={isOpen}
+          open={isOpen}
           onClose={() => setIsOpen(false)}
           title="Delete File?"
           size="sm"
@@ -260,7 +258,7 @@ export const CreateFolder: Story = {
       <>
         <Button onClick={() => setIsOpen(true)}>New Folder</Button>
         <Modal
-          isOpen={isOpen}
+          open={isOpen}
           onClose={() => { setIsOpen(false); setName(""); }}
           title="Create Folder"
           size="sm"
@@ -299,7 +297,7 @@ export const ShareFile: Story = {
       <>
         <Button onClick={() => setIsOpen(true)}>Share</Button>
         <Modal
-          isOpen={isOpen}
+          open={isOpen}
           onClose={() => setIsOpen(false)}
           title="Share File"
           size="lg"
@@ -350,13 +348,13 @@ export const TermsAndConditions: Story = {
       <>
         <Button onClick={() => setIsOpen(true)}>View Terms</Button>
         <Modal
-          isOpen={isOpen}
+          open={isOpen}
           onClose={() => setIsOpen(false)}
           title="Terms & Conditions"
           size="md"
           hideCloseButton
-          closeOnOverlayClick={false}
-          closeOnEsc={false}
+          onInteractOutside={(e) => e.preventDefault()}
+          onEscapeKeyDown={(e) => e.preventDefault()}
           footer={
             <>
               <Button variant="text" onClick={() => setIsOpen(false)}>Decline</Button>
@@ -396,7 +394,7 @@ export const Responsive: Story = {
         </Typography>
         <Button onClick={() => setIsOpen(true)}>Open Modal</Button>
         <Modal
-          isOpen={isOpen}
+          open={isOpen}
           onClose={() => setIsOpen(false)}
           title="Responsive Modal"
           footer={<Button onClick={() => setIsOpen(false)}>Done</Button>}

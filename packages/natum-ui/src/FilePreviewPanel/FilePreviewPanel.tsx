@@ -1,8 +1,10 @@
+/// <reference types="vite/client" />
 "use client";
 
 import {
   forwardRef,
   useCallback,
+  useEffect,
   useId,
   useLayoutEffect,
   useRef,
@@ -26,14 +28,24 @@ const EXIT_DURATION = 150;
 type FilePreviewPanelBaseProps = {
   open: boolean;
   onClose: () => void;
-  fileName: string;
+  fileName: ReactNode;
   meta?: ReactNode;
   headerActions?: ReactNode;
   children?: ReactNode;
   onPrevious?: () => void;
   onNext?: () => void;
-  closeOnEsc?: boolean;
-  closeOnOverlayClick?: boolean;
+  /**
+   * Fires when the user presses Escape while the overlay is open.
+   * Call `event.preventDefault()` to keep the overlay open.
+   * If not handled (or not prevented), the overlay closes itself.
+   */
+  onEscapeKeyDown?: (event: KeyboardEvent) => void;
+  /**
+   * Fires when the user clicks/taps outside the overlay (the scrim).
+   * Call `event.preventDefault()` to keep the overlay open.
+   * If not handled (or not prevented), the overlay closes itself.
+   */
+  onInteractOutside?: (event: PointerEvent | FocusEvent) => void;
   "aria-label"?: string;
   className?: string;
 };
@@ -55,8 +67,8 @@ const FilePreviewPanel = forwardRef<HTMLDivElement, FilePreviewPanelProps>(
       children,
       onPrevious,
       onNext,
-      closeOnEsc = true,
-      closeOnOverlayClick = true,
+      onEscapeKeyDown,
+      onInteractOutside,
       "aria-label": ariaLabel,
       className,
       ...rest
@@ -74,6 +86,26 @@ const FilePreviewPanel = forwardRef<HTMLDivElement, FilePreviewPanelProps>(
       setMounted(true);
     }, []);
 
+    // Dev-warn when fileName is a non-string ReactNode without an explicit
+    // accessible name. The aria-labelledby fallback still works.
+    // One-shot guard so the warn doesn't fire on every parent re-render.
+    const warnedNonStringNameRef = useRef(false);
+    useEffect(() => {
+      if (!import.meta.env.DEV) return;
+      if (warnedNonStringNameRef.current) return;
+      if (
+        fileName !== undefined &&
+        typeof fileName !== "string" &&
+        typeof fileName !== "number" &&
+        !ariaLabel
+      ) {
+        console.warn(
+          "FilePreviewPanel: `fileName` is a non-string ReactNode. Provide `aria-label` to ensure a stable screen-reader name."
+        );
+        warnedNonStringNameRef.current = true;
+      }
+    }, [fileName, ariaLabel]);
+
     const { state, shouldRender } = useAnimationState({
       isOpen: open,
       enterDuration: ENTER_DURATION,
@@ -83,8 +115,13 @@ const FilePreviewPanel = forwardRef<HTMLDivElement, FilePreviewPanelProps>(
     useScrollLock({ enabled: open });
 
     useEscapeKey({
-      onEscape: onClose,
-      enabled: open && closeOnEsc,
+      onEscape: (event) => {
+        onEscapeKeyDown?.(event);
+        if (!event.defaultPrevented) {
+          onClose();
+        }
+      },
+      enabled: open,
     });
 
     // Capture focus on open, restore on close
@@ -109,11 +146,16 @@ const FilePreviewPanel = forwardRef<HTMLDivElement, FilePreviewPanelProps>(
       }
     }, [open, state]);
 
-    const handleScrimClick = useCallback(() => {
-      if (closeOnOverlayClick) {
-        onClose();
-      }
-    }, [closeOnOverlayClick, onClose]);
+    const handleScrimClick = useCallback(
+      (e: React.MouseEvent) => {
+        const native = e.nativeEvent as unknown as PointerEvent;
+        onInteractOutside?.(native);
+        if (!native.defaultPrevented) {
+          onClose();
+        }
+      },
+      [onInteractOutside, onClose]
+    );
 
     const handleKeyDown = useCallback(
       (e: React.KeyboardEvent) => {
@@ -135,6 +177,11 @@ const FilePreviewPanel = forwardRef<HTMLDivElement, FilePreviewPanelProps>(
       : { "aria-labelledby": fileNameId };
 
     if (!mounted || !shouldRender) return null;
+
+    const fileNameTitle =
+      typeof fileName === "string" || typeof fileName === "number"
+        ? String(fileName)
+        : undefined;
 
     return createPortal(
       <>
@@ -160,7 +207,7 @@ const FilePreviewPanel = forwardRef<HTMLDivElement, FilePreviewPanelProps>(
               <div
                 className={styles.file_name}
                 id={fileNameId}
-                title={fileName}
+                title={fileNameTitle}
               >
                 {fileName}
               </div>

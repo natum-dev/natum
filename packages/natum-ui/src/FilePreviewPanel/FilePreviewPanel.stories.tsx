@@ -164,7 +164,7 @@ function NoScrimCloseDemo() {
         onClose={() => setOpen(false)}
         fileName="protected.jpg"
         meta="1.8 MB · JPEG"
-        closeOnOverlayClick={false}
+        onInteractOutside={(e) => e.preventDefault()}
       >
         <ImagePreview
           src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800"

@@ -203,33 +203,66 @@ describe("FilePreviewPanel", () => {
       expect(onClose).toHaveBeenCalledOnce();
     });
 
-    it("closeOnEsc={false} disables Escape close", async () => {
+    it("onEscapeKeyDown can suppress close via event.preventDefault()", async () => {
       const onClose = vi.fn();
       render(
         <FilePreviewPanel
           open
           onClose={onClose}
           fileName="test.jpg"
-          closeOnEsc={false}
+          onEscapeKeyDown={(e) => e.preventDefault()}
         />
       );
       await userEvent.keyboard("{Escape}");
       expect(onClose).not.toHaveBeenCalled();
     });
 
-    it("closeOnOverlayClick={false} disables scrim click close", () => {
+    it("onEscapeKeyDown fires; close still happens by default", async () => {
+      const onClose = vi.fn();
+      const onEscapeKeyDown = vi.fn();
+      render(
+        <FilePreviewPanel
+          open
+          onClose={onClose}
+          fileName="test.jpg"
+          onEscapeKeyDown={onEscapeKeyDown}
+        />
+      );
+      await userEvent.keyboard("{Escape}");
+      expect(onEscapeKeyDown).toHaveBeenCalledOnce();
+      expect(onClose).toHaveBeenCalledOnce();
+    });
+
+    it("onInteractOutside can suppress scrim close via event.preventDefault()", () => {
       const onClose = vi.fn();
       render(
         <FilePreviewPanel
           open
           onClose={onClose}
           fileName="test.jpg"
-          closeOnOverlayClick={false}
+          onInteractOutside={(e) => e.preventDefault()}
         />
       );
       const scrim = document.querySelector("[aria-hidden='true']") as HTMLElement;
       fireEvent.click(scrim);
       expect(onClose).not.toHaveBeenCalled();
+    });
+
+    it("onInteractOutside fires; close still happens by default", () => {
+      const onClose = vi.fn();
+      const onInteractOutside = vi.fn();
+      render(
+        <FilePreviewPanel
+          open
+          onClose={onClose}
+          fileName="test.jpg"
+          onInteractOutside={onInteractOutside}
+        />
+      );
+      const scrim = document.querySelector("[aria-hidden='true']") as HTMLElement;
+      fireEvent.click(scrim);
+      expect(onInteractOutside).toHaveBeenCalledOnce();
+      expect(onClose).toHaveBeenCalledOnce();
     });
   });
 
