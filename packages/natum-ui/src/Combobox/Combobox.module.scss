@@ -112,7 +112,10 @@
   cursor: default;
 }
 .disabled_state {
-  opacity: 0.6;
+  color: var(--disabled-text);
+  background-color: var(--disabled-bg);
+  border-color: var(--disabled-border);
+  opacity: var(--disabled-opacity);
   cursor: not-allowed;
   pointer-events: none;
 }

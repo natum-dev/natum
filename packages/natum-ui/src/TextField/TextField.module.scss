@@ -242,6 +242,8 @@
 // --- Disabled ---
 
 .disabled_state {
+  opacity: var(--disabled-opacity);
+
   .label {
     color: var(--neutral-text-disabled);
   }

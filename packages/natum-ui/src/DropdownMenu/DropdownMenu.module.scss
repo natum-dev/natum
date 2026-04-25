@@ -59,7 +59,8 @@
   }
 
   &[aria-disabled="true"] {
-    opacity: 0.5;
+    color: var(--disabled-text);
+    opacity: var(--disabled-opacity);
     pointer-events: none;
     cursor: not-allowed;
   }

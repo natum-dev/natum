@@ -142,7 +142,8 @@ $badge-colors: neutral, primary, secondary, success, warning, error, info;
 
 // --- Disabled (applies only when interactive) ---
 .interactive.disabled {
-  opacity: 0.5;
+  color: var(--disabled-text);
+  opacity: var(--disabled-opacity);
   cursor: not-allowed;
   pointer-events: none;
 }

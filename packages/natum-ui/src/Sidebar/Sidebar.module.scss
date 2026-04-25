@@ -152,7 +152,8 @@
 
 // --- Disabled state ---
 .item.disabled {
-  opacity: 0.5;
+  color: var(--disabled-text);
+  opacity: var(--disabled-opacity);
   cursor: not-allowed;
   pointer-events: none;
 }

@@ -192,6 +192,7 @@
 // --- Disabled ---------------------------------------------------------------
 .disabled {
   color: var(--disabled-text);
+  opacity: var(--disabled-opacity);
   cursor: not-allowed;
   pointer-events: none;
 

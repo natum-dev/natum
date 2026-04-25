@@ -75,6 +75,7 @@
 .disabled {
   cursor: not-allowed;
   pointer-events: none;
+  opacity: var(--disabled-opacity);
 
   .control {
     border-color: var(--disabled-border);

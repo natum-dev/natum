@@ -102,6 +102,7 @@
   pointer-events: none;
   background-color: var(--neutral-bg-inset);
   color: var(--neutral-text-disabled);
+  opacity: var(--disabled-opacity);
 
   &.elevated {
     box-shadow: none;
