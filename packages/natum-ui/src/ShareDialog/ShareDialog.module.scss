@@ -23,6 +23,9 @@
   position: absolute;
   inset-inline: 0;
   inset-block-start: 100%;
+  // Intra-component stacking only — lifts the search results above sibling
+  // form controls inside the ShareDialog modal. Page-level stacking is
+  // governed by the parent Modal's --z-modal.
   z-index: 10;
   margin-block-start: var(--space-1);
   background: var(--neutral-bg-elevated);

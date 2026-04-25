@@ -3,7 +3,9 @@
   inset-block-end: var(--space-4);
   inline-size: min(360px, calc(100vw - var(--space-4) * 2));
   max-block-size: min(420px, 70vh);
-  z-index: 1050;
+  // Sits above modals (--z-modal: 1300) so upload progress remains visible
+  // when the user opens a dialog mid-upload — same tier as toasts.
+  z-index: var(--z-toast);
   display: flex;
   flex-direction: column;
   background-color: var(--neutral-bg);
