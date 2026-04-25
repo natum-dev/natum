@@ -1,5 +1,9 @@
 @use "../design-tokens" as *;
 
+.share_dialog {
+  // Wrapper for modal content, no additional styles needed
+}
+
 .add_row {
   display: flex;
   align-items: center;
