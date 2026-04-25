@@ -1,0 +1,136 @@
+@use "../design-tokens" as *;
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3, 12px);
+  cursor: pointer;
+  user-select: none;
+  @include hit-target-min;
+}
+
+.rail {
+  position: relative;
+  flex-shrink: 0;
+  inline-size: 40px;
+  block-size: 22px;
+  border-radius: 999px;
+  background-color: var(--neutral-soft);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .rail {
+    transition: background-color var(--duration-fast) var(--easing-default);
+  }
+}
+
+.input {
+  // Visually hidden but focusable.
+  position: absolute;
+  inline-size: 100%;
+  block-size: 100%;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  cursor: inherit;
+  z-index: 1;
+}
+
+.thumb {
+  position: absolute;
+  inset-block-start: 2px;
+  inset-inline-start: 2px;
+  inline-size: 18px;
+  block-size: 18px;
+  border-radius: 50%;
+  background-color: var(--neutral-bg-elevated);
+  box-shadow: var(--shadow-low);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .thumb {
+    transition: transform var(--duration-fast) var(--easing-default);
+  }
+}
+
+.rail:has(.input:checked) {
+  background-color: var(--primary-bg);
+}
+
+.rail:has(.input:checked) .thumb {
+  transform: translateX(18px);
+}
+
+.rail:has(.input:focus-visible) {
+  outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, var(--primary-border));
+  outline-offset: var(--focus-ring-offset, 2px);
+}
+
+.toggle[data-size="sm"] .rail {
+  inline-size: 32px;
+  block-size: 18px;
+}
+
+.toggle[data-size="sm"] .thumb {
+  inline-size: 14px;
+  block-size: 14px;
+}
+
+.toggle[data-size="sm"] .rail:has(.input:checked) .thumb {
+  transform: translateX(14px);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-inline-size: 0;
+}
+
+.toggle[data-label-position="start"] .content {
+  order: 0;
+}
+
+.toggle[data-label-position="start"] .rail {
+  order: 1;
+  margin-inline-start: auto;
+}
+
+.toggle[data-label-position="end"] .content {
+  order: 1;
+}
+
+.toggle[data-label-position="end"] .rail {
+  order: 0;
+  margin-inline-end: auto;
+}
+
+.label {
+  color: var(--neutral-text);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.description {
+  color: var(--neutral-text-secondary);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.toggle[data-disabled="true"] {
+  color: var(--disabled-text);
+  opacity: var(--disabled-opacity);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .toggle:not([data-disabled="true"]):hover .rail {
+    background-color: color-mix(in srgb, var(--neutral-soft) 92%, black);
+  }
+
+  .toggle:not([data-disabled="true"]):hover .rail:has(.input:checked) {
+    background-color: color-mix(in srgb, var(--primary-bg) 92%, black);
+  }
+}

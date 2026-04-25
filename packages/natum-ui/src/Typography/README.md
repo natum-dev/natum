@@ -5,7 +5,7 @@ A component for rendering text with consistent typographic styles and semantic c
 ## Usage
 
 ```tsx
-import Typography from "@natum/natum-ui/Typography";
+import Typography from "@natum/ui/Typography";
 
 <Typography variant="h1">Heading</Typography>
 <Typography variant="body1" color="secondary">Muted text</Typography>
@@ -41,7 +41,7 @@ Use `$typography-preset-overrides` to add the new preset. This generates the CSS
 
 ```scss
 // app/_design-tokens.scss
-@forward "@natum/natum-ui/design-tokens" with (
+@forward "@natum/ui/design-tokens" with (
   $typography-preset-overrides: (
     h7: (
       letter-spacing: 0em,
@@ -63,9 +63,9 @@ Use module augmentation to re-export `TypographyVariant` with the new value. Imp
 
 ```typescript
 // app/natum-ui.d.ts
-import { TypographyVariantBase } from "@natum/natum-ui";
+import { TypographyVariantBase } from "@natum/ui";
 
-declare module "@natum/natum-ui" {
+declare module "@natum/ui" {
   export type TypographyVariant = TypographyVariantBase | "h7";
 }
 ```
@@ -83,7 +83,7 @@ The same pattern works for colors. Add the SCSS token and extend `TypographyColo
 
 ```scss
 // app/_design-tokens.scss
-@forward "@natum/natum-ui/design-tokens" with (
+@forward "@natum/ui/design-tokens" with (
   $typography-light-scheme-overrides: (
     accent: #6200ea,
   ),
@@ -95,9 +95,9 @@ The same pattern works for colors. Add the SCSS token and extend `TypographyColo
 
 ```typescript
 // app/natum-ui.d.ts
-import { TypographyColorBase } from "@natum/natum-ui";
+import { TypographyColorBase } from "@natum/ui";
 
-declare module "@natum/natum-ui" {
+declare module "@natum/ui" {
   export type TypographyColor = TypographyColorBase | "accent";
 }
 ```

@@ -1,0 +1,5 @@
+@use "../design-tokens" as *;
+
+:root {
+  @include register-variable($color, "palette");
+}

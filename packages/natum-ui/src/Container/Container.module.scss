@@ -1,20 +1,15 @@
-@use "../design-tokens" as b;
-
-$container-width: (
-  sm: 640px,
-  md: 840px,
-  lg: 960px,
-  xl: 1280px,
-);
+@use "../design-tokens" as *;
 
 .container {
-  display: block;
-  width: 100%;
-  margin: auto;
-
-  @each $key, $value in $container-width {
-    @include b.breakpoint($key) {
-      max-width: $value;
-    }
-  }
+  margin-inline: auto;
+  padding-inline: var(--space-4);
+  inline-size: 100%;
+  box-sizing: border-box;
 }
+
+// Sizes map to the $breakpoints scale in design-tokens/_breakpoints.scss.
+.size_sm    { max-inline-size: 600px; }
+.size_md    { max-inline-size: 960px; }
+.size_lg    { max-inline-size: 1280px; }
+.size_xl    { max-inline-size: 1920px; }
+.size_fluid { max-inline-size: 100%; }

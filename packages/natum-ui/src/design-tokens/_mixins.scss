@@ -27,3 +27,37 @@
     }
   }
 }
+
+// --- Hit-target mixins -------------------------------------------------------
+// Enforce the 44x44 minimum interactive area required by the accessibility
+// priority. Logical properties keep RTL behavior correct.
+
+// Use when the element itself can grow to the hit target.
+@mixin hit-target-min($size: 44px) {
+  min-inline-size: $size;
+  min-block-size: $size;
+}
+
+// Use when the visual element must stay smaller than the hit target.
+// Adds a centered ::after pseudo that enlarges the interactive area
+// without affecting layout. Sets position: relative on the host.
+//
+// Adjacency caveat: the ::after is pointer-event-active to catch clicks,
+// so it overlaps into the space around the host. Keep >=12px clear on
+// each side to prevent neighboring interactive elements (or passive text
+// you care about click-routing for) from having their clicks stolen.
+@mixin hit-target-extend($size: 44px) {
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 50%;
+    inline-size: $size;
+    block-size: $size;
+    min-inline-size: $size;
+    min-block-size: $size;
+    transform: translate(-50%, -50%);
+  }
+}

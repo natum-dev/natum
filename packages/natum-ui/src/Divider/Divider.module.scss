@@ -1,0 +1,72 @@
+@use "../design-tokens" as *;
+
+.divider {
+  border: none;
+  margin: 0;
+  padding: 0;
+  flex-shrink: 0;
+
+  &.none {
+    margin: 0;
+  }
+}
+
+// --- Orientation ---
+
+.horizontal {
+  width: 100%;
+
+  &.solid {
+    border-block-start: 1px solid var(--border-color-subtle);
+  }
+
+  &.dashed {
+    border-block-start: 1px dashed var(--border-color-subtle);
+  }
+
+  &.dotted {
+    border-block-start: 1px dotted var(--border-color-subtle);
+  }
+
+  // Spacing
+  &.sm {
+    margin-block: var(--space-2, 8px);
+  }
+
+  &.md {
+    margin-block: var(--space-4, 16px);
+  }
+
+  &.lg {
+    margin-block: var(--space-6, 24px);
+  }
+}
+
+.vertical {
+  align-self: stretch;
+
+  &.solid {
+    border-inline-start: 1px solid var(--border-color-subtle);
+  }
+
+  &.dashed {
+    border-inline-start: 1px dashed var(--border-color-subtle);
+  }
+
+  &.dotted {
+    border-inline-start: 1px dotted var(--border-color-subtle);
+  }
+
+  // Spacing
+  &.sm {
+    margin-inline: var(--space-2, 8px);
+  }
+
+  &.md {
+    margin-inline: var(--space-4, 16px);
+  }
+
+  &.lg {
+    margin-inline: var(--space-6, 24px);
+  }
+}

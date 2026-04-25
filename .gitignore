@@ -1,3 +1,6 @@
+# Worktrees
+.worktrees/
+
 # Logs
 log
 logs
@@ -61,6 +64,10 @@ next-env.d.ts
 .next
 out
 
+# Package build output
+dist/
+storybook-static/
+
 # Vercel
 .vercel
 
@@ -70,4 +77,5 @@ out
 .vscode/
 
 
-dist/
+# Superpowers brainstorming sessions
+.superpowers/

@@ -1,0 +1,163 @@
+@use "../design-tokens" as *;
+
+.file_card {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background-color: var(--neutral-bg-elevated);
+  border: 1px solid var(--border-color-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-low);
+  color: var(--neutral-text);
+  overflow: hidden;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      box-shadow var(--duration-fast) var(--easing-default),
+      background-color var(--duration-fast) var(--easing-default),
+      border-color var(--duration-fast) var(--easing-default);
+  }
+}
+
+.preview {
+  aspect-ratio: 4 / 3;
+  inline-size: 100%;
+  background-color: var(--neutral-soft);
+  display: grid;
+  place-items: center;
+  color: var(--neutral-text-secondary);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-inline-size: 0;
+}
+
+.name {
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--neutral-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.thumbnail_wrapper {
+  inline-size: 100%;
+  block-size: 100%;
+
+  :where(img) {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+  }
+}
+
+.file_card[data-size="sm"] {
+  .body {
+    padding: var(--space-2);
+  }
+  .name {
+    font-size: 13px;
+  }
+}
+
+.file_card[data-size="md"] {
+  .body {
+    padding: var(--space-3);
+  }
+  .name {
+    font-size: 14px;
+  }
+}
+
+.file_card[data-size="lg"] {
+  .body {
+    padding: var(--space-4);
+  }
+  .name {
+    font-size: 16px;
+  }
+}
+
+.meta_line {
+  color: var(--neutral-text-secondary);
+  font-size: 12px;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file_card[data-size="sm"] .meta_line {
+  font-size: 11px;
+}
+
+.file_card[data-size="lg"] .meta_line {
+  font-size: 13px;
+}
+
+.action_slot {
+  position: absolute;
+  inset-block-start: var(--space-2);
+  inset-inline-end: var(--space-2);
+  z-index: 1;
+  opacity: 0;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: opacity var(--duration-fast) var(--easing-default);
+  }
+}
+
+.file_card:hover .action_slot,
+.file_card:focus-within .action_slot,
+.file_card[data-selected="true"] .action_slot {
+  opacity: 1;
+}
+
+.file_card:focus-visible {
+  outline: 2px solid var(--primary-border);
+  outline-offset: 2px;
+}
+
+.file_card[role="button"] {
+  cursor: pointer;
+}
+
+.file_card[role="button"]:hover {
+  box-shadow: var(--shadow-hover);
+}
+
+.checkbox_slot {
+  position: absolute;
+  inset-block-start: var(--space-2);
+  inset-inline-start: var(--space-2);
+  z-index: 1;
+  opacity: 0;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: opacity var(--duration-fast) var(--easing-default);
+  }
+}
+
+.file_card:hover .checkbox_slot,
+.file_card:focus-within .checkbox_slot,
+.file_card[data-selected="true"] .checkbox_slot {
+  opacity: 1;
+}
+
+.file_card[data-selected="true"] {
+  border-color: var(--primary-border);
+  background-color: color-mix(
+    in srgb,
+    var(--primary-soft) 40%,
+    var(--neutral-bg-elevated)
+  );
+  // Supplementary outline makes the border visually 2px without a layout shift.
+  outline: 1px solid var(--primary-border);
+  outline-offset: -1px;
+}

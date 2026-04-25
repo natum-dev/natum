@@ -1,0 +1,240 @@
+@use "../design-tokens" as *;
+
+// --- Wrapper ---
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+}
+
+// --- Label ---
+.label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--neutral-text-secondary);
+  margin-block-end: 4px;
+
+  .error & {
+    color: var(--error-text);
+  }
+}
+
+.required_asterisk {
+  color: var(--error-text);
+  margin-inline-start: 2px;
+}
+
+// --- Input container (div wrapping chips + input + right section) ---
+.input_container {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  cursor: text;
+  box-sizing: border-box;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      border-color var(--duration-fast) var(--easing-default),
+      box-shadow var(--duration-fast) var(--easing-default),
+      background-color var(--duration-fast) var(--easing-default);
+  }
+}
+
+// --- Variants ---
+.outlined {
+  border: 1px solid var(--border-color-subtle);
+  background-color: var(--neutral-bg-elevated);
+
+  &:hover:not(.open):not(.disabled_state) {
+    border-color: var(--border-color);
+  }
+  &.open,
+  &:focus-within:not(.disabled_state):not(.readonly_state) {
+    border-color: var(--primary-border);
+    box-shadow: 0 0 0 1px var(--primary-border);
+  }
+  &.error {
+    border-color: var(--error-border);
+  }
+  &.error.open,
+  &.error:focus-within:not(.disabled_state):not(.readonly_state) {
+    border-color: var(--error-border);
+    box-shadow: 0 0 0 1px var(--error-border);
+  }
+}
+
+.filled {
+  border: 1px solid transparent;
+  border-block-end: 1px solid var(--border-color-subtle);
+  background-color: var(--neutral-bg-inset);
+
+  &:hover:not(.open):not(.disabled_state) {
+    border-block-end-color: var(--border-color);
+  }
+  &.open,
+  &:focus-within:not(.disabled_state):not(.readonly_state) {
+    border-block-end-color: var(--primary-border);
+    background-color: var(--neutral-bg-elevated);
+  }
+  &.error {
+    border-block-end-color: var(--error-border);
+  }
+}
+
+// --- Sizes (mirror TextField/Select trigger) ---
+.sm {
+  min-height: 36px;
+  padding: 4px 8px;
+  font-size: 14px;
+  border-radius: var(--radius-sm, 4px);
+}
+
+.md {
+  @include hit-target-min;
+  padding: 4px 12px;
+  font-size: 16px;
+  border-radius: var(--radius-md, 8px);
+}
+
+.lg {
+  min-height: 52px;
+  padding: 8px 16px;
+  font-size: 18px;
+  border-radius: var(--radius-md, 8px);
+}
+
+// --- States ---
+.readonly_state {
+  background-color: var(--neutral-bg-inset);
+  cursor: default;
+}
+.disabled_state {
+  color: var(--disabled-text);
+  background-color: var(--disabled-bg);
+  border-color: var(--disabled-border);
+  opacity: var(--disabled-opacity);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+// --- Sections ---
+.left_section {
+  display: inline-flex;
+  align-items: center;
+  color: var(--neutral-text-secondary);
+  flex-shrink: 0;
+  margin-inline-end: var(--space-2);
+}
+
+.right_section {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--neutral-text-secondary);
+  flex-shrink: 0;
+  margin-inline-start: auto;
+}
+
+// --- Input (native text input inside the container) ---
+.input {
+  flex: 1 1 auto;
+  min-width: 4ch;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--neutral-text);
+  font: inherit;
+  font-size: inherit;
+  text-align: start;
+  padding: 0;
+  margin: 0;
+
+  &::placeholder {
+    color: var(--neutral-text-disabled);
+  }
+
+  &:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px var(--neutral-bg-elevated) inset;
+    -webkit-text-fill-color: var(--neutral-text);
+    caret-color: var(--neutral-text);
+    transition: background-color 5000s ease-in-out 0s;
+  }
+}
+
+// --- Chips (multi-select) — added in Task 7 but styling here for future use ---
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding-inline-start: var(--space-2);
+  padding-inline-end: 2px;
+  padding-block: 2px;
+  background-color: var(--primary-bg);
+  color: #fff;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  max-width: 100%;
+}
+
+.chip_label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 16ch;
+}
+
+.chip_remove {
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 16px;
+  block-size: 16px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: inherit;
+  flex-shrink: 0;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+}
+
+// --- Clear button ---
+.clear_button {
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  color: var(--neutral-text-secondary);
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--neutral-bg-inset);
+    color: var(--neutral-text);
+  }
+}
+
+// --- Chevron ---
+.chevron {
+  transition: transform var(--duration-fast) var(--easing-default);
+}
+.chevron_open {
+  transform: rotate(180deg);
+}
+
+// --- Message ---
+.message {
+  margin-block-start: var(--space-1);
+  font-size: 13px;
+  color: var(--neutral-text-secondary);
+  line-height: 1.4;
+}
+.message_error {
+  color: var(--error-text);
+}

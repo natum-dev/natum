@@ -1,0 +1,146 @@
+@use "../design-tokens" as *;
+
+.wrapper {
+  overflow-x: auto;
+  overflow-y: visible;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-sizing: border-box;
+}
+
+.table {
+  inline-size: 100%;
+  border-collapse: collapse;
+  background: var(--neutral-bg);
+  color: var(--neutral-text);
+  box-sizing: border-box;
+
+  // Header
+  thead th {
+    text-align: start;
+    padding-block: var(--space-3);
+    padding-inline: var(--space-3);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--neutral-text-secondary);
+    border-block-end: 1px solid var(--border-color);
+    background: var(--neutral-bg);
+    box-sizing: border-box;
+  }
+
+  // Body
+  tbody td {
+    padding-block: var(--space-3);
+    padding-inline: var(--space-3);
+    font-size: 14px;
+    box-sizing: border-box;
+  }
+
+  tbody tr {
+    @media (prefers-reduced-motion: no-preference) {
+      transition: background-color var(--duration-fast) var(--easing-default);
+    }
+  }
+
+  tbody tr:hover {
+    background: var(--neutral-soft);
+  }
+
+  // Size variants
+  &[data-size="sm"] {
+    thead th,
+    tbody td { padding-block: var(--space-2); padding-inline: var(--space-3); font-size: 13px; }
+    thead th { font-size: 12px; }
+  }
+  &[data-size="lg"] {
+    thead th,
+    tbody td { padding-block: var(--space-4); padding-inline: var(--space-4); }
+    thead th { font-size: 13px; }
+    tbody td { font-size: 14px; }
+  }
+
+  // Stripes
+  &[data-striped="true"] tbody tr:nth-child(even) {
+    background: color-mix(in srgb, var(--neutral-soft) 40%, transparent);
+  }
+  &[data-striped="true"] tbody tr:nth-child(even):hover {
+    background: var(--neutral-soft);
+  }
+
+  // Row borders
+  &[data-row-borders="true"] tbody tr + tr td {
+    border-block-start: 1px solid var(--border-color);
+  }
+
+  // Sticky header
+  &[data-sticky-header="true"] thead {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 1;
+    background: var(--neutral-bg);
+    th { background: var(--neutral-bg); }
+  }
+}
+
+.row {
+  // placeholder so tr can receive .interactive via cx merge
+}
+
+.table .row.interactive {
+  cursor: pointer;
+}
+
+// aria-selected reflects selection (selectedSet populates in Task 7)
+.table tbody tr[aria-selected="true"] {
+  background: var(--primary-soft);
+}
+.table tbody tr[aria-selected="true"]:hover {
+  background: var(--primary-soft-hover);
+}
+
+.sort_button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  text-transform: inherit;
+  letter-spacing: inherit;
+
+  &:focus-visible {
+    outline: 2px solid var(--focus-ring-color);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+}
+
+.sort_icon {
+  color: currentColor;
+  flex: 0 0 auto;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: transform var(--duration-fast) var(--easing-default);
+  }
+}
+
+.sort_icon_none { opacity: 0.5; }
+.sort_icon_asc { transform: rotate(180deg); }
+.sort_icon_desc { transform: rotate(0deg); }
+
+.selection_cell {
+  inline-size: 1%;
+  padding-inline: var(--space-3);
+  vertical-align: middle;
+}
+
+.action_cell {
+  inline-size: 1%;
+  white-space: nowrap;
+}

@@ -1,0 +1,92 @@
+@use "../design-tokens" as *;
+
+.alert {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--alert-bg, var(--info-soft));
+  box-sizing: border-box;
+
+  --alert-accent-color: var(--info-text);
+}
+
+// --- Type colors ---
+.success {
+  --alert-bg: var(--success-soft);
+  --alert-accent-color: var(--success-text);
+}
+.error {
+  --alert-bg: var(--error-soft);
+  --alert-accent-color: var(--error-text);
+}
+.warning {
+  --alert-bg: var(--warning-soft);
+  --alert-accent-color: var(--warning-text);
+}
+.info {
+  --alert-bg: var(--info-soft);
+  --alert-accent-color: var(--info-text);
+}
+
+// --- Icon ---
+.type_icon {
+  flex-shrink: 0;
+  margin-block-start: 2px;
+  color: var(--alert-accent-color);
+}
+
+// --- Content ---
+.content {
+  flex: 1;
+  min-inline-size: 0;
+}
+
+.title {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--neutral-text);
+  margin-block-end: 2px;
+}
+
+.message {
+  font-size: 14px;
+  color: var(--neutral-text-secondary);
+  line-height: 1.4;
+}
+
+// --- Close button ---
+.close_button {
+  box-sizing: border-box;
+  background: none;
+  border: none;
+  margin: 0;
+  padding: 0;
+  font: inherit;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 24px;
+  block-size: 24px;
+  @include hit-target-extend;
+  border-radius: var(--radius-sm);
+  color: var(--neutral-text-disabled);
+  transition:
+    background-color var(--duration-fast) var(--easing-default),
+    color var(--duration-fast) var(--easing-default);
+
+  &:hover {
+    background-color: var(--neutral-bg-inset);
+    color: var(--neutral-text);
+  }
+
+  &:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+  }
+}

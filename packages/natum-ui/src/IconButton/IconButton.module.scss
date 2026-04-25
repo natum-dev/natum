@@ -1,0 +1,239 @@
+@use "../design-tokens" as *;
+
+.icon_button {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: var(--radius-full);
+  transition: background-color var(--duration-fast) var(--easing-default),
+              color var(--duration-fast) var(--easing-default),
+              filter var(--duration-fast) var(--easing-default);
+  color: var(--icon-button-color, var(--neutral-text-inverse));
+  background: none;
+  border: none;
+  margin: 0;
+  padding: 0;
+  font: inherit;
+  -webkit-appearance: none;
+  appearance: none;
+
+  &:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+  }
+}
+
+// Variants
+.filled,
+.light {
+  background-color: var(--icon-button-main-color);
+}
+
+.soft {
+  background-color: var(--icon-button-soft-color, var(--primary-soft));
+  color: var(--icon-button-main-color);
+
+  &:hover {
+    filter: none;
+    background-color: var(--icon-button-soft-hover-color, var(--primary-soft-hover));
+  }
+}
+
+.text {
+  background-color: transparent;
+  color: var(--icon-button-main-color);
+}
+
+// Colors — each semantic color maps to the token system
+.primary {
+  --icon-button-main-color: var(--primary-text);
+
+  &:hover {
+    filter: brightness(0.85);
+  }
+
+  &.light {
+    --icon-button-main-color: var(--primary-surface);
+    --icon-button-color: var(--primary-text);
+
+    &:hover {
+      filter: brightness(0.95);
+    }
+  }
+
+  &.filled {
+    --icon-button-main-color: var(--primary-bg);
+    --icon-button-color: var(--primary-contrast);
+  }
+
+  &.soft {
+    --icon-button-soft-color: var(--primary-soft);
+    --icon-button-soft-hover-color: var(--primary-soft-hover);
+    --icon-button-main-color: var(--primary-text);
+  }
+}
+
+.secondary {
+  --icon-button-main-color: var(--secondary-text);
+
+  &:hover {
+    filter: brightness(0.85);
+  }
+
+  &.light {
+    --icon-button-main-color: var(--secondary-surface);
+    --icon-button-color: var(--secondary-text);
+
+    &:hover {
+      filter: brightness(0.95);
+    }
+  }
+
+  &.filled {
+    --icon-button-main-color: var(--secondary-bg);
+    --icon-button-color: var(--secondary-contrast);
+  }
+
+  &.soft {
+    --icon-button-soft-color: var(--secondary-soft);
+    --icon-button-soft-hover-color: var(--secondary-soft-hover);
+    --icon-button-main-color: var(--secondary-text);
+  }
+}
+
+.error {
+  --icon-button-main-color: var(--error-text);
+
+  &:hover {
+    filter: brightness(0.85);
+  }
+
+  &.light {
+    --icon-button-main-color: var(--error-surface);
+    --icon-button-color: var(--error-text);
+
+    &:hover {
+      filter: brightness(0.95);
+    }
+  }
+
+  &.filled {
+    --icon-button-main-color: var(--error-bg);
+    --icon-button-color: var(--error-contrast);
+  }
+
+  &.soft {
+    --icon-button-soft-color: var(--error-soft);
+    --icon-button-soft-hover-color: var(--error-soft-hover);
+    --icon-button-main-color: var(--error-text);
+  }
+}
+
+.warning {
+  --icon-button-main-color: var(--warning-text);
+
+  &:hover {
+    filter: brightness(0.85);
+  }
+
+  &.light {
+    --icon-button-main-color: var(--warning-surface);
+    --icon-button-color: var(--warning-text);
+
+    &:hover {
+      filter: brightness(0.95);
+    }
+  }
+
+  &.filled {
+    --icon-button-main-color: var(--warning-bg);
+    --icon-button-color: var(--warning-contrast);
+  }
+
+  &.soft {
+    --icon-button-soft-color: var(--warning-soft);
+    --icon-button-soft-hover-color: var(--warning-soft-hover);
+    --icon-button-main-color: var(--warning-text);
+  }
+}
+
+.success {
+  --icon-button-main-color: var(--success-text);
+
+  &:hover {
+    filter: brightness(0.85);
+  }
+
+  &.light {
+    --icon-button-main-color: var(--success-surface);
+    --icon-button-color: var(--success-text);
+
+    &:hover {
+      filter: brightness(0.95);
+    }
+  }
+
+  &.filled {
+    --icon-button-main-color: var(--success-bg);
+    --icon-button-color: var(--success-contrast);
+  }
+
+  &.soft {
+    --icon-button-soft-color: var(--success-soft);
+    --icon-button-soft-hover-color: var(--success-soft-hover);
+    --icon-button-main-color: var(--success-text);
+  }
+}
+
+// Sizes (hit target dimensions)
+.small {
+  width: 32px;
+  height: 32px;
+  @include hit-target-extend;
+}
+
+.medium {
+  width: 40px;
+  height: 40px;
+  @include hit-target-extend;
+}
+
+.large {
+  // No hit-target mixin — 48x48 already exceeds the 44 minimum.
+  width: 48px;
+  height: 48px;
+}
+
+// Disabled
+.disabled {
+  --icon-button-color: var(--disabled-text);
+  --icon-button-main-color: var(--disabled-bg);
+  opacity: var(--disabled-opacity);
+  cursor: not-allowed;
+  pointer-events: none;
+  box-shadow: none;
+}
+
+// Loading spinner
+.spinner {
+  animation: spin var(--duration-spin) var(--easing-linear) infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Keep the "something is happening" signal under reduced-motion, but slow
+// dramatically to remove the vestibular trigger. --duration-spin is
+// deliberately excluded from the global reduced-motion override (which
+// shrinks --duration-fast/normal/slow to 100ms) because a spinner that
+// "collapses" to 100ms becomes a frantic blur, not a reduced signal.
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation-duration: 4s;
+  }
+}

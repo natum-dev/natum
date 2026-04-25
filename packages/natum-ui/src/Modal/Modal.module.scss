@@ -1,0 +1,219 @@
+@use "../design-tokens" as *;
+
+// --- Overlay ---
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal, 1300);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background-color: rgba(0, 0, 0, 0.5);
+  opacity: 1;
+
+  @include breakpoint(xs) {
+    // Mobile: align to bottom for sheet behavior
+    @media (max-width: 599px) {
+      align-items: flex-end;
+      padding: 0;
+    }
+  }
+}
+
+// --- Overlay animation ---
+
+@keyframes modal_overlay_in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modal_overlay_out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.overlay_entering {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: modal_overlay_in 200ms var(--easing-default, ease) forwards;
+  }
+}
+
+.overlay_exiting {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: modal_overlay_out 150ms var(--easing-default, ease) forwards;
+  }
+}
+
+// --- Panel ---
+
+.panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: calc(100vh - 48px);
+  background-color: var(--neutral-bg-overlay);
+  border-radius: var(--radius-lg, 12px);
+  box-shadow: var(--shadow-high);
+  outline: none;
+  overflow: hidden;
+  opacity: 1;
+  transform: none;
+
+  // Mobile: bottom sheet
+  @media (max-width: 599px) {
+    max-height: 90vh;
+    border-radius: var(--radius-lg, 12px) var(--radius-lg, 12px) 0 0;
+    align-self: flex-end;
+  }
+}
+
+// --- Panel animation (desktop) ---
+
+@keyframes modal_panel_in {
+  from { opacity: 0; transform: scale(0.95) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes modal_panel_out {
+  from { opacity: 1; transform: scale(1) translateY(0); }
+  to { opacity: 0; transform: scale(0.95) translateY(8px); }
+}
+
+// --- Panel animation (mobile — slide up) ---
+
+@keyframes modal_sheet_in {
+  from { opacity: 0; transform: translateY(100%); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes modal_sheet_out {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(100%); }
+}
+
+.entering {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: modal_panel_in 200ms var(--easing-default, ease) forwards;
+
+    @media (max-width: 599px) {
+      animation-name: modal_sheet_in;
+    }
+  }
+}
+
+.exiting {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: modal_panel_out 150ms var(--easing-default, ease) forwards;
+
+    @media (max-width: 599px) {
+      animation-name: modal_sheet_out;
+    }
+  }
+}
+
+// --- Sizes ---
+
+.sm {
+  max-width: 400px;
+
+  .body {
+    padding: 20px;
+  }
+}
+
+.md {
+  max-width: 560px;
+
+  .body {
+    padding: 24px;
+  }
+}
+
+.lg {
+  max-width: 720px;
+
+  .body {
+    padding: 32px;
+  }
+}
+
+// Mobile: reduce padding
+@media (max-width: 599px) {
+  .sm .body,
+  .md .body,
+  .lg .body {
+    padding: 20px;
+  }
+}
+
+// --- Header ---
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-block-end: 1px solid color-mix(in srgb, var(--border-color-subtle) 25%, transparent);
+  flex-shrink: 0;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--neutral-text);
+  margin: 0;
+}
+
+.close_button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  margin: 0;
+  margin-inline-start: auto;
+  border: none;
+  border-radius: var(--radius-sm, 4px);
+  background: transparent;
+  color: var(--neutral-text-secondary);
+  cursor: pointer;
+  appearance: none;
+  flex-shrink: 0;
+
+  &:hover {
+    background-color: var(--neutral-bg-inset);
+    color: var(--neutral-text);
+  }
+
+  &:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+  }
+}
+
+// --- Body ---
+
+.body {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  color: var(--neutral-text);
+}
+
+// --- Footer ---
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 16px 20px;
+  border-block-start: 1px solid color-mix(in srgb, var(--border-color-subtle) 25%, transparent);
+  flex-shrink: 0;
+}
+

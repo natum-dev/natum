@@ -1,0 +1,15 @@
+@use "../design-tokens" as *;
+
+.aspect_ratio {
+  inline-size: 100%;
+  overflow: hidden;
+  position: relative;
+  aspect-ratio: var(--ar-ratio, 1);
+
+  > *:first-child {
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+    display: block;
+  }
+}

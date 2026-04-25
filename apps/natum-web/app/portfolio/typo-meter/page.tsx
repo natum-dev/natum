@@ -1,4 +1,4 @@
-import { Typography } from "@natum/natum-ui/Typography";
+import { Typography } from "@natum/ui/Typography";
 import TypeContent from "./components/TypeContent";
 
 export const metadata = {

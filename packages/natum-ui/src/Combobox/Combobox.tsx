@@ -1,0 +1,603 @@
+"use client";
+
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  type ReactNode,
+  type SyntheticEvent,
+} from "react";
+import { IconChevronDown, IconX } from "@natum/icons";
+import { useActiveDescendant } from "../hooks/use-active-descendant";
+import { useControllable } from "../hooks/use-controllable";
+import { useEscapeKey } from "../hooks/use-escape-key";
+import { useListboxSelection } from "../hooks/use-listbox-selection";
+import { useMergedRefs } from "../hooks/use-merge-refs";
+import { Listbox } from "../internal/listbox/Listbox";
+import type { FlatItem, TreeNode } from "../internal/listbox/types";
+import { ComboboxContext, type ComboboxContextValue } from "./context";
+import { flatten } from "./flatten";
+import styles from "./Combobox.module.scss";
+import cx from "classnames";
+
+type ComboboxSize = "sm" | "md" | "lg";
+type ComboboxVariant = "outlined" | "filled";
+
+type ComboboxBaseProps = {
+  variant?: ComboboxVariant;
+  size?: ComboboxSize;
+  leftSection?: ReactNode;
+
+  placeholder?: string;
+  searchValue?: string;
+  defaultSearchValue?: string;
+  onSearchChange?: (query: string) => void;
+
+  filter?: (query: string, item: FlatItem) => boolean;
+
+  loading?: boolean;
+  error?: ReactNode;
+  emptyContent?: ReactNode;
+  noMatchContent?: ReactNode;
+
+  clearable?: boolean;
+  onClear?: () => void;
+
+  label?: ReactNode;
+  helperText?: ReactNode;
+  errorMessage?: ReactNode;
+  required?: boolean;
+  readOnly?: boolean;
+  disabled?: boolean;
+
+  placement?: "bottom" | "top";
+  maxListboxHeight?: number;
+
+  open?: boolean;
+  defaultOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
+
+  /**
+   * Fires when the user presses Escape while the listbox is open.
+   * Call `event.preventDefault()` to keep the listbox open.
+   * If not handled (or not prevented), the listbox closes itself.
+   */
+  onEscapeKeyDown?: (event: KeyboardEvent) => void;
+  /**
+   * Fires when the user clicks/taps outside the combobox.
+   * Call `event.preventDefault()` to keep the listbox open.
+   * If not handled (or not prevented), the listbox closes itself.
+   *
+   * Combobox attaches a `mousedown` document listener, so the runtime event
+   * is a DOM `MouseEvent` (not `PointerEvent`). Modal/FilePreviewPanel — which
+   * use React's `onClick` — pass a `PointerEvent` instead.
+   */
+  onInteractOutside?: (event: MouseEvent | FocusEvent) => void;
+
+  name?: string;
+
+  children: ReactNode;
+
+  className?: string;
+  inputClassName?: string;
+  listboxClassName?: string;
+};
+
+type ComboboxSingleProps = ComboboxBaseProps & {
+  multiple?: false;
+  value?: string;
+  defaultValue?: string;
+  onChange?: (value: string | undefined, event?: SyntheticEvent) => void;
+};
+
+type ComboboxMultipleProps = ComboboxBaseProps & {
+  multiple: true;
+  value?: string[];
+  defaultValue?: string[];
+  onChange?: (value: string[], event?: SyntheticEvent) => void;
+};
+
+export type ComboboxProps = ComboboxSingleProps | ComboboxMultipleProps;
+
+const isMultiProps = (p: ComboboxProps): p is ComboboxMultipleProps =>
+  p.multiple === true;
+
+const Combobox = forwardRef<HTMLInputElement, ComboboxProps>((props, ref) => {
+  const {
+    variant = "outlined",
+    size = "md",
+    leftSection,
+    placeholder,
+    searchValue: searchValueProp,
+    defaultSearchValue,
+    onSearchChange,
+    filter,
+    loading,
+    error,
+    emptyContent,
+    noMatchContent,
+    clearable = false,
+    onClear,
+    label,
+    helperText,
+    errorMessage,
+    required,
+    readOnly,
+    disabled,
+    placement = "bottom",
+    maxListboxHeight = 320,
+    open: openProp,
+    defaultOpen,
+    onOpenChange,
+    onEscapeKeyDown,
+    onInteractOutside,
+    name,
+    children,
+    className,
+    inputClassName,
+    listboxClassName,
+  } = props;
+
+  // --- Selection state (single hook call with conditional arg; Rules of Hooks compliant) ---
+  const selection = useListboxSelection(
+    isMultiProps(props)
+      ? {
+          multiple: true,
+          value: props.value,
+          defaultValue: props.defaultValue,
+          onChange: props.onChange,
+        }
+      : {
+          multiple: false,
+          value: (props as ComboboxSingleProps).value,
+          defaultValue: (props as ComboboxSingleProps).defaultValue,
+          onChange: (props as ComboboxSingleProps).onChange,
+        }
+  );
+
+  // --- Flatten children ---
+  const { items: allItems, tree: allTree } = useMemo(
+    () => flatten(children),
+    [children]
+  );
+
+  // --- Search state (controlled or uncontrolled) ---
+  const { value: searchBoxed, setValue: setSearchRaw } = useControllable<string>(
+    {
+      value: searchValueProp,
+      defaultValue: defaultSearchValue ?? "",
+      onChange: (v) => onSearchChange?.(v ?? ""),
+    }
+  );
+  const searchValue = searchBoxed ?? "";
+  const setSearchValue = useCallback(
+    (v: string) => setSearchRaw(v),
+    [setSearchRaw]
+  );
+
+  const defaultFilter = useCallback(
+    (query: string, item: FlatItem) => item.textValue.includes(query),
+    []
+  );
+  const effectiveFilter = filter ?? defaultFilter;
+
+  const { visibleItems, visibleTree } = useMemo(() => {
+    if (loading || !searchValue) {
+      return { visibleItems: allItems, visibleTree: allTree };
+    }
+    const q = searchValue.toLowerCase();
+    const keep = (item: FlatItem) => effectiveFilter(q, item);
+    const filteredItems = allItems.filter(keep);
+    const filteredTree: TreeNode[] = [];
+    for (const node of allTree) {
+      if (node.kind === "item") {
+        if (keep(node.item)) filteredTree.push(node);
+      } else {
+        const keptGroupItems = node.items.filter(keep);
+        if (keptGroupItems.length > 0) {
+          filteredTree.push({
+            kind: "group",
+            label: node.label,
+            items: keptGroupItems,
+          });
+        }
+      }
+    }
+    return { visibleItems: filteredItems, visibleTree: filteredTree };
+  }, [allItems, allTree, searchValue, loading, effectiveFilter]);
+
+  // --- Open/closed state ---
+  const { value: isOpenBoxed, setValue: setIsOpenRaw } = useControllable<boolean>(
+    {
+      value: openProp,
+      defaultValue: defaultOpen ?? false,
+      onChange: (v) => onOpenChange?.(v === true),
+    }
+  );
+  const isOpen = isOpenBoxed === true;
+  const setOpen = useCallback((v: boolean) => setIsOpenRaw(v), [setIsOpenRaw]);
+
+  // --- Selection handler (scaffolding — Task 7 may refine) ---
+  const onItemSelect = useCallback(
+    (value: string, event?: SyntheticEvent) => {
+      if (disabled || readOnly) return;
+      selection.toggle(value, event);
+      if (!selection.isMulti) {
+        setOpen(false);
+        setSearchValue("");
+      } else {
+        setSearchValue("");
+      }
+    },
+    [disabled, readOnly, selection, setOpen, setSearchValue]
+  );
+
+  const handleChipRemove = useCallback(
+    (value: string, event?: SyntheticEvent) => {
+      if (disabled || readOnly) return;
+      if (!selection.isMulti) return;
+      selection.toggle(value, event);
+      inputRef.current?.focus();
+    },
+    [disabled, readOnly, selection]
+  );
+
+  const handleClear = useCallback(() => {
+    if (disabled || readOnly) return;
+    // clearable-driven clear: synthetic state change, no user-gesture event
+    // forwarded to onChange (DESIGN_PHILOSOPHY "Form onChange Signatures").
+    selection.clear();
+    setSearchValue("");
+    onClear?.();
+    inputRef.current?.focus();
+  }, [disabled, readOnly, selection, setSearchValue, onClear]);
+
+  const handleIndexSelect = useCallback(
+    (i: number, event?: SyntheticEvent) => {
+      const item = visibleItems[i];
+      if (!item) return;
+      onItemSelect(item.value, event);
+    },
+    [visibleItems, onItemSelect]
+  );
+
+  const { activeIndex, setActiveIndex, onKeyDown: onListboxKeyDown } =
+    useActiveDescendant({
+      count: visibleItems.length,
+      isOpen,
+      onSelect: handleIndexSelect,
+      isDisabled: (i) => visibleItems[i]?.disabled ?? false,
+    });
+
+  // Auto-reset activeIndex to first visible on search / count change (Q10 in the spec).
+  useEffect(() => {
+    if (isOpen && visibleItems.length > 0) {
+      setActiveIndex(0);
+    }
+  }, [searchValue, visibleItems.length, isOpen, setActiveIndex]);
+
+  // --- Ids ---
+  const comboboxId = useId();
+  const inputId = `${comboboxId}-input`;
+  const listboxId = `${comboboxId}-listbox`;
+  const messageId = `${comboboxId}-message`;
+  const itemId = useCallback(
+    (i: number) => `${comboboxId}-item-${i}`,
+    [comboboxId]
+  );
+
+  // --- Refs ---
+  const inputRef = useRef<HTMLInputElement>(null);
+  const mergedInputRef = useMergedRefs(ref, inputRef);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const listboxRef = useRef<HTMLUListElement>(null);
+
+  // --- Derived ---
+  const hasError = errorMessage != null;
+  const message = errorMessage ?? helperText;
+  const hasValue = selection.selected.length > 0;
+
+  const labelFor = useCallback(
+    (value: string): ReactNode => {
+      const item = allItems.find((it) => it.value === value);
+      return item?.children ?? value;
+    },
+    [allItems]
+  );
+
+  const selectedSingleLabel = useMemo<string>(() => {
+    if (selection.isMulti || selection.selected.length === 0) return "";
+    const lbl = labelFor(selection.selected[0]);
+    return typeof lbl === "string" ? lbl : "";
+  }, [selection.isMulti, selection.selected, labelFor]);
+
+  // Input display: typing query when non-empty, otherwise the selected label.
+  // Keys on searchValue (not isFocused) so Escape — which clears searchValue —
+  // reverts the input even though focus remains.
+  const inputDisplayValue = selection.isMulti
+    ? searchValue
+    : searchValue !== ""
+      ? searchValue
+      : selectedSingleLabel;
+
+  const placeholderToShow = selection.isMulti
+    ? selection.selected.length > 0
+      ? ""
+      : placeholder ?? ""
+    : inputDisplayValue
+      ? ""
+      : placeholder ?? "";
+
+  // --- Handlers ---
+  const handleContainerMouseDown = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (disabled || readOnly) return;
+      if (e.target !== inputRef.current) {
+        e.preventDefault();
+        inputRef.current?.focus();
+        if (!isOpen) setOpen(true);
+      }
+    },
+    [disabled, readOnly, isOpen, setOpen]
+  );
+
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (readOnly || disabled) return;
+      setSearchValue(e.target.value);
+      if (!isOpen) setOpen(true);
+    },
+    [readOnly, disabled, isOpen, setOpen, setSearchValue]
+  );
+
+  const handleInputClick = useCallback(() => {
+    if (readOnly || disabled) return;
+    if (!isOpen) setOpen(true);
+  }, [readOnly, disabled, isOpen, setOpen]);
+
+  const handleInputFocus = useCallback(() => {
+    if (!selection.isMulti && selection.selected.length > 0 && inputRef.current) {
+      const el = inputRef.current;
+      requestAnimationFrame(() => el.select());
+    }
+  }, [selection.isMulti, selection.selected]);
+
+  const handleInputBlur = useCallback(
+    (e: React.FocusEvent<HTMLInputElement>) => {
+      if (containerRef.current?.contains(e.relatedTarget as Node)) return;
+      setSearchValue("");
+      setOpen(false);
+    },
+    [setOpen, setSearchValue]
+  );
+
+  const handleInputKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (readOnly || disabled) return;
+      // Backspace on empty input in multi mode removes the last chip.
+      if (
+        e.key === "Backspace" &&
+        selection.isMulti &&
+        searchValue === "" &&
+        selection.selected.length > 0
+      ) {
+        e.preventDefault();
+        handleChipRemove(selection.selected[selection.selected.length - 1], e);
+        return;
+      }
+      // Space must pass through to the native input.
+      if (e.key === " ") return;
+      // Tab closes and lets native focus advance — handle before delegation so a
+      // future useActiveDescendant change that starts handling Tab can't steal it.
+      if (e.key === "Tab") {
+        setOpen(false);
+        return;
+      }
+      if (e.key.length === 1 && !isOpen) setOpen(true);
+      onListboxKeyDown(e);
+    },
+    [
+      readOnly,
+      disabled,
+      selection.isMulti,
+      selection.selected,
+      searchValue,
+      isOpen,
+      setOpen,
+      onListboxKeyDown,
+      handleChipRemove,
+    ]
+  );
+
+  // --- Click outside (inline, since useClickOutside is single-ref) ---
+  useEffect(() => {
+    if (!isOpen) return;
+    const handler = (e: MouseEvent) => {
+      const t = e.target as Node | null;
+      if (!t) return;
+      const inContainer = containerRef.current?.contains(t);
+      const inListbox = listboxRef.current?.contains(t);
+      if (inContainer || inListbox) return;
+      onInteractOutside?.(e);
+      if (!e.defaultPrevented) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [isOpen, setOpen, onInteractOutside]);
+
+  // --- Escape ---
+  useEscapeKey({
+    onEscape: (event) => {
+      onEscapeKeyDown?.(event);
+      if (event.defaultPrevented) return;
+      setSearchValue("");
+      setOpen(false);
+    },
+    enabled: isOpen,
+  });
+
+  // --- Context for marker orphan detection ---
+  const ctxValue = useMemo<ComboboxContextValue>(
+    () => ({ comboboxId }),
+    [comboboxId]
+  );
+
+  return (
+    <div className={cx(styles.wrapper, { [styles.error]: hasError }, className)}>
+      {label != null && (
+        <label htmlFor={inputId} className={styles.label}>
+          {label}
+          {required && (
+            <span aria-hidden="true" className={styles.required_asterisk}>
+              {" "}
+              *
+            </span>
+          )}
+        </label>
+      )}
+
+      <div
+        ref={containerRef}
+        className={cx(
+          styles.input_container,
+          styles[variant],
+          styles[size],
+          {
+            [styles.open]: isOpen,
+            [styles.error]: hasError,
+            [styles.readonly_state]: readOnly,
+            [styles.disabled_state]: disabled,
+          }
+        )}
+        onMouseDown={handleContainerMouseDown}
+      >
+        {leftSection && (
+          <span className={styles.left_section}>{leftSection}</span>
+        )}
+
+        {selection.isMulti &&
+          selection.selected.map((v) => {
+            const lbl = labelFor(v);
+            const lblStr = typeof lbl === "string" ? lbl : v;
+            return (
+              <span key={v} className={styles.chip}>
+                <span className={styles.chip_label}>{lbl}</span>
+                <button
+                  type="button"
+                  tabIndex={-1}
+                  aria-label={`Remove ${lblStr}`}
+                  className={styles.chip_remove}
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={(e) => handleChipRemove(v, e)}
+                >
+                  <IconX size="xs" color="currentColor" />
+                </button>
+              </span>
+            );
+          })}
+
+        <input
+          ref={mergedInputRef}
+          id={inputId}
+          type="text"
+          role="combobox"
+          aria-autocomplete="list"
+          aria-haspopup="listbox"
+          aria-expanded={isOpen}
+          aria-controls={listboxId}
+          aria-activedescendant={
+            isOpen && activeIndex >= 0 ? itemId(activeIndex) : undefined
+          }
+          aria-required={required || undefined}
+          aria-invalid={hasError || undefined}
+          aria-describedby={message != null ? messageId : undefined}
+          placeholder={placeholderToShow}
+          value={inputDisplayValue}
+          disabled={disabled}
+          readOnly={readOnly}
+          className={cx(styles.input, inputClassName)}
+          onFocus={handleInputFocus}
+          onBlur={handleInputBlur}
+          onChange={handleInputChange}
+          onClick={handleInputClick}
+          onKeyDown={handleInputKeyDown}
+        />
+
+        <span className={styles.right_section}>
+          {clearable && hasValue && !readOnly && !disabled && (
+            <button
+              type="button"
+              tabIndex={-1}
+              aria-label="Clear selection"
+              className={styles.clear_button}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => handleClear()}
+            >
+              <IconX size="sm" color="currentColor" />
+            </button>
+          )}
+          <IconChevronDown
+            size="sm"
+            color="currentColor"
+            className={cx(styles.chevron, { [styles.chevron_open]: isOpen })}
+          />
+        </span>
+      </div>
+
+      <ComboboxContext.Provider value={ctxValue}>
+        {/* Mount children for marker dev warnings; markers return null. */}
+        {children}
+      </ComboboxContext.Provider>
+
+      <Listbox
+        ref={listboxRef}
+        isOpen={isOpen}
+        triggerRef={containerRef}
+        tree={visibleTree}
+        items={visibleItems}
+        activeIndex={activeIndex}
+        setActiveIndex={setActiveIndex}
+        isSelected={selection.isSelected}
+        isMulti={selection.isMulti}
+        onItemSelect={onItemSelect}
+        placement={placement}
+        maxHeight={maxListboxHeight}
+        labelId={inputId}
+        listboxId={listboxId}
+        itemId={itemId}
+        loading={loading}
+        error={error}
+        emptyContent={emptyContent}
+        noMatchContent={noMatchContent}
+        query={searchValue}
+        className={listboxClassName}
+      />
+
+      {name &&
+        selection.selected.map((v) => (
+          <input key={v} type="hidden" name={name} value={v} />
+        ))}
+
+      {message != null && (
+        <div
+          id={messageId}
+          className={cx(styles.message, {
+            [styles.message_error]: hasError,
+          })}
+          role={hasError ? "alert" : undefined}
+        >
+          {message}
+        </div>
+      )}
+    </div>
+  );
+});
+
+Combobox.displayName = "Combobox";
+
+export { Combobox };

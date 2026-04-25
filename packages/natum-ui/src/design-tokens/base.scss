@@ -1,28 +1,276 @@
 @use "index" as *;
+@use "sass:color";
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
 @import "modern-normalize/modern-normalize.css";
 
+@mixin light-scheme {
+  // --- Semantic color tokens ---
+
+  // Primary (blue)
+  --primary-bg: #{get-color(blue, 500)};
+  --primary-surface: #{get-color(blue, 50)};
+  --primary-text: #{get-color(blue, 700)};
+  --primary-contrast: #{get-color(grey, 50)};
+  --primary-border: #{get-color(blue, 500)};
+
+  // Secondary (purple)
+  --secondary-bg: #{get-color(purple, 500)};
+  --secondary-surface: #{get-color(purple, 50)};
+  --secondary-text: #{get-color(purple, 700)};
+  --secondary-contrast: #{get-color(grey, 50)};
+  --secondary-border: #{get-color(purple, 500)};
+
+  // Error (red)
+  --error-bg: #{get-color(red, 500)};
+  --error-surface: #{get-color(red, 50)};
+  --error-text: #{get-color(red, 700)};
+  --error-contrast: #{get-color(grey, 50)};
+  --error-border: #{get-color(red, 500)};
+
+  // Success (green)
+  --success-bg: #{get-color(green, 500)};
+  --success-surface: #{get-color(green, 50)};
+  --success-text: #{get-color(green, 700)};
+  --success-contrast: #{get-color(grey, 50)};
+  --success-border: #{get-color(green, 500)};
+
+  // Warning (yellow)
+  --warning-bg: #{get-color(yellow, 500)};
+  --warning-surface: #{get-color(yellow, 50)};
+  --warning-text: #{get-color(yellow, 900)};
+  --warning-contrast: #{get-color(grey, 900)};
+  --warning-border: #{get-color(yellow, 400)};
+
+  // Info (blue)
+  --info-bg: #{get-color(blue, 400)};
+  --info-surface: #{get-color(blue, 50)};
+  --info-text: #{get-color(blue, 700)};
+  --info-contrast: #{get-color(grey, 50)};
+  --info-border: #{get-color(blue, 400)};
+
+  // Neutral (grey)
+  --neutral-bg: #{get-color(grey, 50)};
+  --neutral-surface: #{get-color(grey, 50)};
+  --neutral-text: #{get-color(grey, 900)};
+  --neutral-contrast: #{get-color(grey, 50)};
+  --neutral-border: #{get-color(grey, 500)};
+
+  // Neutral extras — text hierarchy
+  --neutral-text-secondary: #{get-color(grey, 700)};
+  --neutral-text-disabled: #{get-color(grey, 400)};
+  --neutral-text-link: #{get-color(blue, 700)};
+  --neutral-text-inverse: #{get-color(grey, 50)};
+
+  // Neutral extras — surface hierarchy
+  --neutral-bg-elevated: #fff;
+  --neutral-bg-overlay: #fff;
+  --neutral-bg-inset: #{get-color(grey, 100)};
+
+  // Border
+  --border-color: #{get-color(grey, 600)};
+  --border-color-subtle: #{get-color(grey, 500)};
+
+  // Shadow
+  --shadow-low: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-medium: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
+  --shadow-high: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+  --shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.08);
+
+  // Soft backgrounds (surface-first design — tinted fills for soft variant)
+  --primary-soft: #{color.mix(get-color(blue, 500), get-color(grey, 50), 12%)};
+  --secondary-soft: #{color.mix(get-color(purple, 500), get-color(grey, 50), 12%)};
+  --error-soft: #{color.mix(get-color(red, 500), get-color(grey, 50), 12%)};
+  --success-soft: #{color.mix(get-color(green, 500), get-color(grey, 50), 12%)};
+  --warning-soft: #{color.mix(get-color(yellow, 500), get-color(grey, 50), 12%)};
+  --info-soft: #{color.mix(get-color(blue, 400), get-color(grey, 50), 12%)};
+  --neutral-soft: #{color.mix(get-color(grey, 500), get-color(grey, 50), 12%)};
+
+  --primary-soft-hover: #{color.mix(get-color(blue, 500), get-color(grey, 50), 20%)};
+  --secondary-soft-hover: #{color.mix(get-color(purple, 500), get-color(grey, 50), 20%)};
+  --error-soft-hover: #{color.mix(get-color(red, 500), get-color(grey, 50), 20%)};
+  --success-soft-hover: #{color.mix(get-color(green, 500), get-color(grey, 50), 20%)};
+  --warning-soft-hover: #{color.mix(get-color(yellow, 500), get-color(grey, 50), 20%)};
+  --info-soft-hover: #{color.mix(get-color(blue, 400), get-color(grey, 50), 20%)};
+  --neutral-soft-hover: #{color.mix(get-color(grey, 500), get-color(grey, 50), 20%)};
+
+  // Focus
+  --focus-ring-color: #{get-color(blue, 500)};
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+
+  // Disabled
+  --disabled-text: #{get-color(grey, 400)};
+  --disabled-bg: #{get-color(grey, 100)};
+  --disabled-border: #{get-color(grey, 300)};
+  --disabled-opacity: 0.85;
+}
+
 @mixin dark-scheme {
-  --bg-color: #{get-color(grey, 900)};
-  @include register-variable($typography-dark-scheme, "typography");
+  // --- Semantic color tokens ---
+
+  // Primary (blue)
+  --primary-bg: #{get-color(blue, 400)};
+  --primary-surface: #{get-color(blue, 900)};
+  --primary-text: #{get-color(blue, 200)};
+  --primary-contrast: #{get-color(grey, 900)};
+  --primary-border: #{get-color(blue, 400)};
+
+  // Secondary (purple)
+  --secondary-bg: #{get-color(purple, 400)};
+  --secondary-surface: #{get-color(purple, 900)};
+  --secondary-text: #{get-color(purple, 200)};
+  --secondary-contrast: #{get-color(grey, 900)};
+  --secondary-border: #{get-color(purple, 400)};
+
+  // Error (red)
+  --error-bg: #{get-color(red, 400)};
+  --error-surface: #{get-color(red, 900)};
+  --error-text: #{get-color(red, 200)};
+  --error-contrast: #{get-color(grey, 900)};
+  --error-border: #{get-color(red, 400)};
+
+  // Success (green)
+  --success-bg: #{get-color(green, 400)};
+  --success-surface: #{get-color(green, 900)};
+  --success-text: #{get-color(green, 200)};
+  --success-contrast: #{get-color(grey, 900)};
+  --success-border: #{get-color(green, 400)};
+
+  // Warning (yellow)
+  --warning-bg: #{get-color(yellow, 300)};
+  --warning-surface: #{get-color(yellow, 900)};
+  --warning-text: #{get-color(yellow, 200)};
+  --warning-contrast: #{get-color(grey, 900)};
+  --warning-border: #{get-color(yellow, 300)};
+
+  // Info (blue)
+  --info-bg: #{get-color(blue, 300)};
+  --info-surface: #{get-color(blue, 900)};
+  --info-text: #{get-color(blue, 200)};
+  --info-contrast: #{get-color(grey, 900)};
+  --info-border: #{get-color(blue, 400)};
+
+  // Neutral (grey)
+  --neutral-bg: #{get-color(grey, 900)};
+  --neutral-surface: #{get-color(grey, 800)};
+  --neutral-text: #{get-color(grey, 100)};
+  --neutral-contrast: #{get-color(grey, 900)};
+  --neutral-border: #{get-color(grey, 400)};
+
+  // Neutral extras — text hierarchy
+  --neutral-text-secondary: #{get-color(grey, 200)};
+  --neutral-text-disabled: #{get-color(grey, 300)};
+  --neutral-text-link: #{get-color(blue, 200)};
+  --neutral-text-inverse: #{get-color(grey, 900)};
+
+  // Neutral extras — surface hierarchy
+  --neutral-bg-elevated: #{get-color(grey, 800)};
+  --neutral-bg-overlay: #{get-color(grey, 800)};
+  --neutral-bg-inset: #393837;
+
+  // Border
+  --border-color: #{get-color(grey, 400)};
+  --border-color-subtle: #{get-color(grey, 400)};
+
+  // Shadow
+  --shadow-low: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-medium: 0 4px 6px rgba(0, 0, 0, 0.35), 0 2px 4px rgba(0, 0, 0, 0.25);
+  --shadow-high: 0 10px 15px rgba(0, 0, 0, 0.45), 0 4px 6px rgba(0, 0, 0, 0.3);
+  --shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(0, 0, 0, 0.3);
+
+  // Soft backgrounds (surface-first design — tinted fills for soft variant)
+  --primary-soft: #{color.mix(get-color(blue, 400), get-color(grey, 900), 12%)};
+  --secondary-soft: #{color.mix(get-color(purple, 400), get-color(grey, 900), 12%)};
+  --error-soft: #{color.mix(get-color(red, 400), get-color(grey, 900), 12%)};
+  --success-soft: #{color.mix(get-color(green, 400), get-color(grey, 900), 12%)};
+  --warning-soft: #{color.mix(get-color(yellow, 300), get-color(grey, 900), 12%)};
+  --info-soft: #{color.mix(get-color(blue, 300), get-color(grey, 900), 12%)};
+  --neutral-soft: #{color.mix(get-color(grey, 400), get-color(grey, 900), 12%)};
+
+  --primary-soft-hover: #{color.mix(get-color(blue, 400), get-color(grey, 900), 20%)};
+  --secondary-soft-hover: #{color.mix(get-color(purple, 400), get-color(grey, 900), 20%)};
+  --error-soft-hover: #{color.mix(get-color(red, 400), get-color(grey, 900), 20%)};
+  --success-soft-hover: #{color.mix(get-color(green, 400), get-color(grey, 900), 20%)};
+  --warning-soft-hover: #{color.mix(get-color(yellow, 300), get-color(grey, 900), 20%)};
+  --info-soft-hover: #{color.mix(get-color(blue, 300), get-color(grey, 900), 20%)};
+  --neutral-soft-hover: #{color.mix(get-color(grey, 400), get-color(grey, 900), 20%)};
+
+  // Focus
+  --focus-ring-color: #{get-color(blue, 200)};
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+
+  // Disabled
+  --disabled-text: #{get-color(grey, 500)};
+  --disabled-bg: #{get-color(grey, 800)};
+  --disabled-border: #{get-color(grey, 600)};
+  --disabled-opacity: 0.85;
 }
 
 :root {
   @include register-variable($palette, "palette");
+  @include light-scheme;
 
-  @include register-variable($typography-light-scheme, "typography");
+  // --- Spacing tokens (4px base grid, multiplier naming) ---
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
 
-  --bg-color: #{get-color(grey, 50)};
+  // --- Radius tokens ---
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
 
+  // --- Motion tokens ---
+  --duration-fast: 125ms;
+  --duration-normal: 250ms;
+  --duration-slow: 450ms;
+  --duration-spin: 800ms;
+  --easing-default: cubic-bezier(0.2, 0, 0, 1);
+  --easing-enter: cubic-bezier(0, 0, 0, 1);
+  --easing-exit: cubic-bezier(0.3, 0, 1, 1);
+  --easing-linear: linear;
+
+  // --- Z-index tokens ---
+  --z-base: 0;
+  --z-dropdown: 1000;
+  --z-sticky: 1100;
+  --z-overlay: 1200;
+  --z-modal: 1300;
+  --z-toast: 1400;
+  --z-tooltip: 1500;
+
+  // Prevent flash: match bg-color to user preference before JS hydrates
   @media (prefers-color-scheme: dark) {
-    @include dark-scheme;
+    --neutral-bg: #{get-color(grey, 900)};
   }
 }
 
-body {
-  background-color: var(--bg-color);
-
-  &[data-theme="dark"] {
-    @include dark-scheme;
+// Reduced motion: shorten all durations, components handle spatial→opacity swap
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 100ms;
+    --duration-normal: 100ms;
+    --duration-slow: 100ms;
   }
+}
+
+// All theme tokens are driven by data-theme set by ThemeProvider on <html>
+:root[data-theme="light"] {
+  @include light-scheme;
+}
+
+:root[data-theme="dark"] {
+  @include dark-scheme;
+}
+
+body {
+  background-color: var(--neutral-bg);
 }

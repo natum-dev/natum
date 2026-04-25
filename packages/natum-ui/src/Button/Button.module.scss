@@ -1,14 +1,29 @@
 @use "../design-tokens" as *;
 
 .button {
-  all: unset;
+  box-sizing: border-box;
   display: inline-flex;
   cursor: pointer;
-  transition: all 0.25s ease;
+  background: none;
+  border: none;
+  margin: 0;
+  font: inherit;
   font-weight: 500;
-  color: var(--button-color, #{get-color(grey, 50)});
+  text-decoration: none;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: background-color var(--duration-fast) var(--easing-default),
+              color var(--duration-fast) var(--easing-default),
+              filter var(--duration-fast) var(--easing-default);
   align-items: center;
   justify-content: center;
+  border-radius: var(--radius-md);
+  color: var(--button-color, var(--neutral-text));
+
+  &:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+  }
 
   &.full_width {
     display: flex;
@@ -16,141 +31,200 @@
   }
 }
 
-.filled,
-.light {
-  background-color: var(--button-main-color);
+// Slot wrappers — keep icons/spinner aligned to the text baseline.
+.section {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
 }
 
-.outlined {
-  border-width: 1px;
-  border-style: solid;
-  border-color: var(--button-main-color);
+.label {
+  display: inline-flex;
+  align-items: center;
+}
+
+// --- Sizes -------------------------------------------------------------------
+// Sizes drive padding, font-size, slot gap, and minimum height.
+.sm {
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+  font-size: 14px;
+  min-block-size: 32px;
+  @include hit-target-extend;
+}
+
+.md {
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  font-size: 16px;
+  min-block-size: 40px;
+  @include hit-target-extend;
+}
+
+.lg {
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-6);
+  font-size: 16px;
+  // 48px already exceeds the 44px hit-target minimum.
+  min-block-size: 48px;
+}
+
+// --- Variants ---------------------------------------------------------------
+// Variants consume the per-color CSS custom properties set in the color blocks
+// below. This keeps the variant rules color-agnostic and allows colors to layer
+// cleanly on top.
+.filled {
+  background-color: var(--button-main-color);
+  color: var(--button-contrast-color, var(--neutral-text-inverse));
+
+  &:hover {
+    filter: brightness(1.1);
+  }
+}
+
+.soft {
+  background-color: var(--button-soft-color);
   color: var(--button-main-color);
+
+  &:hover {
+    background-color: var(--button-soft-hover-color);
+  }
 }
 
 .text {
-  background-color: transparent;
-}
-
-.primary {
-  --button-main-color: #{get-color(blue, 700)};
+  background: none;
+  color: var(--button-main-color);
 
   &:hover {
-    --button-main-color: #{get-color(blue, 800)};
+    background-color: var(--button-soft-color);
   }
+}
 
-  &.light {
-    --button-main-color: #{get-color(blue, 100)};
-    --button-color: #{get-color(blue, 700)};
+// --- Colors -----------------------------------------------------------------
+// Each semantic color sets the same set of CSS custom properties; the variant
+// block above renders them. This is the same composition pattern IconButton
+// uses.
+.primary {
+  --button-main-color: var(--primary-bg);
+  --button-contrast-color: var(--primary-contrast);
+  --button-soft-color: var(--primary-soft);
+  --button-soft-hover-color: var(--primary-soft-hover);
 
-    &:hover {
-      --button-main-color: #{get-color(blue, 200)};
-    }
+  &.soft,
+  &.text {
+    --button-main-color: var(--primary-text);
   }
 }
 
 .secondary {
-  --button-main-color: #{get-color(purple, 700)};
+  --button-main-color: var(--secondary-bg);
+  --button-contrast-color: var(--secondary-contrast);
+  --button-soft-color: var(--secondary-soft);
+  --button-soft-hover-color: var(--secondary-soft-hover);
 
-  &:hover {
-    --button-main-color: #{get-color(purple, 800)};
-  }
-
-  &.light {
-    --button-main-color: #{get-color(purple, 100)};
-    --button-color: #{get-color(purple, 700)};
-
-    &:hover {
-      --button-main-color: #{get-color(purple, 200)};
-    }
+  &.soft,
+  &.text {
+    --button-main-color: var(--secondary-text);
   }
 }
 
 .error {
-  --button-main-color: #{get-color(red, 700)};
+  --button-main-color: var(--error-bg);
+  --button-contrast-color: var(--error-contrast);
+  --button-soft-color: var(--error-soft);
+  --button-soft-hover-color: var(--error-soft-hover);
 
-  &:hover {
-    --button-main-color: #{get-color(red, 800)};
-  }
-
-  &.light {
-    --button-main-color: #{get-color(red, 100)};
-    --button-color: #{get-color(red, 700)};
-
-    &:hover {
-      --button-main-color: #{get-color(red, 200)};
-    }
-  }
-}
-
-.warning {
-  --button-main-color: #{get-color(orange, 700)};
-
-  &:hover {
-    --button-main-color: #{get-color(orange, 800)};
-  }
-
-  &.light {
-    --button-main-color: #{get-color(orange, 100)};
-    --button-color: #{get-color(orange, 700)};
-
-    &:hover {
-      --button-main-color: #{get-color(orange, 200)};
-    }
+  &.soft,
+  &.text {
+    --button-main-color: var(--error-text);
   }
 }
 
 .success {
-  --button-main-color: #{get-color(green, 700)};
+  --button-main-color: var(--success-bg);
+  --button-contrast-color: var(--success-contrast);
+  --button-soft-color: var(--success-soft);
+  --button-soft-hover-color: var(--success-soft-hover);
 
-  &:hover {
-    --button-main-color: #{get-color(green, 800)};
-  }
-
-  &.light {
-    --button-main-color: #{get-color(green, 100)};
-    --button-color: #{get-color(green, 700)};
-
-    &:hover {
-      --button-main-color: #{get-color(green, 200)};
-    }
+  &.soft,
+  &.text {
+    --button-main-color: var(--success-text);
   }
 }
 
+.warning {
+  --button-main-color: var(--warning-bg);
+  --button-contrast-color: var(--warning-contrast);
+  --button-soft-color: var(--warning-soft);
+  --button-soft-hover-color: var(--warning-soft-hover);
+
+  &.soft,
+  &.text {
+    --button-main-color: var(--warning-text);
+  }
+}
+
+.info {
+  --button-main-color: var(--info-bg);
+  --button-contrast-color: var(--info-contrast);
+  --button-soft-color: var(--info-soft);
+  --button-soft-hover-color: var(--info-soft-hover);
+
+  &.soft,
+  &.text {
+    --button-main-color: var(--info-text);
+  }
+}
+
+.neutral {
+  --button-main-color: var(--neutral-text);
+  --button-contrast-color: var(--neutral-contrast);
+  --button-soft-color: var(--neutral-soft);
+  --button-soft-hover-color: var(--neutral-soft-hover);
+
+  &.soft,
+  &.text {
+    --button-main-color: var(--neutral-text);
+  }
+}
+
+// --- Disabled ---------------------------------------------------------------
 .disabled {
-  --button-color: #{get-color(grey, 600)};
-  --button-main-color: #{get-color(grey, 400)};
+  color: var(--disabled-text);
+  opacity: var(--disabled-opacity);
   cursor: not-allowed;
+  pointer-events: none;
 
-  &:hover {
-    --button-main-color: #{get-color(grey, 400)};
+  &.filled {
+    background-color: var(--disabled-bg);
+    color: var(--disabled-text);
   }
 
-  &.outlined {
-    --button-main-color: #{get-color(grey, 600)};
-    color: var(--button-color);
+  &.soft {
+    background-color: var(--disabled-bg);
+    color: var(--disabled-text);
   }
 
-  &.light {
-    --button-color: #{get-color(grey, 600)};
-    --button-main-color: #{get-color(grey, 400)};
+  &.text {
+    background: none;
+    color: var(--disabled-text);
   }
 }
 
-.small {
-  font-size: 14px;
-  padding: 8px 12px;
-  border-radius: 6px;
+// --- Loading ----------------------------------------------------------------
+// While loading the button stays focusable (no native `disabled` attribute) so
+// screen readers announce a busy interactive element. Pointer interaction is
+// suppressed at the children level so the focus ring stays usable.
+.loading {
+  cursor: progress;
+
+  > * {
+    pointer-events: none;
+  }
 }
 
-.medium {
-  font-size: 16px;
-  padding: 10px 16px;
-  border-radius: 8px;
-}
-
-.large {
-  font-size: 18px;
-  padding: 12px 20px;
-  border-radius: 10px;
+// Spinner inherits color via `currentColor` from the parent variant.
+.spinner {
+  display: inline-flex;
 }

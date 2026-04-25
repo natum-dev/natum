@@ -1,223 +1,309 @@
 @use "../design-tokens" as *;
 
-.textfield {
-  display: inline-flex;
+// --- Wrapper ---
+
+.wrapper {
+  display: flex;
   flex-direction: column;
-  gap: 4px;
-  font-family: inherit;
-
-  --textfield-border-color: #{get-color(grey, 400)};
-  --textfield-focus-color: #{get-color(blue, 700)};
-  --textfield-bg: transparent;
-  --textfield-label-color: #{get-color(grey, 800)};
-  --textfield-text-color: #{get-color(grey, 900)};
-  --textfield-message-color: #{get-color(grey, 600)};
-  --textfield-placeholder-color: #{get-color(grey, 500)};
-  --textfield-font-size: 16px;
-  --textfield-padding: 10px 12px;
-  --textfield-radius: 8px;
-
-  &.full_width {
-    display: flex;
-    width: 100%;
-  }
+  width: 100%;
+  min-width: 0;
 }
+
+// --- Label ---
 
 .label {
-  font-size: calc(var(--textfield-font-size) - 2px);
+  display: block;
+  font-size: 14px;
   font-weight: 500;
-  color: var(--textfield-label-color);
+  color: var(--neutral-text-secondary);
+  margin-block-end: 4px;
+
+  .error & {
+    color: var(--error-text);
+  }
 }
 
-.input_wrapper {
+// Focus label color — comes first
+.focused .label,
+.wrapper:has(.focused) .label {
+  color: var(--primary-text);
+}
+
+// Error label color — comes AFTER focused, so it wins via source order
+.error .label,
+.error:has(.focused) .label {
+  color: var(--error-text);
+}
+
+.required_asterisk {
+  color: var(--error-text);
+  margin-inline-start: 2px;
+}
+
+// --- Input Container ---
+
+.input_container {
   display: flex;
   align-items: center;
-  border: 1px solid var(--textfield-border-color);
-  border-radius: var(--textfield-radius);
-  background-color: var(--textfield-bg);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  cursor: text;
+  box-sizing: border-box;
 
-  &:focus-within {
-    border-color: var(--textfield-focus-color);
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--textfield-focus-color) 20%, transparent);
-  }
-}
-
-.input {
-  all: unset;
-  flex: 1;
-  min-width: 0;
-  font-size: var(--textfield-font-size);
-  padding: var(--textfield-padding);
-  color: var(--textfield-text-color);
-
-  &::placeholder {
-    color: var(--textfield-placeholder-color);
-  }
-}
-
-.left_section,
-.right_section {
-  display: flex;
-  align-items: center;
-  color: #{get-color(grey, 600)};
-}
-
-.left_section {
-  padding-left: 12px;
-}
-
-.right_section {
-  padding-right: 12px;
-}
-
-.clear_button {
-  all: unset;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  padding: 0 8px;
-  font-size: calc(var(--textfield-font-size) + 2px);
-  color: #{get-color(grey, 500)};
-  line-height: 1;
-
-  &:hover {
-    color: #{get-color(grey, 700)};
-  }
-}
-
-.message {
-  font-size: calc(var(--textfield-font-size) - 2px);
-  color: var(--textfield-message-color);
-}
-
-.error_text {
-  color: var(--textfield-focus-color);
-}
-
-// --- Colors ---
-
-.primary {
-  --textfield-border-color: #{get-color(blue, 300)};
-  --textfield-focus-color: #{get-color(blue, 700)};
-  --textfield-label-color: #{get-color(blue, 700)};
-  --textfield-text-color: #{get-color(blue, 800)};
-  --textfield-message-color: #{get-color(blue, 600)};
-  --textfield-placeholder-color: color-mix(in srgb, #{get-color(blue, 100)} 50%, #{get-color(grey, 100)});
-}
-
-.secondary {
-  --textfield-border-color: #{get-color(purple, 300)};
-  --textfield-focus-color: #{get-color(purple, 700)};
-  --textfield-label-color: #{get-color(purple, 700)};
-  --textfield-text-color: #{get-color(purple, 800)};
-  --textfield-message-color: #{get-color(purple, 600)};
-  --textfield-placeholder-color: color-mix(in srgb, #{get-color(purple, 100)} 50%, #{get-color(grey, 100)});
-}
-
-.error {
-  --textfield-border-color: #{get-color(red, 300)};
-  --textfield-focus-color: #{get-color(red, 700)};
-  --textfield-label-color: #{get-color(red, 700)};
-  --textfield-text-color: #{get-color(red, 800)};
-  --textfield-message-color: #{get-color(red, 600)};
-  --textfield-placeholder-color: color-mix(in srgb, #{get-color(red, 100)} 50%, #{get-color(grey, 100)});
-}
-
-.success {
-  --textfield-border-color: #{get-color(green, 300)};
-  --textfield-focus-color: #{get-color(green, 700)};
-  --textfield-label-color: #{get-color(green, 700)};
-  --textfield-text-color: #{get-color(green, 800)};
-  --textfield-message-color: #{get-color(green, 600)};
-  --textfield-placeholder-color: color-mix(in srgb, #{get-color(green, 100)} 50%, #{get-color(grey, 100)});
-}
-
-.warning {
-  --textfield-border-color: #{get-color(orange, 300)};
-  --textfield-focus-color: #{get-color(orange, 700)};
-  --textfield-label-color: #{get-color(orange, 700)};
-  --textfield-text-color: #{get-color(orange, 800)};
-  --textfield-message-color: #{get-color(orange, 600)};
-  --textfield-placeholder-color: color-mix(in srgb, #{get-color(orange, 100)} 50%, #{get-color(grey, 100)});
-}
-
-// --- Error state ---
-
-.has_error {
-  --textfield-border-color: #{get-color(red, 700)};
-  --textfield-focus-color: #{get-color(red, 700)};
-  --textfield-label-color: #{get-color(red, 700)};
-}
-
-// --- Disabled ---
-
-.disabled {
-  --textfield-border-color: #{get-color(grey, 300)};
-  --textfield-label-color: #{get-color(grey, 500)};
-  --textfield-text-color: #{get-color(grey, 500)};
-  --textfield-message-color: #{get-color(grey, 400)};
-  --textfield-placeholder-color: #{get-color(grey, 300)};
-  --textfield-bg: #{get-color(grey, 100)};
-  cursor: not-allowed;
-
-  .input {
-    cursor: not-allowed;
-  }
-
-  .input_wrapper {
-    &:focus-within {
-      border-color: var(--textfield-border-color);
-      box-shadow: none;
-    }
+  @media (prefers-reduced-motion: no-preference) {
+    transition: border-color var(--duration-fast, 100ms) var(--easing-default, ease),
+      box-shadow var(--duration-fast, 100ms) var(--easing-default, ease),
+      background-color var(--duration-fast, 100ms) var(--easing-default, ease);
   }
 }
 
 // --- Variants ---
 
 .outlined {
-  // uses default .input_wrapper styling
+  border: 1px solid var(--border-color-subtle);
+  background-color: var(--neutral-bg-elevated);
+
+  &:hover:not(.focused) {
+    border-color: var(--border-color);
+  }
+
+  &.focused {
+    border-color: var(--primary-border);
+    box-shadow: 0 0 0 1px var(--primary-border);
+  }
+
+  // Error state must override ALL other states
+  .error & {
+    border-color: var(--error-border);
+
+    &:hover {
+      border-color: var(--error-border);
+    }
+
+    &.focused {
+      border-color: var(--error-border);
+      box-shadow: 0 0 0 1px var(--error-border);
+    }
+  }
 }
 
 .filled {
-  .input_wrapper {
-    border-color: transparent;
-    border-bottom: 2px solid var(--textfield-border-color);
-    border-radius: var(--textfield-radius);
-    background-color: #{get-color(grey, 50)};
+  border: 1px solid transparent;
+  border-block-end: 1px solid var(--border-color-subtle);
+  background-color: var(--neutral-bg-inset);
 
-    &:focus-within {
-      border-bottom-color: var(--textfield-focus-color);
-      box-shadow: none;
+  &:hover:not(.focused) {
+    border-block-end-color: var(--border-color);
+  }
+
+  &.focused {
+    border-block-end-color: var(--primary-border);
+    background-color: var(--neutral-bg-elevated);
+  }
+
+  // Error state must override ALL other states
+  .error & {
+    border-block-end-color: var(--error-border);
+
+    &:hover {
+      border-block-end-color: var(--error-border);
     }
-  }
 
-  &.has_error .input_wrapper {
-    border-bottom-color: #{get-color(red, 700)};
-  }
-
-  &.disabled .input_wrapper {
-    background-color: #{get-color(grey, 100)};
+    &.focused {
+      border-block-end-color: var(--error-border);
+    }
   }
 }
 
 // --- Sizes ---
 
-.small {
-  --textfield-font-size: 14px;
-  --textfield-padding: 8px 10px;
-  --textfield-radius: 6px;
+.sm {
+  min-height: 36px;
+  padding: 4px 8px;
+  font-size: 14px;
+  border-radius: var(--radius-sm, 4px);
 }
 
-.medium {
-  --textfield-font-size: 16px;
-  --textfield-padding: 10px 12px;
-  --textfield-radius: 8px;
+.md {
+  @include hit-target-min;
+  padding: 8px 12px;
+  font-size: 16px;
+  border-radius: var(--radius-md, 8px);
 }
 
-.large {
-  --textfield-font-size: 18px;
-  --textfield-padding: 12px 14px;
-  --textfield-radius: 10px;
+.lg {
+  min-height: 52px;
+  padding: 12px 16px;
+  font-size: 18px;
+  border-radius: var(--radius-md, 8px);
+}
+
+// --- Input ---
+
+.input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--neutral-text);
+  font: inherit;
+  font-size: inherit;
+  text-align: start;
+  padding: 0;
+  margin: 0;
+
+  &::placeholder {
+    color: var(--neutral-text-disabled);
+  }
+
+  &:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px var(--neutral-bg-elevated) inset;
+    -webkit-text-fill-color: var(--neutral-text);
+    caret-color: var(--neutral-text);
+    transition: background-color 5000s ease-in-out 0s;
+  }
+}
+
+// --- Sections ---
+
+.left_section,
+.right_section {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: var(--neutral-text-secondary);
+  pointer-events: none;
+
+  // Restore pointer events on interactive children
+  button,
+  a,
+  [role="button"] {
+    pointer-events: auto;
+  }
+}
+
+.has_left {
+  padding-inline-start: 8px;
+}
+
+.has_right {
+  padding-inline-end: 8px;
+}
+
+.left_section {
+  margin-inline-end: 8px;
+}
+
+.right_section {
+  margin-inline-start: 8px;
+}
+
+// --- Clear Button ---
+
+.clear_button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 4px;
+  margin: 0;
+  margin-inline-start: 4px;
+  border: none;
+  border-radius: var(--radius-sm, 4px);
+  background: transparent;
+  color: var(--neutral-text-secondary);
+  cursor: pointer;
+  appearance: none;
+
+  &:hover {
+    background-color: var(--neutral-bg-inset);
+    color: var(--neutral-text);
+  }
+}
+
+// --- Message (Helper / Error) ---
+
+.message {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  margin-block-start: 4px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.message_helper {
+  color: var(--neutral-text-secondary);
+}
+
+.message_error {
+  color: var(--error-text);
+}
+
+// --- Disabled ---
+
+.disabled_state {
+  opacity: var(--disabled-opacity);
+
+  .label {
+    color: var(--neutral-text-disabled);
+  }
+
+  .input_container {
+    cursor: not-allowed;
+    background-color: var(--neutral-bg-inset);
+    border-color: var(--neutral-border);
+    color: var(--neutral-text-disabled);
+  }
+
+  .input {
+    cursor: not-allowed;
+    color: var(--neutral-text-disabled);
+
+    &::placeholder {
+      color: var(--neutral-text-disabled);
+    }
+  }
+}
+
+// --- ReadOnly ---
+
+.readonly_state {
+  .label {
+    color: var(--neutral-text-secondary);
+  }
+
+  // Suppress label focus color change
+  &:has(.focused) .label {
+    color: var(--neutral-text-secondary);
+  }
+
+  .input_container {
+    background-color: var(--neutral-bg-inset);
+    border-color: var(--border-color-subtle);
+    cursor: default;
+
+    // No hover change
+    &:hover {
+      border-color: var(--border-color-subtle);
+    }
+
+    // For filled variant, keep bottom border visible but static
+    &.filled {
+      border-block-end-color: var(--border-color-subtle);
+
+      &:hover {
+        border-block-end-color: var(--border-color-subtle);
+      }
+    }
+
+    // Neutral focus — no primary ring
+    &.focused {
+      box-shadow: none;
+      border-color: var(--border-color-subtle);
+    }
+  }
+
+  .input {
+    color: var(--neutral-text);
+  }
 }

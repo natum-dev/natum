@@ -1,0 +1,149 @@
+@use "../design-tokens" as *;
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  gap: var(--space-1);
+  border-radius: 999px;
+  font-family: inherit;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  white-space: nowrap;
+  box-sizing: border-box;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      background-color var(--duration-fast) var(--easing-default),
+      color var(--duration-fast) var(--easing-default),
+      border-color var(--duration-fast) var(--easing-default);
+  }
+}
+
+// --- Sizes ---
+.sm {
+  block-size: 16px;
+  padding-inline: var(--space-2);
+  font-size: 10px;
+}
+
+.md {
+  block-size: 20px;
+  padding-inline: var(--space-2);
+  font-size: 11px;
+}
+
+// --- Variant × color matrix ---
+// Each semantic color exposes these custom properties in design-tokens/base.scss:
+//   --{color}-bg, --{color}-contrast, --{color}-border,
+//   --{color}-text, --{color}-soft, --{color}-soft-hover
+$badge-colors: neutral, primary, secondary, success, warning, error, info;
+
+@each $c in $badge-colors {
+  .#{$c} {
+    &.filled {
+      background-color: var(--#{$c}-bg);
+      color: var(--#{$c}-contrast);
+    }
+
+    &.outlined {
+      background-color: transparent;
+      color: var(--#{$c}-text);
+      border: 1px solid var(--#{$c}-border);
+    }
+
+    &.soft {
+      background-color: var(--#{$c}-soft);
+      color: var(--#{$c}-text);
+    }
+  }
+}
+
+// --- Dot mode (collapses to colored circle) ---
+.dot {
+  padding-inline: 0;
+  gap: 0;
+
+  &.sm {
+    block-size: 6px;
+    inline-size: 6px;
+  }
+
+  &.md {
+    block-size: 8px;
+    inline-size: 8px;
+  }
+}
+
+// --- Leading icon slot ---
+.left_section {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+
+  svg {
+    display: block;
+  }
+}
+
+.sm .left_section svg {
+  inline-size: 12px;
+  block-size: 12px;
+}
+
+.md .left_section svg {
+  inline-size: 14px;
+  block-size: 14px;
+}
+
+// --- Interactive states (auto-derived when as='a' | 'button') ---
+.interactive {
+  cursor: pointer;
+  text-decoration: none;
+  border: none;
+  appearance: none;
+  font: inherit;
+
+  &:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+  }
+}
+
+// Per-variant hover/active when interactive
+@each $c in $badge-colors {
+  .interactive.#{$c} {
+    &.soft:hover {
+      background-color: var(--#{$c}-soft-hover);
+    }
+
+    &.outlined:hover {
+      background-color: var(--#{$c}-soft);
+    }
+
+    &.filled:hover {
+      background-color: color-mix(in srgb, var(--#{$c}-bg) 90%, black);
+    }
+
+    &.soft:active {
+      background-color: color-mix(in srgb, var(--#{$c}-soft-hover) 85%, black);
+    }
+
+    &.outlined:active {
+      background-color: color-mix(in srgb, var(--#{$c}-soft) 85%, black);
+    }
+
+    &.filled:active {
+      background-color: color-mix(in srgb, var(--#{$c}-bg) 80%, black);
+    }
+  }
+}
+
+// --- Disabled (applies only when interactive) ---
+.interactive.disabled {
+  color: var(--disabled-text);
+  opacity: var(--disabled-opacity);
+  cursor: not-allowed;
+  pointer-events: none;
+}
