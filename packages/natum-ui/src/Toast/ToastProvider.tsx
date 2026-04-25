@@ -52,6 +52,7 @@ const ToastProvider = ({
               styles.toast_container,
               styles[positionClassMap[position]]
             )}
+            role="region"
             aria-label="Notifications"
           >
             {visibleToasts.map((t) => (
