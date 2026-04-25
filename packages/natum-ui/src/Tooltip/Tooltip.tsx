@@ -25,6 +25,12 @@ export type TooltipProps = {
   content: ReactNode;
   placement?: Placement;
   delay?: number;
+  /**
+   * Fires when the user presses Escape while the tooltip is open.
+   * Call `event.preventDefault()` to keep the tooltip visible.
+   * If not handled (or not prevented), the tooltip hides itself.
+   */
+  onEscapeKeyDown?: (event: KeyboardEvent) => void;
   children: ReactElement;
   className?: string;
 };
@@ -32,7 +38,17 @@ export type TooltipProps = {
 const EXIT_DURATION = 125;
 
 const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
-  ({ content, placement = "top", delay = 200, children, className }, ref) => {
+  (
+    {
+      content,
+      placement = "top",
+      delay = 200,
+      onEscapeKeyDown,
+      children,
+      className,
+    },
+    ref
+  ) => {
     const [isOpen, setIsOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
 
@@ -73,7 +89,15 @@ const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
       setIsOpen(false);
     }, []);
 
-    useEscapeKey({ onEscape: hide, enabled: isOpen });
+    useEscapeKey({
+      onEscape: (event) => {
+        onEscapeKeyDown?.(event);
+        if (!event.defaultPrevented) {
+          hide();
+        }
+      },
+      enabled: isOpen,
+    });
 
     useEffect(() => {
       return () => {

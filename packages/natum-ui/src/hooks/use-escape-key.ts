@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 
 export type UseEscapeKeyOptions = {
-  onEscape: () => void;
+  onEscape: (event: KeyboardEvent) => void;
   enabled?: boolean;
 };
 
@@ -15,7 +15,7 @@ export function useEscapeKey(options: UseEscapeKeyOptions): void {
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        onEscapeRef.current();
+        onEscapeRef.current(e);
       }
     };
 

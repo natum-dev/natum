@@ -5,7 +5,7 @@ const FOCUSABLE_SELECTOR =
 
 export type UseFocusTrapOptions = {
   isActive: boolean;
-  onEscape?: () => void;
+  onEscape?: (event: KeyboardEvent) => void;
 };
 
 export type UseFocusTrapReturn = {
@@ -79,7 +79,7 @@ export function useFocusTrap(options: UseFocusTrapOptions): UseFocusTrapReturn {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         e.stopPropagation();
-        onEscapeRef.current?.();
+        onEscapeRef.current?.(e);
         return;
       }
 

@@ -179,4 +179,41 @@ describe("Tooltip", () => {
     act(() => { vi.advanceTimersByTime(0); });
     expect(screen.getByRole("tooltip")).toHaveClass("custom-tooltip");
   });
+
+  // --- Dismissal callback (Tooltip exposes onEscapeKeyDown only) ---
+  it("Escape fires onEscapeKeyDown; tooltip still hides by default", async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    const onEscapeKeyDown = vi.fn();
+    render(
+      <Tooltip content="Tip" delay={0} onEscapeKeyDown={onEscapeKeyDown}>
+        <button>Hover me</button>
+      </Tooltip>
+    );
+    await user.hover(screen.getByText("Hover me"));
+    act(() => { vi.advanceTimersByTime(0); });
+    expect(screen.getByRole("tooltip")).toBeInTheDocument();
+    await user.keyboard("{Escape}");
+    expect(onEscapeKeyDown).toHaveBeenCalledOnce();
+    act(() => { vi.advanceTimersByTime(150); });
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+  });
+
+  it("onEscapeKeyDown consumer can suppress hide via event.preventDefault()", async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    render(
+      <Tooltip
+        content="Tip"
+        delay={0}
+        onEscapeKeyDown={(e) => e.preventDefault()}
+      >
+        <button>Hover me</button>
+      </Tooltip>
+    );
+    await user.hover(screen.getByText("Hover me"));
+    act(() => { vi.advanceTimersByTime(0); });
+    expect(screen.getByRole("tooltip")).toBeInTheDocument();
+    await user.keyboard("{Escape}");
+    act(() => { vi.advanceTimersByTime(150); });
+    expect(screen.getByRole("tooltip")).toBeInTheDocument();
+  });
 });

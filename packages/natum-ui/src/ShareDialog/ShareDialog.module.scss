@@ -1,7 +1,8 @@
 @use "../design-tokens" as *;
 
 .share_dialog {
-  // Wrapper for modal content, no additional styles needed
+  // Wrapper for modal content; class kept for consumer styling hooks.
+  display: block;
 }
 
 .add_row {
