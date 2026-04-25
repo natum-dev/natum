@@ -24,7 +24,7 @@ describe("useListboxSelection", () => {
     act(() => {
       result.current.toggle("b");
     });
-    expect(onChange).toHaveBeenCalledWith("b");
+    expect(onChange).toHaveBeenCalledWith("b", undefined);
 
     // simulate parent updating the prop
     rerender({ value: "b" });
@@ -65,7 +65,7 @@ describe("useListboxSelection", () => {
     act(() => {
       result.current.clear();
     });
-    expect(onChange).toHaveBeenCalledWith(undefined);
+    expect(onChange).toHaveBeenCalledWith(undefined, undefined);
     expect(result.current.selected).toEqual([]);
   });
 
@@ -94,7 +94,7 @@ describe("useListboxSelection", () => {
     act(() => {
       result.current.toggle("b");
     });
-    expect(onChange).toHaveBeenCalledWith(["a", "b"]);
+    expect(onChange).toHaveBeenCalledWith(["a", "b"], undefined);
   });
 
   it("multi: toggling an existing value removes it", () => {
@@ -110,7 +110,7 @@ describe("useListboxSelection", () => {
     act(() => {
       result.current.toggle("a");
     });
-    expect(onChange).toHaveBeenCalledWith(["b"]);
+    expect(onChange).toHaveBeenCalledWith(["b"], undefined);
   });
 
   it("multi: toggle on empty array adds", () => {
@@ -144,7 +144,7 @@ describe("useListboxSelection", () => {
     act(() => {
       result.current.clear();
     });
-    expect(onChange).toHaveBeenCalledWith([]);
+    expect(onChange).toHaveBeenCalledWith([], undefined);
     expect(result.current.selected).toEqual([]);
   });
 

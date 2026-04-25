@@ -26,7 +26,7 @@ type RadioGroupBaseProps = {
   defaultValue?: string;
   onChange?: (
     value: string,
-    event: React.ChangeEvent<HTMLInputElement>
+    event?: React.ChangeEvent<HTMLInputElement>
   ) => void;
   size?: RadioGroupSize;
   color?: RadioGroupSemanticColor;

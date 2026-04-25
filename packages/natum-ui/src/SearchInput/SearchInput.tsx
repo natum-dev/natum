@@ -2,7 +2,7 @@
 "use client";
 
 import { forwardRef, useEffect, useRef, useState } from "react";
-import type { ComponentPropsWithoutRef } from "react";
+import type { ComponentPropsWithoutRef, SyntheticEvent } from "react";
 import { IconSearch } from "@natum/icons";
 import { TextField } from "../TextField";
 import type { TextFieldProps } from "../TextField";
@@ -14,9 +14,11 @@ type SearchInputOwnProps = {
    * Fires after typing pauses for `debounceMs` — NOT on every keystroke.
    * Also fires immediately on Enter, blur, and clear (pending timer flushed).
    * The input itself stays responsive to keystrokes independently of this
-   * callback.
+   * callback. The second argument is the underlying React change event when
+   * the change came from typing; it is `undefined` when the change came from
+   * the clear button or other synthetic flush paths.
    */
-  onChange?: (value: string) => void;
+  onChange?: (value: string, event?: SyntheticEvent) => void;
   /** Fires on Enter. The pending debounce timer is flushed first. */
   onSubmit?: (value: string) => void;
   /** Default 250ms. `0` still dispatches async via setTimeout(…, 0). */
@@ -85,12 +87,14 @@ const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
 
     const timerRef = useRef<number | null>(null);
     const pendingRef = useRef<string | null>(null);
+    const pendingEventRef = useRef<SyntheticEvent | undefined>(undefined);
 
     const cancelPending = () => {
       if (timerRef.current !== null) {
         window.clearTimeout(timerRef.current);
         timerRef.current = null;
         pendingRef.current = null;
+        pendingEventRef.current = undefined;
       }
     };
 
@@ -99,18 +103,23 @@ const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
         window.clearTimeout(timerRef.current);
         timerRef.current = null;
         const pending = pendingRef.current;
+        const pendingEvent = pendingEventRef.current;
         pendingRef.current = null;
-        if (pending !== null) onChange?.(pending);
+        pendingEventRef.current = undefined;
+        if (pending !== null) onChange?.(pending, pendingEvent);
       }
     };
 
-    const schedule = (next: string) => {
+    const schedule = (next: string, event?: SyntheticEvent) => {
       cancelPending();
       pendingRef.current = next;
+      pendingEventRef.current = event;
       timerRef.current = window.setTimeout(() => {
         timerRef.current = null;
         pendingRef.current = null;
-        onChange?.(next);
+        const e = pendingEventRef.current;
+        pendingEventRef.current = undefined;
+        onChange?.(next, e);
       }, Math.max(0, debounceMs));
     };
 
@@ -126,7 +135,7 @@ const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
         onChange={(e) => {
           const next = e.target.value;
           setRawValue(next);
-          schedule(next);
+          schedule(next, e);
         }}
         onKeyDown={(e) => {
           onKeyDown?.(e);

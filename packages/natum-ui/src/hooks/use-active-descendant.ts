@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 export type UseActiveDescendantProps = {
   count: number;
   isOpen: boolean;
-  onSelect: (index: number) => void;
+  onSelect: (index: number, event?: React.SyntheticEvent) => void;
   isDisabled?: (index: number) => boolean;
 };
 
@@ -124,7 +124,7 @@ export function useActiveDescendant(
       case " ": {
         e.preventDefault();
         if (current >= 0 && !d?.(current)) {
-          onSelectRef.current(current);
+          onSelectRef.current(current, e);
         }
         return;
       }

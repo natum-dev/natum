@@ -8,6 +8,7 @@ import {
   useMemo,
   useRef,
   type ReactNode,
+  type SyntheticEvent,
 } from "react";
 import { IconChevronDown, IconX } from "@natum/icons";
 import { useActiveDescendant } from "../hooks/use-active-descendant";
@@ -48,6 +49,23 @@ type SelectBaseProps = {
   defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
 
+  /**
+   * Fires when the user presses Escape while the listbox is open.
+   * Call `event.preventDefault()` to keep the listbox open.
+   * If not handled (or not prevented), the listbox closes itself.
+   */
+  onEscapeKeyDown?: (event: KeyboardEvent) => void;
+  /**
+   * Fires when the user clicks/taps outside the trigger and listbox.
+   * Call `event.preventDefault()` to keep the listbox open.
+   * If not handled (or not prevented), the listbox closes itself.
+   *
+   * Select attaches a `mousedown` document listener, so the runtime event
+   * is a DOM `MouseEvent` (not `PointerEvent`). Modal/FilePreviewPanel — which
+   * use React's `onClick` — pass a `PointerEvent` instead.
+   */
+  onInteractOutside?: (event: MouseEvent | FocusEvent) => void;
+
   name?: string;
 
   children: ReactNode;
@@ -61,14 +79,14 @@ type SelectSingleProps = SelectBaseProps & {
   multiple?: false;
   value?: string;
   defaultValue?: string;
-  onChange?: (value: string | undefined) => void;
+  onChange?: (value: string | undefined, event?: SyntheticEvent) => void;
 };
 
 type SelectMultipleProps = SelectBaseProps & {
   multiple: true;
   value?: string[];
   defaultValue?: string[];
-  onChange?: (value: string[]) => void;
+  onChange?: (value: string[], event?: SyntheticEvent) => void;
   renderValue?: (selected: string[]) => ReactNode;
 };
 
@@ -96,6 +114,8 @@ const Select = forwardRef<HTMLButtonElement, SelectProps>((props, ref) => {
     open: openProp,
     defaultOpen,
     onOpenChange,
+    onEscapeKeyDown,
+    onInteractOutside,
     name,
     children,
     className,
@@ -134,9 +154,9 @@ const Select = forwardRef<HTMLButtonElement, SelectProps>((props, ref) => {
 
   // --- Selection handler (wraps toggle + close-on-single) ---
   const onItemSelect = useCallback(
-    (value: string) => {
+    (value: string, event?: SyntheticEvent) => {
       if (disabled || readOnly) return;
-      selection.toggle(value);
+      selection.toggle(value, event);
       if (!selection.isMulti) {
         setIsOpen(false);
       }
@@ -145,10 +165,10 @@ const Select = forwardRef<HTMLButtonElement, SelectProps>((props, ref) => {
   );
 
   const handleIndexSelect = useCallback(
-    (i: number) => {
+    (i: number, event?: SyntheticEvent) => {
       const item = items[i];
       if (!item) return;
-      onItemSelect(item.value);
+      onItemSelect(item.value, event);
     },
     [items, onItemSelect]
   );
@@ -231,6 +251,8 @@ const Select = forwardRef<HTMLButtonElement, SelectProps>((props, ref) => {
     (e: React.MouseEvent) => {
       e.stopPropagation();
       if (disabled || readOnly) return;
+      // clearable-driven clear: synthetic state change, no user-gesture event
+      // forwarded to onChange (DESIGN_PHILOSOPHY "Form onChange Signatures").
       selection.clear();
       onClear?.();
     },
@@ -245,15 +267,23 @@ const Select = forwardRef<HTMLButtonElement, SelectProps>((props, ref) => {
       if (!t) return;
       const inTrigger = triggerRef.current?.contains(t);
       const inListbox = listboxRef.current?.contains(t);
-      if (!inTrigger && !inListbox) setIsOpen(false);
+      if (inTrigger || inListbox) return;
+      onInteractOutside?.(e);
+      if (!e.defaultPrevented) {
+        setIsOpen(false);
+      }
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
-  }, [isOpen, setIsOpen]);
+  }, [isOpen, setIsOpen, onInteractOutside]);
 
   // --- Escape ---
   useEscapeKey({
-    onEscape: () => setIsOpen(false),
+    onEscape: (event) => {
+      onEscapeKeyDown?.(event);
+      if (event.defaultPrevented) return;
+      setIsOpen(false);
+    },
     enabled: isOpen,
   });
 

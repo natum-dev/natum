@@ -247,7 +247,7 @@ describe("Select", () => {
     const trigger = screen.getByRole("combobox");
     await user.click(trigger);
     await user.keyboard("{ArrowDown}{Enter}");
-    expect(onChange).toHaveBeenCalledWith("b");
+    expect(onChange).toHaveBeenCalledWith("b", expect.anything());
     expect(trigger).toHaveAttribute("aria-expanded", "false");
   });
 
@@ -263,7 +263,7 @@ describe("Select", () => {
     const trigger = screen.getByRole("combobox");
     await user.click(trigger);
     await user.keyboard("{Enter}");
-    expect(onChange).toHaveBeenCalledWith(["a"]);
+    expect(onChange).toHaveBeenCalledWith(["a"], expect.anything());
     expect(trigger).toHaveAttribute("aria-expanded", "true");
   });
 
@@ -277,7 +277,7 @@ describe("Select", () => {
     );
     await user.click(screen.getByRole("combobox"));
     await user.keyboard("{ }");
-    expect(onChange).toHaveBeenCalledWith("a");
+    expect(onChange).toHaveBeenCalledWith("a", expect.anything());
   });
 
   it("Escape closes; focus stays on trigger", async () => {
@@ -346,7 +346,7 @@ describe("Select", () => {
     const Wrapper = () => {
       const [v, setV] = useState<string | undefined>(undefined);
       return (
-        <Select label="F" value={v} onChange={(next) => { onChange(next); setV(next); }}>
+        <Select label="F" value={v} onChange={(next, e) => { onChange(next, e); setV(next); }}>
           <SelectItem value="a">A</SelectItem>
           <SelectItem value="b">B</SelectItem>
         </Select>
@@ -355,7 +355,7 @@ describe("Select", () => {
     render(<Wrapper />);
     await user.click(screen.getByRole("combobox"));
     await user.click(screen.getByText("B"));
-    expect(onChange).toHaveBeenCalledWith("b");
+    expect(onChange).toHaveBeenCalledWith("b", expect.anything());
   });
 
   it("multi controlled: toggling adds/removes from onChange payload", async () => {
@@ -364,7 +364,7 @@ describe("Select", () => {
     const Wrapper = () => {
       const [v, setV] = useState<string[]>([]);
       return (
-        <Select label="F" multiple value={v} onChange={(next) => { onChange(next); setV(next); }}>
+        <Select label="F" multiple value={v} onChange={(next, e) => { onChange(next, e); setV(next); }}>
           <SelectItem value="a">A</SelectItem>
           <SelectItem value="b">B</SelectItem>
         </Select>
@@ -373,11 +373,11 @@ describe("Select", () => {
     render(<Wrapper />);
     await user.click(screen.getByRole("combobox"));
     await user.click(screen.getByText("A"));
-    expect(onChange).toHaveBeenLastCalledWith(["a"]);
+    expect(onChange).toHaveBeenLastCalledWith(["a"], expect.anything());
     await user.click(screen.getByText("B"));
-    expect(onChange).toHaveBeenLastCalledWith(["a", "b"]);
+    expect(onChange).toHaveBeenLastCalledWith(["a", "b"], expect.anything());
     await user.click(screen.getByText("A"));
-    expect(onChange).toHaveBeenLastCalledWith(["b"]);
+    expect(onChange).toHaveBeenLastCalledWith(["b"], expect.anything());
   });
 
   it("clearable single: X fires onChange(undefined), onClear, and does NOT close listbox", async () => {
@@ -399,7 +399,8 @@ describe("Select", () => {
     await user.click(trigger);
     const clearBtn = screen.getByLabelText("Clear selection");
     await user.click(clearBtn);
-    expect(onChange).toHaveBeenCalledWith(undefined);
+    // clearable-driven clear is a synthetic state change: no event forwarded.
+    expect(onChange).toHaveBeenCalledWith(undefined, undefined);
     expect(onClear).toHaveBeenCalled();
     expect(trigger).toHaveAttribute("aria-expanded", "true");
   });
@@ -422,7 +423,8 @@ describe("Select", () => {
     const trigger = screen.getByRole("combobox");
     await user.click(trigger);
     await user.click(screen.getByLabelText("Clear selection"));
-    expect(onChange).toHaveBeenCalledWith([]);
+    // clearable-driven clear is a synthetic state change: no event forwarded.
+    expect(onChange).toHaveBeenCalledWith([], undefined);
     expect(trigger).toHaveAttribute("aria-expanded", "true");
   });
 
@@ -562,5 +564,64 @@ describe("Select", () => {
       </Select>
     );
     expect(await screen.findByRole("listbox")).toBeInTheDocument();
+  });
+
+  // --- Dismissal callbacks ---
+  it("Escape fires onEscapeKeyDown; close still happens by default", async () => {
+    const user = userEvent.setup();
+    const onEscapeKeyDown = vi.fn();
+    renderBasic({ onEscapeKeyDown });
+    const trigger = screen.getByRole("combobox");
+    await user.click(trigger);
+    expect(trigger).toHaveAttribute("aria-expanded", "true");
+    await user.keyboard("{Escape}");
+    expect(onEscapeKeyDown).toHaveBeenCalledOnce();
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+  });
+
+  it("Escape consumer can suppress close via event.preventDefault()", async () => {
+    const user = userEvent.setup();
+    renderBasic({ onEscapeKeyDown: (e) => e.preventDefault() });
+    const trigger = screen.getByRole("combobox");
+    await user.click(trigger);
+    expect(trigger).toHaveAttribute("aria-expanded", "true");
+    await user.keyboard("{Escape}");
+    expect(trigger).toHaveAttribute("aria-expanded", "true");
+  });
+
+  it("outside click fires onInteractOutside; close still happens by default", async () => {
+    const user = userEvent.setup();
+    const onInteractOutside = vi.fn();
+    render(
+      <>
+        <div data-testid="outside">outside</div>
+        <Select label="F" onInteractOutside={onInteractOutside}>
+          <SelectItem value="a">A</SelectItem>
+        </Select>
+      </>
+    );
+    const trigger = screen.getByRole("combobox");
+    await user.click(trigger);
+    expect(trigger).toHaveAttribute("aria-expanded", "true");
+    await user.click(screen.getByTestId("outside"));
+    expect(onInteractOutside).toHaveBeenCalledOnce();
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+  });
+
+  it("outside click consumer can suppress close via event.preventDefault()", async () => {
+    const user = userEvent.setup();
+    render(
+      <>
+        <div data-testid="outside">outside</div>
+        <Select label="F" onInteractOutside={(e) => e.preventDefault()}>
+          <SelectItem value="a">A</SelectItem>
+        </Select>
+      </>
+    );
+    const trigger = screen.getByRole("combobox");
+    await user.click(trigger);
+    expect(trigger).toHaveAttribute("aria-expanded", "true");
+    await user.click(screen.getByTestId("outside"));
+    expect(trigger).toHaveAttribute("aria-expanded", "true");
   });
 });
