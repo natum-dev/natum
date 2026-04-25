@@ -40,8 +40,9 @@
   }
 
   &[aria-disabled="true"] {
+    color: var(--disabled-text);
     cursor: not-allowed;
-    opacity: 0.5;
+    opacity: var(--disabled-opacity);
   }
 
   &:hover:not([aria-disabled="true"]) {
