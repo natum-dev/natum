@@ -216,9 +216,53 @@ Every component follows this standard props shape:
 
 - `onX` for event callbacks (`onClick`, `onClose`, `onChange`)
 - Native HTML boolean attributes use bare names: `disabled`, `required`, `readOnly`, `checked`
-- `isX` for non-native boolean states only (`isOpen`, `isLoading`, `isInteractive`, `isSelected`)
+- For non-native boolean state, use the prop name that reads most naturally as a state assertion:
+  - **Adjectival state** uses the `isX` form: `isInteractive`, `isSelected`, `isLoading`. These read as predicates ("the card is selected").
+  - **Industry-standardized overlay vocabulary** uses the bare name to align with the cross-library convention (Radix, React Aria, MUI, Headless UI all use `open`): `open` / `defaultOpen` / `onOpenChange` for any overlay (Modal, Drawer, Popover, Combobox, Select, DropdownMenu, FilePreviewPanel, ShareDialog).
+  - **Bare collapse vocabulary** for collapsible regions: `collapsed` / `defaultCollapsed` / `onCollapseChange` (Sidebar, UploadPanel).
+- For controlled props, the change callback is named `on{PropName}Change` (`onOpenChange` mirrors `open`, `onCollapseChange` mirrors `collapsed`, etc.).
 - `xSection` for slot props (`leftSection`, `rightSection`)
 - New naming conventions must be proposed and approved before adoption
+
+### Overlay Dismissal API
+
+All overlay components (Modal, FilePreviewPanel, Combobox, Select, DropdownMenuContent, Tooltip) expose a single, consistent dismissal interface. The default behavior closes the overlay; consumers opt out via `event.preventDefault()`:
+
+```ts
+type OverlayDismissProps = {
+  /**
+   * Fires when the user presses Escape while the overlay is open.
+   * Call `event.preventDefault()` to keep the overlay open.
+   * If not handled (or not prevented), the overlay closes itself.
+   */
+  onEscapeKeyDown?: (event: KeyboardEvent) => void;
+
+  /**
+   * Fires when the user clicks/taps outside the overlay (or focus moves out).
+   * Call `event.preventDefault()` to keep the overlay open.
+   * If not handled (or not prevented), the overlay closes itself.
+   *
+   * The exact event type depends on how the component listens for the
+   * outside interaction. Components that use a React `onClick` on a scrim
+   * element (Modal, FilePreviewPanel) deliver a `PointerEvent`.
+   * Components that attach a document-level `mousedown` listener
+   * (Combobox, Select) deliver a DOM `MouseEvent`. Each component
+   * publishes the precise type its runtime actually delivers.
+   */
+  onInteractOutside?: (event: PointerEvent | MouseEvent | FocusEvent) => void;
+};
+```
+
+Tooltip exposes `onEscapeKeyDown` only — it has no concept of "outside click."
+
+This replaces the older boolean-pair pattern (`closeOnEsc` / `closeOnOverlayClick`). Booleans cannot express "let me decide based on conditions"; cancellable callbacks subsume them — `onEscapeKeyDown={(e) => e.preventDefault()}` is the explicit "always blocked" form, and the `(e) => isDirty && e.preventDefault()` form handles the conditional case that booleans cannot.
+
+### Form `onChange` Signatures
+
+Form components fall into two categories with different `onChange` shapes:
+
+- **Native form primitives** (TextField, Textarea, Checkbox, Radio standalone, Toggle): keep the native `(event: ChangeEvent<...>) => void` signature. Consumers extending these components expect the native event shape.
+- **Composite/abstracted form widgets** (RadioGroup, Combobox, Select, SearchInput): use `(value, event?: SyntheticEvent) => void`. The value is what changed; the event is the underlying React event when a single user gesture triggered the change, or `undefined` for synthetic state changes (e.g. a `clearable`-driven clear, a debounce flush from blur, programmatic resets).
 
 ### Ref Forwarding
 
