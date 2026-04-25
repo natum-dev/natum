@@ -1,17 +1,18 @@
 import { useCallback, useRef, useState } from "react";
+import type { SyntheticEvent } from "react";
 
 type SingleProps = {
   multiple?: false;
   value?: string;
   defaultValue?: string;
-  onChange?: (value: string | undefined) => void;
+  onChange?: (value: string | undefined, event?: SyntheticEvent) => void;
 };
 
 type MultiProps = {
   multiple: true;
   value?: string[];
   defaultValue?: string[];
-  onChange?: (value: string[]) => void;
+  onChange?: (value: string[], event?: SyntheticEvent) => void;
 };
 
 export type UseListboxSelectionProps = SingleProps | MultiProps;
@@ -19,8 +20,8 @@ export type UseListboxSelectionProps = SingleProps | MultiProps;
 export type UseListboxSelectionReturn = {
   selected: string[];
   isSelected: (v: string) => boolean;
-  toggle: (v: string) => void;
-  clear: () => void;
+  toggle: (v: string, event?: SyntheticEvent) => void;
+  clear: (event?: SyntheticEvent) => void;
   isMulti: boolean;
 };
 
@@ -55,17 +56,17 @@ export function useListboxSelection(
   onChangeRef.current = props.onChange;
 
   const toggle = useCallback(
-    (v: string) => {
+    (v: string, event?: SyntheticEvent) => {
       if (isMulti) {
         const next = currentMulti.includes(v)
           ? currentMulti.filter((x) => x !== v)
           : [...currentMulti, v];
         if (!multiIsControlled) setMultiInternal(next);
-        (onChangeRef.current as MultiProps["onChange"])?.(next);
+        (onChangeRef.current as MultiProps["onChange"])?.(next, event);
       } else {
         if (currentSingle === v) return; // no-op
         if (!singleIsControlled) setSingleInternal(v);
-        (onChangeRef.current as SingleProps["onChange"])?.(v);
+        (onChangeRef.current as SingleProps["onChange"])?.(v, event);
       }
     },
     [
@@ -77,15 +78,18 @@ export function useListboxSelection(
     ]
   );
 
-  const clear = useCallback(() => {
-    if (isMulti) {
-      if (!multiIsControlled) setMultiInternal([]);
-      (onChangeRef.current as MultiProps["onChange"])?.([]);
-    } else {
-      if (!singleIsControlled) setSingleInternal(undefined);
-      (onChangeRef.current as SingleProps["onChange"])?.(undefined);
-    }
-  }, [isMulti, singleIsControlled, multiIsControlled]);
+  const clear = useCallback(
+    (event?: SyntheticEvent) => {
+      if (isMulti) {
+        if (!multiIsControlled) setMultiInternal([]);
+        (onChangeRef.current as MultiProps["onChange"])?.([], event);
+      } else {
+        if (!singleIsControlled) setSingleInternal(undefined);
+        (onChangeRef.current as SingleProps["onChange"])?.(undefined, event);
+      }
+    },
+    [isMulti, singleIsControlled, multiIsControlled]
+  );
 
   const selected = isMulti
     ? currentMulti

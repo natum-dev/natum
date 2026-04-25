@@ -75,7 +75,7 @@ describe("SearchInput — external value sync", () => {
     expect(input.value).toBe("seedx");
     // Debounced — flush the pending timer before asserting the emit.
     vi.advanceTimersByTime(250);
-    expect(handleChange).toHaveBeenCalledWith("seedx");
+    expect(handleChange).toHaveBeenCalledWith("seedx", expect.anything());
     vi.useRealTimers();
   });
 });
@@ -92,7 +92,7 @@ describe("SearchInput — debounce", () => {
     expect(handleChange).not.toHaveBeenCalled();
     vi.advanceTimersByTime(250);
     expect(handleChange).toHaveBeenCalledTimes(1);
-    expect(handleChange).toHaveBeenCalledWith("abc");
+    expect(handleChange).toHaveBeenCalledWith("abc", expect.anything());
     vi.useRealTimers();
   });
 
@@ -109,7 +109,7 @@ describe("SearchInput — debounce", () => {
     expect(handleChange).not.toHaveBeenCalled();
     vi.advanceTimersByTime(50);
     expect(handleChange).toHaveBeenCalledTimes(1);
-    expect(handleChange).toHaveBeenCalledWith("ab");
+    expect(handleChange).toHaveBeenCalledWith("ab", expect.anything());
     vi.useRealTimers();
   });
 
@@ -144,7 +144,7 @@ describe("SearchInput — debounce", () => {
     expect(handleChange).not.toHaveBeenCalled();
     vi.advanceTimersByTime(0);
     expect(handleChange).toHaveBeenCalledTimes(1);
-    expect(handleChange).toHaveBeenCalledWith("z");
+    expect(handleChange).toHaveBeenCalledWith("z", expect.anything());
     vi.useRealTimers();
   });
 
@@ -185,7 +185,7 @@ describe("SearchInput — Enter + submit", () => {
     await user.type(input, "hello");
     await user.keyboard("{Enter}");
     expect(handleChange).toHaveBeenCalledTimes(1);
-    expect(handleChange).toHaveBeenCalledWith("hello");
+    expect(handleChange).toHaveBeenCalledWith("hello", expect.anything());
     expect(handleSubmit).toHaveBeenCalledTimes(1);
     expect(handleSubmit).toHaveBeenCalledWith("hello");
     // No late emit from the cancelled timer.
@@ -238,7 +238,7 @@ describe("SearchInput — Enter + submit", () => {
     expect(handleSubmit).not.toHaveBeenCalled();
     // Pending debounce timer NOT cancelled (no flush happened either).
     vi.advanceTimersByTime(300);
-    expect(handleChange).toHaveBeenCalledWith("x");
+    expect(handleChange).toHaveBeenCalledWith("x", expect.anything());
     vi.useRealTimers();
   });
 });
@@ -259,7 +259,7 @@ describe("SearchInput — blur flush", () => {
     expect(handleChange).not.toHaveBeenCalled();
     screen.getByRole("button", { name: "elsewhere" }).focus();
     expect(handleChange).toHaveBeenCalledTimes(1);
-    expect(handleChange).toHaveBeenCalledWith("foo");
+    expect(handleChange).toHaveBeenCalledWith("foo", expect.anything());
     // No late emit.
     vi.advanceTimersByTime(500);
     expect(handleChange).toHaveBeenCalledTimes(1);
@@ -301,7 +301,7 @@ describe("SearchInput — clear button", () => {
     );
     await user.click(screen.getByRole("button", { name: "Clear input" }));
     // onChange('') emitted synchronously (not scheduled 250ms out).
-    expect(handleChange).toHaveBeenCalledWith("");
+    expect(handleChange.mock.calls[0][0]).toBe("");
     expect(screen.getByRole<HTMLInputElement>("searchbox").value).toBe("");
     // Drain timers — nothing further should fire.
     vi.advanceTimersByTime(500);

@@ -8,6 +8,7 @@ import {
   useMemo,
   useRef,
   type ReactNode,
+  type SyntheticEvent,
 } from "react";
 import { IconChevronDown, IconX } from "@natum/icons";
 import { useActiveDescendant } from "../hooks/use-active-descendant";
@@ -59,6 +60,23 @@ type ComboboxBaseProps = {
   defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
 
+  /**
+   * Fires when the user presses Escape while the listbox is open.
+   * Call `event.preventDefault()` to keep the listbox open.
+   * If not handled (or not prevented), the listbox closes itself.
+   */
+  onEscapeKeyDown?: (event: KeyboardEvent) => void;
+  /**
+   * Fires when the user clicks/taps outside the combobox.
+   * Call `event.preventDefault()` to keep the listbox open.
+   * If not handled (or not prevented), the listbox closes itself.
+   *
+   * Combobox attaches a `mousedown` document listener, so the runtime event
+   * is a DOM `MouseEvent` (not `PointerEvent`). Modal/FilePreviewPanel — which
+   * use React's `onClick` — pass a `PointerEvent` instead.
+   */
+  onInteractOutside?: (event: MouseEvent | FocusEvent) => void;
+
   name?: string;
 
   children: ReactNode;
@@ -72,14 +90,14 @@ type ComboboxSingleProps = ComboboxBaseProps & {
   multiple?: false;
   value?: string;
   defaultValue?: string;
-  onChange?: (value: string | undefined) => void;
+  onChange?: (value: string | undefined, event?: SyntheticEvent) => void;
 };
 
 type ComboboxMultipleProps = ComboboxBaseProps & {
   multiple: true;
   value?: string[];
   defaultValue?: string[];
-  onChange?: (value: string[]) => void;
+  onChange?: (value: string[], event?: SyntheticEvent) => void;
 };
 
 export type ComboboxProps = ComboboxSingleProps | ComboboxMultipleProps;
@@ -114,6 +132,8 @@ const Combobox = forwardRef<HTMLInputElement, ComboboxProps>((props, ref) => {
     open: openProp,
     defaultOpen,
     onOpenChange,
+    onEscapeKeyDown,
+    onInteractOutside,
     name,
     children,
     className,
@@ -202,9 +222,9 @@ const Combobox = forwardRef<HTMLInputElement, ComboboxProps>((props, ref) => {
 
   // --- Selection handler (scaffolding — Task 7 may refine) ---
   const onItemSelect = useCallback(
-    (value: string) => {
+    (value: string, event?: SyntheticEvent) => {
       if (disabled || readOnly) return;
-      selection.toggle(value);
+      selection.toggle(value, event);
       if (!selection.isMulti) {
         setOpen(false);
         setSearchValue("");
@@ -216,10 +236,10 @@ const Combobox = forwardRef<HTMLInputElement, ComboboxProps>((props, ref) => {
   );
 
   const handleChipRemove = useCallback(
-    (value: string) => {
+    (value: string, event?: SyntheticEvent) => {
       if (disabled || readOnly) return;
       if (!selection.isMulti) return;
-      selection.toggle(value);
+      selection.toggle(value, event);
       inputRef.current?.focus();
     },
     [disabled, readOnly, selection]
@@ -227,6 +247,8 @@ const Combobox = forwardRef<HTMLInputElement, ComboboxProps>((props, ref) => {
 
   const handleClear = useCallback(() => {
     if (disabled || readOnly) return;
+    // clearable-driven clear: synthetic state change, no user-gesture event
+    // forwarded to onChange (DESIGN_PHILOSOPHY "Form onChange Signatures").
     selection.clear();
     setSearchValue("");
     onClear?.();
@@ -234,10 +256,10 @@ const Combobox = forwardRef<HTMLInputElement, ComboboxProps>((props, ref) => {
   }, [disabled, readOnly, selection, setSearchValue, onClear]);
 
   const handleIndexSelect = useCallback(
-    (i: number) => {
+    (i: number, event?: SyntheticEvent) => {
       const item = visibleItems[i];
       if (!item) return;
-      onItemSelect(item.value);
+      onItemSelect(item.value, event);
     },
     [visibleItems, onItemSelect]
   );
@@ -363,7 +385,7 @@ const Combobox = forwardRef<HTMLInputElement, ComboboxProps>((props, ref) => {
         selection.selected.length > 0
       ) {
         e.preventDefault();
-        handleChipRemove(selection.selected[selection.selected.length - 1]);
+        handleChipRemove(selection.selected[selection.selected.length - 1], e);
         return;
       }
       // Space must pass through to the native input.
@@ -398,15 +420,21 @@ const Combobox = forwardRef<HTMLInputElement, ComboboxProps>((props, ref) => {
       if (!t) return;
       const inContainer = containerRef.current?.contains(t);
       const inListbox = listboxRef.current?.contains(t);
-      if (!inContainer && !inListbox) setOpen(false);
+      if (inContainer || inListbox) return;
+      onInteractOutside?.(e);
+      if (!e.defaultPrevented) {
+        setOpen(false);
+      }
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
-  }, [isOpen, setOpen]);
+  }, [isOpen, setOpen, onInteractOutside]);
 
   // --- Escape ---
   useEscapeKey({
-    onEscape: () => {
+    onEscape: (event) => {
+      onEscapeKeyDown?.(event);
+      if (event.defaultPrevented) return;
       setSearchValue("");
       setOpen(false);
     },
@@ -465,7 +493,7 @@ const Combobox = forwardRef<HTMLInputElement, ComboboxProps>((props, ref) => {
                   aria-label={`Remove ${lblStr}`}
                   className={styles.chip_remove}
                   onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => handleChipRemove(v)}
+                  onClick={(e) => handleChipRemove(v, e)}
                 >
                   <IconX size="xs" color="currentColor" />
                 </button>
@@ -508,7 +536,7 @@ const Combobox = forwardRef<HTMLInputElement, ComboboxProps>((props, ref) => {
               aria-label="Clear selection"
               className={styles.clear_button}
               onMouseDown={(e) => e.preventDefault()}
-              onClick={handleClear}
+              onClick={() => handleClear()}
             >
               <IconX size="sm" color="currentColor" />
             </button>

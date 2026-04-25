@@ -145,7 +145,7 @@ describe("useActiveDescendant", () => {
     );
     act(() => result.current.setActiveIndex(1));
     act(() => result.current.onKeyDown(keyEvent("Enter").event));
-    expect(onSelect).toHaveBeenCalledWith(1);
+    expect(onSelect).toHaveBeenCalledWith(1, expect.anything());
   });
 
   it("Space calls onSelect(activeIndex) when valid", () => {
@@ -155,7 +155,7 @@ describe("useActiveDescendant", () => {
     );
     act(() => result.current.setActiveIndex(2));
     act(() => result.current.onKeyDown(keyEvent(" ").event));
-    expect(onSelect).toHaveBeenCalledWith(2);
+    expect(onSelect).toHaveBeenCalledWith(2, expect.anything());
   });
 
   it("Enter with activeIndex=-1 is a no-op", () => {

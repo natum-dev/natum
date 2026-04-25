@@ -7,6 +7,7 @@ import {
   useRef,
   useState,
   type ReactNode,
+  type SyntheticEvent,
 } from "react";
 import { createPortal } from "react-dom";
 import { IconCheck } from "@natum/icons";
@@ -29,7 +30,7 @@ export type ListboxProps = {
   setActiveIndex: (i: number) => void;
   isSelected: (v: string) => boolean;
   isMulti: boolean;
-  onItemSelect: (value: string) => void;
+  onItemSelect: (value: string, event?: SyntheticEvent) => void;
   placement: "top" | "bottom";
   maxHeight: number;
   labelId: string;
@@ -137,8 +138,8 @@ export const Listbox = forwardRef<HTMLUListElement, ListboxProps>(
             if (!item.disabled) setActiveIndex(item.index);
           }}
           onMouseDown={(e) => e.preventDefault()}
-          onClick={() => {
-            if (!item.disabled) onItemSelect(item.value);
+          onClick={(e) => {
+            if (!item.disabled) onItemSelect(item.value, e);
           }}
         >
           {isMulti && (

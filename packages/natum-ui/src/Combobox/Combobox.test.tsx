@@ -271,7 +271,7 @@ describe("Combobox — selection", () => {
     const Wrapper = () => {
       const [v, setV] = React.useState<string | undefined>(undefined);
       return (
-        <Combobox label="F" value={v} onChange={(next) => { onChange(next); setV(next); }}>
+        <Combobox label="F" value={v} onChange={(next, e) => { onChange(next, e); setV(next); }}>
           <ComboboxItem value="a">Apple</ComboboxItem>
           <ComboboxItem value="b">Banana</ComboboxItem>
         </Combobox>
@@ -281,7 +281,7 @@ describe("Combobox — selection", () => {
     const input = screen.getByRole("combobox") as HTMLInputElement;
     await user.click(input);
     await user.click(screen.getByText("Banana"));
-    expect(onChange).toHaveBeenCalledWith("b");
+    expect(onChange).toHaveBeenCalledWith("b", expect.anything());
     input.blur();
     expect(input.value).toBe("Banana");
   });
@@ -303,7 +303,7 @@ describe("Combobox — selection", () => {
     const Wrapper = () => {
       const [v, setV] = React.useState<string[]>([]);
       return (
-        <Combobox label="F" multiple value={v} onChange={(next) => { onChange(next); setV(next); }}>
+        <Combobox label="F" multiple value={v} onChange={(next, e) => { onChange(next, e); setV(next); }}>
           <ComboboxItem value="a">Apple</ComboboxItem>
           <ComboboxItem value="b">Banana</ComboboxItem>
         </Combobox>
@@ -313,9 +313,9 @@ describe("Combobox — selection", () => {
     const input = screen.getByRole("combobox");
     await user.click(input);
     await user.click(screen.getByText("Apple"));
-    expect(onChange).toHaveBeenLastCalledWith(["a"]);
+    expect(onChange).toHaveBeenLastCalledWith(["a"], expect.anything());
     await user.click(screen.getByText("Banana"));
-    expect(onChange).toHaveBeenLastCalledWith(["a", "b"]);
+    expect(onChange).toHaveBeenLastCalledWith(["a", "b"], expect.anything());
   });
 
   it("multi pick keeps listbox open", async () => {
@@ -351,7 +351,7 @@ describe("Combobox — selection", () => {
     const Wrapper = () => {
       const [v, setV] = React.useState<string[]>(["a", "b"]);
       return (
-        <Combobox label="F" multiple value={v} onChange={(next) => { onChange(next); setV(next); }}>
+        <Combobox label="F" multiple value={v} onChange={(next, e) => { onChange(next, e); setV(next); }}>
           <ComboboxItem value="a">Apple</ComboboxItem>
           <ComboboxItem value="b">Banana</ComboboxItem>
         </Combobox>
@@ -359,7 +359,7 @@ describe("Combobox — selection", () => {
     };
     render(<Wrapper />);
     await user.click(screen.getByLabelText("Remove Apple"));
-    expect(onChange).toHaveBeenCalledWith(["b"]);
+    expect(onChange).toHaveBeenCalledWith(["b"], expect.anything());
   });
 
   it("multi Backspace on empty input removes last chip", async () => {
@@ -368,7 +368,7 @@ describe("Combobox — selection", () => {
     const Wrapper = () => {
       const [v, setV] = React.useState<string[]>(["a", "b"]);
       return (
-        <Combobox label="F" multiple value={v} onChange={(next) => { onChange(next); setV(next); }}>
+        <Combobox label="F" multiple value={v} onChange={(next, e) => { onChange(next, e); setV(next); }}>
           <ComboboxItem value="a">Apple</ComboboxItem>
           <ComboboxItem value="b">Banana</ComboboxItem>
         </Combobox>
@@ -378,7 +378,7 @@ describe("Combobox — selection", () => {
     const input = screen.getByRole("combobox") as HTMLInputElement;
     input.focus();
     await user.keyboard("{Backspace}");
-    expect(onChange).toHaveBeenCalledWith(["a"]);
+    expect(onChange).toHaveBeenCalledWith(["a"], expect.anything());
   });
 
   it("multi Backspace with text in input does NOT remove chips", async () => {
@@ -408,7 +408,7 @@ describe("Combobox — selection", () => {
     const input = screen.getByRole("combobox");
     await user.click(input);
     await user.keyboard("{ArrowDown}{Enter}");
-    expect(onChange).toHaveBeenCalledWith("b");
+    expect(onChange).toHaveBeenCalledWith("b", expect.anything());
     expect(input).toHaveAttribute("aria-expanded", "false");
   });
 
@@ -531,7 +531,8 @@ describe("Combobox — clearable", () => {
     );
     const clearBtn = screen.getByLabelText("Clear selection");
     await user.click(clearBtn);
-    expect(onChange).toHaveBeenCalledWith(undefined);
+    // clearable-driven clear is a synthetic state change: no event forwarded.
+    expect(onChange).toHaveBeenCalledWith(undefined, undefined);
     expect(onClear).toHaveBeenCalled();
   });
 
@@ -545,7 +546,8 @@ describe("Combobox — clearable", () => {
       </Combobox>
     );
     await user.click(screen.getByLabelText("Clear selection"));
-    expect(onChange).toHaveBeenCalledWith([]);
+    // clearable-driven clear is a synthetic state change: no event forwarded.
+    expect(onChange).toHaveBeenCalledWith([], undefined);
   });
 
   it("clear does NOT close the listbox if open", async () => {
@@ -684,5 +686,67 @@ describe("Combobox — single-select input revert", () => {
     expect(input.value).toBe("xx");
     await user.tab();
     expect(input.value).toBe("Banana");
+  });
+});
+
+describe("Combobox — dismissal callbacks", () => {
+  // --- onEscapeKeyDown ---
+  it("Escape fires onEscapeKeyDown; close still happens by default", async () => {
+    const user = userEvent.setup();
+    const onEscapeKeyDown = vi.fn();
+    renderBasic({ onEscapeKeyDown });
+    const input = screen.getByRole("combobox");
+    await user.click(input);
+    expect(input).toHaveAttribute("aria-expanded", "true");
+    await user.keyboard("{Escape}");
+    expect(onEscapeKeyDown).toHaveBeenCalledOnce();
+    expect(input).toHaveAttribute("aria-expanded", "false");
+  });
+
+  it("Escape consumer can suppress close via event.preventDefault()", async () => {
+    const user = userEvent.setup();
+    renderBasic({ onEscapeKeyDown: (e) => e.preventDefault() });
+    const input = screen.getByRole("combobox");
+    await user.click(input);
+    expect(input).toHaveAttribute("aria-expanded", "true");
+    await user.keyboard("{Escape}");
+    expect(input).toHaveAttribute("aria-expanded", "true");
+  });
+
+  // --- onInteractOutside ---
+  it("outside click fires onInteractOutside; close still happens by default", async () => {
+    const user = userEvent.setup();
+    const onInteractOutside = vi.fn();
+    render(
+      <>
+        <div data-testid="outside">outside</div>
+        <Combobox label="F" onInteractOutside={onInteractOutside}>
+          <ComboboxItem value="a">A</ComboboxItem>
+        </Combobox>
+      </>
+    );
+    const input = screen.getByRole("combobox");
+    await user.click(input);
+    expect(input).toHaveAttribute("aria-expanded", "true");
+    await user.click(screen.getByTestId("outside"));
+    expect(onInteractOutside).toHaveBeenCalledOnce();
+    expect(input).toHaveAttribute("aria-expanded", "false");
+  });
+
+  it("outside click consumer can suppress close via event.preventDefault()", async () => {
+    const user = userEvent.setup();
+    render(
+      <>
+        <div data-testid="outside">outside</div>
+        <Combobox label="F" onInteractOutside={(e) => e.preventDefault()}>
+          <ComboboxItem value="a">A</ComboboxItem>
+        </Combobox>
+      </>
+    );
+    const input = screen.getByRole("combobox");
+    await user.click(input);
+    expect(input).toHaveAttribute("aria-expanded", "true");
+    await user.click(screen.getByTestId("outside"));
+    expect(input).toHaveAttribute("aria-expanded", "true");
   });
 });
